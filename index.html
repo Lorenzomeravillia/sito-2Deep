@@ -126,6 +126,14 @@
     .contact-item label{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:.25rem}
     .contact-item a{color:var(--white);text-decoration:none;font-size:1rem;transition:color .3s}
     .contact-item a:hover{color:var(--amber)}
+    .setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem 2rem;margin-top:.5rem}
+    .setup-item{display:flex;flex-direction:column;gap:.15rem;padding:.7rem 0;border-bottom:1px solid rgba(200,146,42,.1)}
+    .setup-label{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--amber)}
+    .setup-val{font-size:.92rem;color:var(--gray)}
+    .faq-list{display:flex;flex-direction:column;gap:1.2rem;max-width:680px}
+    .faq-item{border-bottom:1px solid rgba(200,146,42,.12);padding-bottom:1.2rem}
+    .faq-q{font-family:var(--serif);font-size:1rem;color:var(--white);margin-bottom:.4rem;font-weight:400}
+    .faq-a{font-size:.9rem;color:var(--gray);line-height:1.7}
     .btn-wa{display:flex;align-items:center;justify-content:center;gap:.9rem;background:#25d366;color:#fff;padding:1.1rem 2.4rem;font-family:var(--sans);font-size:.85rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;border-radius:3px;transition:background .3s,transform .2s;width:100%}
     .btn-wa:hover{background:#1ebe5d;transform:translateY(-2px)}
     .btn-wa svg{width:22px;height:22px;fill:#fff;flex-shrink:0}
@@ -164,6 +172,7 @@
       .hero-photo-wrap::before{inset:-8px}
       .hero-photo-placeholder{aspect-ratio:16/9}
       .vibes-grid,.venues-grid,.members-grid{grid-template-columns:1fr}
+      .setup-grid{grid-template-columns:1fr}
       .sound-layout{grid-template-columns:1fr;gap:3rem}
       .vibe-card{border-right:none;border-bottom:1px solid rgba(200,146,42,.1)}
       .vibe-card:last-child{border-bottom:none}
@@ -198,11 +207,11 @@
     <div class="hero-content">
       <span class="hero-label" data-content="hero.label">Ska · Reggae · Acustico · Live</span>
       <h1 data-content="hero.title">2 Deep</h1>
-      <p class="hero-tagline" data-content="hero.tagline">Quando il ritmo è quello giusto, la serata resta addosso</p>
-      <p class="hero-desc" data-content="hero.desc">Siamo un duo acustico ska-reggae: chitarra, ukulele, percussioni e voci. Portiamo nei locali un repertorio di brani conosciuti, rivisitati con leggerezza, groove e un suono caldo, pensato per accompagnare la serata senza invaderla.</p>
+      <p class="hero-tagline" data-content="hero.tagline">Duo acustico ska-reggae per locali, enoteche e feste</p>
+      <p class="hero-desc" data-content="hero.desc">Chitarra, ukulele, percussioni e due voci. Brani conosciuti, risuonati in levare, con un suono caldo e leggero: abbastanza presente da creare serata, abbastanza discreto da lasciar parlare le persone.</p>
       <div class="hero-ctas">
-        <a href="#contatti" class="btn-primary">Prenota il duo</a>
-        <a href="#vibes" class="btn-outline">Scopri il sound</a>
+        <a href="#video" class="btn-primary">Guarda un video live</a>
+        <a href="https://wa.me/393488414630?text=Ciao%202Deep!%20Vorrei%20info%20per%20una%20serata%20nel%20mio%20locale." class="btn-outline" target="_blank" rel="noopener">Scrivici su WhatsApp</a>
       </div>
     </div>
     <div class="hero-photo-wrap">
@@ -253,11 +262,18 @@
     <div class="venues-grid">
       <div class="venue-tag reveal"><div class="venue-tag-icon">🍺</div><div><h3>Pub &amp; Birrerie</h3><p>Ritmo, leggerezza e un clima informale. Lo ska-reggae acustico sta bene dove le persone entrano per bere qualcosa e finiscono per restare più del previsto.</p></div></div>
       <div class="venue-tag reveal"><div class="venue-tag-icon">🍷</div><div><h3>Enoteche &amp; Wine Bar</h3><p>Un suono caldo, curato, mai aggressivo. La musica accompagna l'ambiente senza coprire le conversazioni e senza trasformare la serata in un concerto urlato.</p></div></div>
-      <div class="venue-tag reveal"><div class="venue-tag-icon">🎪</div><div><h3>Sagre &amp; Feste</h3><p>Brani riconoscibili, energia dal vivo e un repertorio che parla a pubblici diversi. Funziona con chi ascolta davvero, ma anche con chi passa, si ferma e si lascia prendere.</p></div></div>
+      <div class="venue-tag reveal"><div class="venue-tag-icon">🎪</div><div><h3>Sagre &amp; Feste</h3><p>Brani riconoscibili, energia dal vivo e un repertorio che parla a pubblici diversi: funziona bene quando serve una musica ritmica e adatta a chi ascolta e a chi semplicemente passa.</p></div></div>
       <div class="venue-tag reveal"><div class="venue-tag-icon">🍽</div><div><h3>Locali &amp; Ristoranti</h3><p>Una presenza musicale che dà carattere alla serata senza disturbare il servizio e l'esperienza degli ospiti.</p></div></div>
     </div>
     <div class="venues-note reveal">
-      <p data-content="venues.setup">Portiamo noi il necessario. In genere bastano una presa di corrente e uno spazio di circa 3×3 metri. Il resto lo sistemiamo noi, con tempi rapidi e senza complicare il lavoro del locale.</p>
+      <h3 style="font-family:var(--serif);font-weight:400;color:var(--white);margin-bottom:1.2rem;font-size:1.1rem;">Cosa serve per farci suonare</h3>
+      <div class="setup-grid">
+        <div class="setup-item"><span class="setup-label">Spazio</span><span class="setup-val">circa 3×3 metri</span></div>
+        <div class="setup-item"><span class="setup-label">Corrente</span><span class="setup-val">una presa normale</span></div>
+        <div class="setup-item"><span class="setup-label">Volume</span><span class="setup-val">adatto a locali dove si conversa</span></div>
+        <div class="setup-item"><span class="setup-label">Montaggio</span><span class="setup-val">rapido, senza complicare la serata</span></div>
+        <div class="setup-item"><span class="setup-label">Adatto a</span><span class="setup-val">pub, enoteche, birrerie, feste private, piccoli eventi</span></div>
+      </div>
     </div>
   </div>
 </section>
@@ -271,7 +287,7 @@
         <div class="section-divider"></div>
         <div class="sound-list">
           <div class="sound-item"><span class="sound-num">01</span><div><h3 data-content="sound.item1_title">Cover rivisitate</h3><p data-content="sound.item1_desc">Partiamo da brani pop, rock e italiani che molti riconoscono, poi li spostiamo su un terreno più solare: levare, groove, armonie vocali e arrangiamenti acustici.</p></div></div>
-          <div class="sound-item"><span class="sound-num">02</span><div><h3 data-content="sound.item2_title">432 Hz — una scelta di suono</h3><p data-content="sound.item2_desc">Suoniamo accordati a 432 Hz perché ci piace la sensazione che restituisce: un suono più morbido, caldo, meno affaticante. Non lo raccontiamo come una magia, ma come una scelta estetica precisa.</p></div></div>
+          <div class="sound-item"><span class="sound-num">02</span><div><h3 data-content="sound.item2_title">Un suono più morbido</h3><p data-content="sound.item2_desc">Ci piace lavorare su un suono caldo, rotondo, non aggressivo. Anche l'accordatura a 432 Hz fa parte di questa ricerca, ma quello che conta davvero è l'effetto finale: una musica che accompagna senza stancare.</p></div></div>
           <div class="sound-item"><span class="sound-num">03</span><div><h3 data-content="sound.item3_title">Energia senza volume eccessivo</h3><p data-content="sound.item3_desc">Chitarra, ukulele, percussioni e voci possono riempire bene una serata senza bisogno di spingere troppo. L'energia c'è, ma resta adatta allo spazio e alle persone che lo vivono.</p></div></div>
         </div>
       </div>
@@ -318,7 +334,7 @@
                 <span class="member-role-tag" style="margin-bottom:0" data-content="members.katia_role">Voce · Percussioni</span>
               </div>
             </div>
-            <p data-content="members.katia_bio">Arriva dal canto corale, poi passa per il palco rock con gli Afotherica e quello ska con gli Sklero Zero. Nel duo canta, suona le percussioni e porta quella presenza naturale che fa sentire il pubblico dentro la serata.</p>
+            <p data-content="members.katia_bio">Voce e percussioni. Arriva dal canto corale, dal rock e dallo ska: tre mondi che nel duo diventano presenza scenica, ritmo e naturalezza. È quella che tiene il contatto più diretto con la serata.</p>
             <span class="member-back-btn">← indietro</span>
           </div>
         </div>
@@ -343,7 +359,7 @@
                 <span class="member-role-tag" style="margin-bottom:0" data-content="members.lorenzo_role">Chitarra · Chitarra arpa · Voce</span>
               </div>
             </div>
-            <p data-content="members.lorenzo_bio">Si forma sulla chitarra jazz e porta nel progetto molti anni di musica dal vivo. Nel duo costruisce la parte armonica e ritmica, alternando chitarra e chitarra arpa, uno strumento particolare che aggiunge colore e profondità al suono.</p>
+            <p data-content="members.lorenzo_bio">Chitarra, chitarra arpa e voce. Viene dallo studio della chitarra jazz e da molti anni di musica dal vivo. Nel duo costruisce il tappeto armonico e ritmico: il motore caldo su cui si appoggiano voce, levare e groove.</p>
             <span class="member-back-btn">← indietro</span>
           </div>
         </div>
@@ -389,13 +405,30 @@
   </div>
 </section>
 
+<section id="faq">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">Domande rapide</span>
+      <h2 class="section-title">Cosa chiedono i gestori</h2>
+      <div class="section-divider"></div>
+      <div class="faq-list">
+        <div class="faq-item"><p class="faq-q">Quanto spazio serve?</p><p class="faq-a">Circa 3×3 metri. Ci adattiamo a spazi anche più piccoli se il contesto lo permette.</p></div>
+        <div class="faq-item"><p class="faq-q">Portate voi l'impianto?</p><p class="faq-a">Sì, per situazioni piccole e medie siamo completamente autonomi. Una presa di corrente è sufficiente.</p></div>
+        <div class="faq-item"><p class="faq-q">Il volume è adatto a una cena o a un'enoteca?</p><p class="faq-a">Sì, il progetto nasce proprio per creare atmosfera senza coprire le conversazioni. Il livello si regola in base al locale.</p></div>
+        <div class="faq-item"><p class="faq-q">Fate anche feste private?</p><p class="faq-a">Sì, se il contesto è adatto al nostro repertorio. Scriveteci e valutiamo insieme.</p></div>
+        <div class="faq-item"><p class="faq-q">Quanto dura un set?</p><p class="faq-a">Da concordare: di solito uno o due set da 45–60 minuti, con pausa. Siamo flessibili in base alla serata.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="contatti">
   <div class="container">
     <div class="contact-center reveal">
       <span class="section-label" data-content="contact.label">Contatti</span>
       <h2 class="section-title" data-content="contact.title">Parlaci della tua serata</h2>
       <div class="section-divider"></div>
-      <p class="contact-intro" data-content="contact.desc">Pub, birrerie, enoteche, sagre, eventi privati — scriveteci e troviamo la formula giusta per il vostro locale.</p>
+      <p class="contact-intro" data-content="contact.desc">Vuoi capire se siamo adatti alla tua serata? Scrivici su WhatsApp indicando data, luogo, tipo di evento e orario indicativo. Ti rispondiamo con disponibilità, proposta e informazioni tecniche.</p>
       <div class="contact-items">
         <div class="contact-item"><label>Instagram</label><a href="https://www.instagram.com/" target="_blank" data-href="contact.instagram" data-content-text-same="true">@2deep_music</a></div>
       </div>
