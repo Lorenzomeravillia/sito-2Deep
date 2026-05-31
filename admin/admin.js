@@ -17,27 +17,11 @@ let tdAdmin = null;
 let contentData = [];
 let eventsData  = [];
 
-function dbg(msg) {
-    let box = document.getElementById('debug-box');
-    if (!box) {
-        box = document.createElement('div');
-        box.id = 'debug-box';
-        box.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#111;color:#0f0;font-family:monospace;font-size:12px;padding:8px;z-index:99999;max-height:50vh;overflow-y:auto;white-space:pre-wrap;';
-        document.body.prepend(box);
-    }
-    box.textContent += new Date().toISOString().slice(11,19) + ' ' + msg + '\n';
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-    dbg('DOMContentLoaded');
     try {
-        dbg('window.supabase = ' + typeof window.supabase);
         if (!window.supabase) throw new Error('Supabase CDN non caricato');
-        dbg('createClient...');
         tdAdmin = window.supabase.createClient(_SB_URL, _SB_KEY, { db: { schema: 'td' } });
-        dbg('tdAdmin OK');
     } catch (err) {
-        dbg('ERRORE INIT: ' + err.message);
         showToast('Errore init: ' + err.message, 'error');
         return;
     }
@@ -52,10 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    dbg('binding login-btn...');
     document.getElementById('login-btn').addEventListener('click', login);
     document.getElementById('logout-btn').addEventListener('click', logout);
-    dbg('binding forms...');
 
     document.getElementById('form-hero').addEventListener('submit',     e => saveSection(e, 'hero'));
     document.getElementById('form-venues').addEventListener('submit',   e => saveSection(e, 'venues'));
@@ -69,13 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function checkSession() {
-    dbg('checkSession start');
     const as = document.getElementById('auth-section');
     const ds = document.getElementById('dashboard-section');
     try {
-        dbg('calling getSession...');
         const { data } = await tdAdmin.auth.getSession();
-        dbg('session: ' + (data.session ? 'LOGGED IN' : 'no session'));
         if (data.session) {
             as.style.display = 'none';
             ds.style.display = 'block';
@@ -91,16 +70,13 @@ async function login() {
     const email = document.getElementById('email').value.trim();
     const pass  = document.getElementById('password').value;
     const btn   = document.getElementById('login-btn');
-    dbg('login() email=' + email + ' pass.len=' + pass.length);
     if (!email || !pass) { showToast('Inserisci email e password.', 'error'); return; }
     btn.innerText = 'Accesso...'; btn.disabled = true;
     try {
-        dbg('signInWithPassword...');
-        const { data, error } = await tdAdmin.auth.signInWithPassword({ email, password: pass });
-        dbg('result: error=' + (error ? error.message : 'none') + ' user=' + (data?.user?.email || 'null'));
+        const { error } = await tdAdmin.auth.signInWithPassword({ email, password: pass });
         if (error) showToast('Login fallito: ' + error.message, 'error');
         else { showToast('Accesso effettuato ✓'); checkSession(); }
-    } catch (e) { dbg('EXCEPTION: ' + e.message); showToast('Eccezione: ' + e.message, 'error'); }
+    } catch (e) { showToast('Eccezione: ' + e.message, 'error'); }
     finally { btn.innerText = 'Accedi'; btn.disabled = false; }
 }
 
