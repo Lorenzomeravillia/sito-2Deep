@@ -115,6 +115,24 @@
     .contact-form textarea{resize:vertical;min-height:120px}
     footer{padding:2.2rem 2rem;border-top:1px solid rgba(200,146,42,.07);text-align:center;font-size:.78rem;color:var(--gray)}
     footer span{color:var(--amber)}
+    /* Repertorio */
+    #repertorio{background:var(--bg2)}
+    .song-grid{columns:2;column-gap:2rem;margin-top:1.5rem}
+    .song-item{break-inside:avoid;padding:.6rem 0;border-bottom:1px solid rgba(200,146,42,.06);display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
+    .song-title{color:var(--white);font-size:.95rem}
+    .song-artist{color:var(--gray);font-size:.78rem;flex-shrink:0}
+    .rep-note{margin-top:2rem;font-size:.85rem;color:var(--gray);font-style:italic}
+    /* Video */
+    #video{background:var(--bg)}
+    .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin-top:1.5rem}
+    .video-card{background:rgba(200,146,42,.03);border:1px solid rgba(200,146,42,.08);border-radius:3px;overflow:hidden;transition:border-color .3s}
+    .video-card:hover{border-color:rgba(200,146,42,.25)}
+    .video-thumb{position:relative;padding-bottom:56.25%;overflow:hidden}
+    .video-thumb iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+    .video-info{padding:1rem 1.2rem}
+    .video-info h3{font-family:var(--serif);font-weight:400;font-size:1.05rem;color:var(--white);margin-bottom:.3rem}
+    .video-info p{font-size:.82rem;color:var(--gray);line-height:1.6}
+    @media(max-width:600px){.song-grid{columns:1}}
     .wa-float{position:fixed;bottom:2rem;right:2rem;width:54px;height:54px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 18px rgba(37,211,102,.3);transition:transform .3s,box-shadow .3s;text-decoration:none}
     .wa-float:hover{transform:scale(1.1);box-shadow:0 6px 26px rgba(37,211,102,.45)}
     .wa-float svg{width:26px;height:26px;fill:#fff}
@@ -141,6 +159,8 @@
     <li><a href="#vibes" onclick="closeNav()">Il Sound</a></li>
     <li><a href="#venues" onclick="closeNav()">Per i Locali</a></li>
     <li><a href="#members" onclick="closeNav()">Il Duo</a></li>
+    <li><a href="#repertorio" onclick="closeNav()">Repertorio</a></li>
+    <li><a href="#video" onclick="closeNav()">Video</a></li>
     <li><a href="#contatti" class="nav-cta" onclick="closeNav()">Contattaci</a></li>
   </ul>
   <div class="nav-hamburger" id="hamburger" onclick="toggleNav()">
@@ -275,6 +295,29 @@
       <div class="section-divider"></div>
     </div>
     <div class="reveal" id="events-list" style="display:flex;flex-direction:column;gap:0;"></div>
+  </div>
+</section>
+
+<section id="repertorio" style="display:none">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">Cosa suoniamo</span>
+      <h2 class="section-title">Repertorio</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="song-grid reveal" id="repertoire-grid"></div>
+    <p class="rep-note reveal" id="rep-note"></p>
+  </div>
+</section>
+
+<section id="video" style="display:none">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">Guardaci</span>
+      <h2 class="section-title">Video live</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="video-grid reveal" id="videos-grid"></div>
   </div>
 </section>
 

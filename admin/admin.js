@@ -16,10 +16,17 @@ const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 const BUCKET    = 'td-site';
 const BUCKET_URL = () => `${_SB_URL}/storage/v1/object/public/${BUCKET}`;
 
-let tdAdmin     = null;
-let contentData = [];
-let eventsData  = [];
-let imagesData  = [];
+function extractYouTubeId(url) {
+    const m = (url || '').match(/(?:youtu\.be\/|v=|embed\/)([^#&?]{11})/);
+    return m ? m[1] : null;
+}
+
+let tdAdmin       = null;
+let contentData   = [];
+let eventsData    = [];
+let imagesData    = [];
+let videosData    = [];
+let repertoireData = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     try {
@@ -49,6 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('form-membri').addEventListener('submit',   e => saveSection(e, 'members'));
     document.getElementById('form-contatti').addEventListener('submit', e => saveSection(e, 'contact'));
     document.getElementById('form-new-event').addEventListener('submit', addEvent);
+    document.getElementById('form-new-song').addEventListener('submit', addSong);
+    document.getElementById('form-new-video').addEventListener('submit', addVideo);
+    document.getElementById('form-edit-video').addEventListener('submit', saveVideoEdit);
+    document.getElementById('modal-edit-video').addEventListener('click', function(e) {
+        if (e.target === this) closeVideoModal();
+    });
     document.getElementById('form-upload-photo').addEventListener('submit', uploadPhoto);
     document.getElementById('form-edit-photo').addEventListener('submit', saveImageEdit);
     document.getElementById('modal-edit-photo').addEventListener('click', function(e) {
@@ -114,20 +127,28 @@ async function logout() {
 async function loadAdminData() {
     setLoading(true);
     try {
-        const [cnt, ev, img] = await Promise.all([
+        const [cnt, ev, img, vid, rep] = await Promise.all([
             tdAdmin.from('site_content').select('*'),
             tdAdmin.from('site_events').select('*').order('event_date', { ascending: true }),
-            tdAdmin.from('site_images').select('*').order('display_order')
+            tdAdmin.from('site_images').select('*').order('display_order'),
+            tdAdmin.from('site_videos').select('*').order('display_order', { ascending: true }),
+            tdAdmin.from('site_repertoire').select('*').order('display_order', { ascending: true })
         ]);
         if (cnt.error) throw cnt.error;
         if (ev.error)  throw ev.error;
         if (img.error) throw img.error;
-        contentData = cnt.data || [];
-        eventsData  = ev.data  || [];
-        imagesData  = img.data || [];
+        if (vid.error) throw vid.error;
+        if (rep.error) throw rep.error;
+        contentData    = cnt.data || [];
+        eventsData     = ev.data  || [];
+        imagesData     = img.data || [];
+        videosData     = vid.data || [];
+        repertoireData = rep.data || [];
         populateForms();
         renderEvents();
         renderImages();
+        renderVideos();
+        renderRepertoire();
         setLoading(false);
     } catch (e) {
         setLoading(false, true);
@@ -220,6 +241,167 @@ async function deleteEvent(id) {
     const { error } = await tdAdmin.from('site_events').delete().eq('id', id);
     if (error) showToast('Errore: ' + error.message, 'error');
     else { showToast('Eliminata'); loadAdminData(); }
+}
+
+// ── Repertoire ──
+async function addSong(e) {
+    e.preventDefault();
+    const nextOrder = repertoireData.length ? Math.max(...repertoireData.map(r => r.display_order || 0)) + 1 : 1;
+    const { error } = await tdAdmin.from('site_repertoire').insert([{
+        song_title: document.getElementById('song-title').value.trim(),
+        artist:     document.getElementById('song-artist').value.trim(),
+        display_order: nextOrder, is_active: true
+    }]);
+    if (error) showToast('Errore: ' + error.message, 'error');
+    else { showToast('Brano aggiunto ✓'); e.target.reset(); loadAdminData(); }
+}
+
+async function deleteSong(id) {
+    if (!confirm('Eliminare questo brano?')) return;
+    const { error } = await tdAdmin.from('site_repertoire').delete().eq('id', id);
+    if (error) showToast('Errore: ' + error.message, 'error');
+    else { showToast('Eliminato'); loadAdminData(); }
+}
+
+async function moveSong(id, dir) {
+    const idx = repertoireData.findIndex(s => s.id === id);
+    if (idx < 0 || (dir === -1 && idx === 0) || (dir === 1 && idx === repertoireData.length - 1)) return;
+    const cur = repertoireData[idx], swp = repertoireData[idx + dir];
+    await Promise.all([
+        tdAdmin.from('site_repertoire').update({ display_order: swp.display_order }).eq('id', cur.id),
+        tdAdmin.from('site_repertoire').update({ display_order: cur.display_order }).eq('id', swp.id)
+    ]);
+    loadAdminData();
+}
+
+function renderRepertoire() {
+    const list = document.getElementById('songs-admin-list');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!repertoireData.length) { list.innerHTML = '<li style="color:#999;padding:1rem;">Nessun brano.</li>'; return; }
+    repertoireData.forEach((s, idx) => {
+        const li = document.createElement('li');
+        li.className = 'data-item';
+        li.innerHTML = `
+            <div><strong>${s.song_title}</strong>${s.artist ? ' — <em>' + s.artist + '</em>' : ''}</div>
+            <div class="data-item-actions">
+                <button onclick="moveSong('${s.id}',-1)" ${idx===0?'disabled':''}>▲</button>
+                <button onclick="moveSong('${s.id}',1)"  ${idx===repertoireData.length-1?'disabled':''}>▼</button>
+                <button class="danger" onclick="deleteSong('${s.id}')">Elimina</button>
+            </div>`;
+        list.appendChild(li);
+    });
+}
+
+// ── Video ──
+async function addVideo(e) {
+    e.preventDefault();
+    const url  = document.getElementById('video-url').value.trim();
+    const ytId = extractYouTubeId(url);
+    if (!ytId) { showToast('URL YouTube non valido', 'error'); return; }
+    const nextOrder = videosData.length ? Math.max(...videosData.map(v => v.display_order || 0)) + 1 : 1;
+    const { error } = await tdAdmin.from('site_videos').insert([{
+        youtube_url:   `https://www.youtube.com/watch?v=${ytId}`,
+        title:         document.getElementById('video-title').value.trim() || 'Video',
+        description:   document.getElementById('video-desc').value.trim(),
+        display_order: nextOrder,
+        is_visible:    document.getElementById('video-visible').checked
+    }]);
+    if (error) showToast('Errore: ' + error.message, 'error');
+    else { showToast('Video aggiunto ✓'); e.target.reset(); loadAdminData(); }
+}
+
+function editVideo(id) {
+    const v = videosData.find(v => v.id === id);
+    if (!v) return;
+    document.getElementById('edit-vid-id').value       = v.id;
+    document.getElementById('edit-vid-url').value      = v.youtube_url || '';
+    document.getElementById('edit-vid-title').value    = v.title || '';
+    document.getElementById('edit-vid-desc').value     = v.description || '';
+    document.getElementById('edit-vid-visible').checked = v.is_visible;
+    const ytId = extractYouTubeId(v.youtube_url);
+    const wrap = document.getElementById('edit-vid-thumb-wrap');
+    const thumb = document.getElementById('edit-vid-thumb');
+    if (ytId) { thumb.src = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`; wrap.style.display = 'block'; }
+    else { wrap.style.display = 'none'; }
+    document.getElementById('edit-vid-url').oninput = function() {
+        const id2 = extractYouTubeId(this.value);
+        if (id2) { thumb.src = `https://img.youtube.com/vi/${id2}/hqdefault.jpg`; wrap.style.display = 'block'; }
+        else { wrap.style.display = 'none'; }
+    };
+    document.getElementById('modal-edit-video').style.display = 'flex';
+}
+
+function closeVideoModal() { document.getElementById('modal-edit-video').style.display = 'none'; }
+
+async function saveVideoEdit(e) {
+    e.preventDefault();
+    const id   = document.getElementById('edit-vid-id').value;
+    const url  = document.getElementById('edit-vid-url').value.trim();
+    const ytId = extractYouTubeId(url);
+    if (!ytId) { showToast('URL YouTube non valido', 'error'); return; }
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.innerText = 'Salvataggio...'; btn.disabled = true;
+    try {
+        const { error } = await tdAdmin.from('site_videos').update({
+            youtube_url: `https://www.youtube.com/watch?v=${ytId}`,
+            title:       document.getElementById('edit-vid-title').value.trim(),
+            description: document.getElementById('edit-vid-desc').value.trim(),
+            is_visible:  document.getElementById('edit-vid-visible').checked
+        }).eq('id', id);
+        if (error) throw error;
+        showToast('Video aggiornato ✓'); closeVideoModal(); loadAdminData();
+    } catch (err) { showToast('Errore: ' + err.message, 'error'); }
+    finally { btn.innerText = 'Salva'; btn.disabled = false; }
+}
+
+async function deleteVideo(id) {
+    if (!confirm('Eliminare questo video?')) return;
+    const { error } = await tdAdmin.from('site_videos').delete().eq('id', id);
+    if (error) showToast('Errore: ' + error.message, 'error');
+    else { showToast('Video eliminato'); closeVideoModal(); loadAdminData(); }
+}
+
+async function moveVideo(id, dir) {
+    const idx = videosData.findIndex(v => v.id === id);
+    if (idx < 0 || (dir === -1 && idx === 0) || (dir === 1 && idx === videosData.length - 1)) return;
+    const cur = videosData[idx], swp = videosData[idx + dir];
+    await Promise.all([
+        tdAdmin.from('site_videos').update({ display_order: swp.display_order }).eq('id', cur.id),
+        tdAdmin.from('site_videos').update({ display_order: cur.display_order }).eq('id', swp.id)
+    ]);
+    loadAdminData();
+}
+
+function renderVideos() {
+    const list = document.getElementById('videos-admin-list');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!videosData.length) { list.innerHTML = '<li style="color:#999;padding:1rem;">Nessun video.</li>'; return; }
+    videosData.forEach((v, idx) => {
+        const li = document.createElement('li');
+        li.className = 'data-item';
+        const ytId = extractYouTubeId(v.youtube_url);
+        const thumb = ytId ? `<img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" style="width:80px;border-radius:4px;flex-shrink:0">` : '';
+        li.innerHTML = `
+            <div style="display:flex;gap:1rem;align-items:center;flex:1">
+                ${thumb}
+                <div>
+                    <strong>${v.title || 'Video'}</strong>
+                    <div style="font-size:.8rem;color:#666">${v.description || ''}</div>
+                    <div style="font-size:.75rem;color:${v.is_visible?'green':'#aaa'}">${v.is_visible?'● Pubblico':'○ Nascosto'}</div>
+                </div>
+            </div>
+            <div class="data-item-actions">
+                <button onclick="editVideo('${v.id}')">✏️ Modifica</button>
+                <div style="display:flex;flex-direction:column;gap:.2rem">
+                    <button onclick="moveVideo('${v.id}',-1)" ${idx===0?'disabled':''} style="padding:2px 8px">▲</button>
+                    <button onclick="moveVideo('${v.id}',1)"  ${idx===videosData.length-1?'disabled':''} style="padding:2px 8px">▼</button>
+                </div>
+                <button class="danger" onclick="deleteVideo('${v.id}')">Elimina</button>
+            </div>`;
+        list.appendChild(li);
+    });
 }
 
 // ── Folder → role auto-derive ──

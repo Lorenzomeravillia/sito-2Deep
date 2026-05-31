@@ -67,6 +67,8 @@
             <button class="tab-btn" data-target="tab-membri">Il Duo</button>
             <button class="tab-btn" data-target="tab-eventi">Date</button>
             <button class="tab-btn" data-target="tab-contatti">Contatti</button>
+            <button class="tab-btn" data-target="tab-repertorio">Repertorio</button>
+            <button class="tab-btn" data-target="tab-video">Video</button>
             <button class="tab-btn" data-target="tab-foto">Foto</button>
             <button class="tab-btn" data-target="tab-password">🔑 Password</button>
         </div>
@@ -135,6 +137,60 @@
             </div>
             <h4>Date a sistema</h4>
             <ul id="events-admin-list" class="data-list" style="list-style:none"></ul>
+        </div>
+
+        <!-- Repertorio -->
+        <div id="tab-repertorio" class="tab-content">
+            <h3>Gestione Repertorio</h3>
+            <div style="background:#fafafa;padding:1rem;border:1px solid var(--border);margin-bottom:2rem;border-radius:4px">
+                <form id="form-new-song">
+                    <h4 style="margin-bottom:1rem">Aggiungi Brano</h4>
+                    <div style="display:flex;gap:1rem">
+                        <div style="flex:2"><label>Titolo</label><input type="text" id="song-title" required></div>
+                        <div style="flex:1"><label>Artista / Band</label><input type="text" id="song-artist"></div>
+                    </div>
+                    <button type="submit" class="section-save-btn" style="background:var(--text)">Aggiungi</button>
+                </form>
+            </div>
+            <h4>Brani a sistema</h4>
+            <ul id="songs-admin-list" style="list-style:none"></ul>
+        </div>
+
+        <!-- Video -->
+        <div id="tab-video" class="tab-content">
+            <h3>Gestione Video YouTube</h3>
+            <div style="background:#fafafa;padding:1rem;border:1px solid var(--border);margin-bottom:2rem;border-radius:4px">
+                <form id="form-new-video">
+                    <h4 style="margin-bottom:1rem">Aggiungi Video</h4>
+                    <div class="form-group"><label>URL YouTube</label><input type="url" id="video-url" placeholder="https://www.youtube.com/watch?v=..." required></div>
+                    <div class="form-group"><label>Titolo (opzionale)</label><input type="text" id="video-title"></div>
+                    <div class="form-group"><label>Descrizione (opzionale)</label><input type="text" id="video-desc"></div>
+                    <label><input type="checkbox" id="video-visible" checked style="width:auto;margin:0 .4rem 0 0"> Pubblica subito</label>
+                    <button type="submit" class="section-save-btn" style="background:var(--text)">Aggiungi</button>
+                </form>
+            </div>
+            <h4>Video a sistema</h4>
+            <ul id="videos-admin-list" style="list-style:none"></ul>
+        </div>
+
+        <!-- Modal modifica video -->
+        <div id="modal-edit-video" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;">
+            <div style="background:#fff;border-radius:8px;padding:2rem;max-width:480px;width:90%;max-height:90vh;overflow-y:auto;">
+                <h3 style="margin-bottom:1rem">Modifica Video</h3>
+                <form id="form-edit-video">
+                    <input type="hidden" id="edit-vid-id">
+                    <div id="edit-vid-thumb-wrap" style="display:none;margin-bottom:1rem"><img id="edit-vid-thumb" src="" style="width:100%;border-radius:4px;"></div>
+                    <div class="form-group"><label>URL YouTube</label><input type="url" id="edit-vid-url"></div>
+                    <div class="form-group"><label>Titolo</label><input type="text" id="edit-vid-title"></div>
+                    <div class="form-group"><label>Descrizione</label><input type="text" id="edit-vid-desc"></div>
+                    <label style="margin-bottom:1rem;display:flex;align-items:center;gap:.5rem"><input type="checkbox" id="edit-vid-visible" style="width:auto;margin:0"> Visibile</label>
+                    <div style="display:flex;gap:.5rem;margin-top:1rem">
+                        <button type="submit" style="flex:1">Salva</button>
+                        <button type="button" class="danger" onclick="deleteVideo(document.getElementById('edit-vid-id').value)" style="flex:1">Elimina</button>
+                        <button type="button" onclick="closeVideoModal()" style="flex:1;background:#eee;color:#333">Annulla</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Foto -->

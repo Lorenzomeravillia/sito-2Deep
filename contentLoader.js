@@ -6,10 +6,12 @@
 
   const BUCKET_URL = `${window.SUPABASE_URL}/storage/v1/object/public/td-site`;
 
-  const [{ data: content }, { data: events }, { data: images }] = await Promise.all([
+  const [{ data: content }, { data: events }, { data: images }, { data: videos }, { data: repertoire }] = await Promise.all([
     db.from('site_content').select('*'),
     db.from('site_events').select('*').eq('is_published', true).order('event_date', { ascending: true }),
-    db.from('site_images').select('*').eq('is_active', true).order('display_order')
+    db.from('site_images').select('*').eq('is_active', true).order('display_order'),
+    db.from('site_videos').select('*').eq('is_visible', true).order('display_order', { ascending: true }),
+    db.from('site_repertoire').select('*').eq('is_active', true).order('display_order', { ascending: true })
   ]);
 
   // ── Text content ──
@@ -56,6 +58,36 @@
       el.innerHTML = `<img src="${url}" alt="${img.alt_text || ''}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
     });
   });
+
+  // ── Repertoire ──
+  const repGrid = document.getElementById('repertoire-grid');
+  if (repGrid && repertoire && repertoire.length) {
+    repGrid.innerHTML = '';
+    repertoire.forEach(s => {
+      const div = document.createElement('div');
+      div.className = 'song-item';
+      div.innerHTML = `<span class="song-title">${s.song_title}</span><span class="song-artist">${s.artist || ''}</span>`;
+      repGrid.appendChild(div);
+    });
+    document.getElementById('repertorio').style.display = '';
+  }
+
+  // ── Videos ──
+  const vidGrid = document.getElementById('videos-grid');
+  if (vidGrid && videos && videos.length) {
+    vidGrid.innerHTML = '';
+    videos.forEach(v => {
+      const ytId = (v.youtube_url || '').match(/(?:youtu\.be\/|v=|embed\/)([^#&?]{11})/)?.[1];
+      if (!ytId) return;
+      const card = document.createElement('div');
+      card.className = 'video-card';
+      card.innerHTML = `
+        <div class="video-thumb"><iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen loading="lazy"></iframe></div>
+        <div class="video-info">${v.title ? `<h3>${v.title}</h3>` : ''}${v.description ? `<p>${v.description}</p>` : ''}</div>`;
+      vidGrid.appendChild(card);
+    });
+    document.getElementById('video').style.display = '';
+  }
 
   // ── Events ──
   const evList = document.getElementById('events-list');
