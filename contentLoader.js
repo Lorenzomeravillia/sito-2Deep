@@ -4,9 +4,12 @@
   const { createClient } = window.supabase;
   const db = createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY, { db: { schema: 'td' } });
 
-  const [{ data: content }, { data: events }] = await Promise.all([
+  const BUCKET_URL = `${window.SUPABASE_URL}/storage/v1/object/public/td-site`;
+
+  const [{ data: content }, { data: events }, { data: images }] = await Promise.all([
     db.from('site_content').select('*'),
-    db.from('site_events').select('*').eq('is_published', true).order('event_date', { ascending: true })
+    db.from('site_events').select('*').eq('is_published', true).order('event_date', { ascending: true }),
+    db.from('site_images').select('*').eq('is_active', true).order('display_order')
   ]);
 
   // ── Text content ──
@@ -34,6 +37,23 @@
           if (el.getAttribute('data-content-text-same') === 'true') el.textContent = item.content_value;
         }
       }
+    });
+  });
+
+  // ── Images ──
+  (images || []).forEach(img => {
+    const url = `${BUCKET_URL}/${img.filename}`;
+    // Hero background
+    document.querySelectorAll(`[data-bg-role="${img.role}"]`).forEach(el => {
+      el.style.backgroundImage = `url('${url}')`;
+      el.style.backgroundSize  = (img.bg_size || 100) + '%';
+      el.style.backgroundPosition = 'center';
+      el.style.backgroundRepeat = 'no-repeat';
+      el.style.filter = `brightness(${img.brightness || 100}%)`;
+    });
+    // Member avatar
+    document.querySelectorAll(`[data-img-role="${img.role}"]`).forEach(el => {
+      el.innerHTML = `<img src="${url}" alt="${img.alt_text || ''}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
     });
   });
 
