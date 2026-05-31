@@ -10,6 +10,9 @@ function showToast(msg, type = 'success') {
     setTimeout(() => toast.remove(), 3500);
 }
 
+const _SB_URL = 'https://jvcvxzampxopvihahwbh.supabase.co';
+const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2Y3Z4emFtcHhvcHZpaGFod2JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzMDMyNDMsImV4cCI6MjA4Nzg3OTI0M30.x2seoq8KYJdWLles7H8n0uD2Qm77MCbWEGNDnN6DWrc';
+
 let tdAdmin = null;
 let contentData = [];
 let eventsData  = [];
@@ -17,8 +20,7 @@ let eventsData  = [];
 document.addEventListener('DOMContentLoaded', () => {
     try {
         if (!window.supabase) throw new Error('Supabase CDN non caricato');
-        if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) throw new Error('config.js mancante');
-        tdAdmin = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY, { db: { schema: 'td' } });
+        tdAdmin = window.supabase.createClient(_SB_URL, _SB_KEY, { db: { schema: 'td' } });
     } catch (err) {
         showToast('Errore init: ' + err.message, 'error');
         return;
