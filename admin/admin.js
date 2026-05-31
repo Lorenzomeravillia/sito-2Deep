@@ -55,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('form-venues').addEventListener('submit',   e => saveSection(e, 'venues'));
     document.getElementById('form-sound').addEventListener('submit',    e => saveSection(e, 'sound'));
     document.getElementById('form-footer').addEventListener('submit',   e => saveSection(e, 'footer'));
-    document.getElementById('form-about').addEventListener('submit',    e => saveSection(e, 'about'));
     document.getElementById('form-membri').addEventListener('submit',   e => saveSection(e, 'members'));
     document.getElementById('form-contatti').addEventListener('submit', e => saveSection(e, 'contact'));
     document.getElementById('form-new-event').addEventListener('submit', addEvent);
@@ -182,7 +181,6 @@ function populateForms() {
     fillFormFields('form-venues',   'venues');
     fillFormFields('form-sound',    'sound');
     fillFormFields('form-footer',   'footer');
-    fillFormFields('form-about',    'about');
     fillFormFields('form-membri',   'members');
     fillFormFields('form-contatti', 'contact');
 }
