@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2 Deep — Ska Reggae Acustico</title>
+  <meta name="description" content="Katia e Lorenzo sono i 2 Deep: ska-reggae acustico, 432 Hz e un kazoo sempre pronto.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #0d1a0e;
+      --bg2:      #111f12;
+      --green:    #2d5a27;
+      --gold:     #d4a843;
+      --gold-dim: rgba(212,168,67,0.15);
+      --white:    #f0ede6;
+      --gray:     #8a9e87;
+      --serif:    'Playfair Display', serif;
+      --sans:     'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: var(--sans);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: rgba(13,26,14,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(212,168,67,0.08);
+    }
+
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+
+    .nav-cta {
+      background: var(--gold);
+      color: var(--bg) !important;
+      padding: 0.5rem 1.2rem;
+      border-radius: 2px;
+    }
+
+    .nav-cta:hover { background: #c49a35 !important; color: var(--bg) !important; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 60%, rgba(45,90,39,0.35) 0%, transparent 70%),
+        linear-gradient(180deg, var(--bg) 0%, #0a160b 100%);
+    }
+
+    /* Placeholder wavy lines decoration */
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          -30deg,
+          transparent,
+          transparent 40px,
+          rgba(212,168,67,0.03) 40px,
+          rgba(212,168,67,0.03) 41px
+        );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+    }
+
+    .hero-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(3.5rem, 10vw, 7rem);
+      font-weight: 400;
+      line-height: 1;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-sub {
+      font-family: var(--serif);
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: var(--gold);
+      font-style: italic;
+      margin-bottom: 2rem;
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--gray);
+      max-width: 500px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--bg);
+      padding: 0.85rem 2rem;
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+
+    .btn-primary:hover { background: #c49a35; }
+
+    .btn-outline {
+      display: inline-block;
+      border: 1px solid rgba(212,168,67,0.4);
+      color: var(--gold);
+      padding: 0.85rem 2rem;
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--gold);
+      background: var(--gold-dim);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--gray);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      animation: bounce 2s infinite;
+    }
+
+    .scroll-hint::after {
+      content: '';
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ── SECTIONS COMMON ── */
+    section {
+      padding: 7rem 2rem;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+
+    .section-divider {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      margin-bottom: 3rem;
+    }
+
+    /* ── BIO ── */
+    #bio {
+      background: var(--bg2);
+    }
+
+    .bio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .bio-photo {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: var(--green);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bio-photo-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: rgba(212,168,67,0.4);
+    }
+
+    .bio-photo-placeholder svg {
+      width: 60px;
+      height: 60px;
+      opacity: 0.4;
+    }
+
+    .bio-photo-placeholder span {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .bio-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(212,168,67,0.15);
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    .bio-text p {
+      color: var(--gray);
+      margin-bottom: 1.2rem;
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    .bio-text p strong {
+      color: var(--white);
+      font-weight: 400;
+    }
+
+    .bio-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    .bio-tag {
+      border: 1px solid rgba(212,168,67,0.25);
+      color: var(--gold);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border-radius: 2px;
+    }
+
+    /* ── MEMBERS ── */
+    #members {
+      background: var(--bg);
+    }
+
+    .members-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+
+    .member-card {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+      padding: 2rem;
+      border: 1px solid rgba(212,168,67,0.08);
+      border-radius: 4px;
+      background: rgba(212,168,67,0.02);
+      transition: border-color 0.3s;
+    }
+
+    .member-card:hover {
+      border-color: rgba(212,168,67,0.2);
+    }
+
+    .member-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: var(--green);
+      border: 1px solid rgba(212,168,67,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .member-photo svg {
+      width: 40px;
+      height: 40px;
+      opacity: 0.3;
+    }
+
+    .member-info h3 {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 0.2rem;
+    }
+
+    .member-role {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+
+    .member-info p {
+      font-size: 0.9rem;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    /* ── SOUND ── */
+    #sound {
+      background: var(--bg2);
+    }
+
+    .sound-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .sound-card {
+      padding: 2rem;
+      border-top: 1px solid rgba(212,168,67,0.2);
+      position: relative;
+    }
+
+    .sound-num {
+      font-family: var(--serif);
+      font-size: 3rem;
+      color: rgba(212,168,67,0.15);
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .sound-card h3 {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    .sound-card p {
+      font-size: 0.9rem;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    /* ── GALLERY placeholder ── */
+    #gallery {
+      background: var(--bg);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 0.8rem;
+      margin-top: 3rem;
+    }
+
+    .gallery-item {
+      background: var(--green);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gallery-item:first-child {
+      grid-column: span 2;
+      aspect-ratio: 16/9;
+    }
+
+    .gallery-item:not(:first-child) {
+      aspect-ratio: 1;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .gallery-item:hover img { transform: scale(1.04); }
+
+    .gallery-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(212,168,67,0.25);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .gallery-placeholder svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    /* ── CONTATTI ── */
+    #contatti {
+      background: var(--bg2);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .contact-intro {
+      font-size: 1.05rem;
+      color: var(--gray);
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+    }
+
+    .contact-items {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .contact-item label {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .contact-item a {
+      color: var(--white);
+      text-decoration: none;
+      font-size: 1rem;
+      transition: color 0.3s;
+    }
+
+    .contact-item a:hover { color: var(--gold); }
+
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      background: rgba(212,168,67,0.04);
+      border: 1px solid rgba(212,168,67,0.15);
+      color: var(--white);
+      padding: 0.9rem 1rem;
+      font-family: var(--sans);
+      font-size: 0.95rem;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder { color: var(--gray); }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      border-color: rgba(212,168,67,0.4);
+    }
+
+    .contact-form textarea { resize: vertical; min-height: 130px; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 2.5rem 2rem;
+      border-top: 1px solid rgba(212,168,67,0.08);
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--gray);
+    }
+
+    footer span { color: var(--gold); }
+
+    /* ── WHATSAPP FLOAT ── */
+    .wa-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 56px;
+      height: 56px;
+      background: #25d366;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-decoration: none;
+    }
+
+    .wa-float:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 28px rgba(37,211,102,0.45);
+    }
+
+    .wa-float svg { width: 28px; height: 28px; fill: #fff; }
+
+    /* ── REVEAL ANIMATION ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .bio-grid,
+      .members-grid,
+      .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .bio-photo { aspect-ratio: 4/3; max-width: 400px; }
+      .sound-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .gallery-item:first-child { grid-column: span 2; }
+      .form-row { grid-template-columns: 1fr; }
+      .member-card { grid-template-columns: 1fr; text-align: center; }
+      .member-photo { margin: 0 auto; }
+    }
+
+    @media (max-width: 480px) {
+      section { padding: 5rem 1.2rem; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-item:first-child { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero">2 Deep</a>
+  <ul class="nav-links">
+    <li><a href="#bio">Chi siamo</a></li>
+    <li><a href="#members">Il Duo</a></li>
+    <li><a href="#sound">Il Sound</a></li>
+    <li><a href="#gallery">Foto</a></li>
+    <li><a href="#contatti" class="nav-cta">Contattaci</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <span class="hero-label">Ska · Reggae · Acustico · 432 Hz</span>
+    <h1>2 Deep</h1>
+    <p class="hero-sub">La pesante leggerezza</p>
+    <p class="hero-desc">Katia e Lorenzo prendono i vostri brani preferiti, ci aggiungono ukulele, chitarra, percussioni e un kazoo — e succede qualcosa di bello.</p>
+    <div class="hero-ctas">
+      <a href="#contatti" class="btn-primary">Prenota una serata</a>
+      <a href="#bio" class="btn-outline">Scopri di più</a>
+    </div>
+  </div>
+  <div class="scroll-hint">Scorri</div>
+</section>
+
+<!-- BIO -->
+<section id="bio">
+  <div class="container">
+    <div class="bio-grid">
+      <div class="bio-photo reveal">
+        <div class="bio-photo-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <span>Foto in arrivo</span>
+        </div>
+      </div>
+      <div class="bio-text reveal">
+        <span class="section-label">Chi siamo</span>
+        <h2 class="section-title">Katia e Lorenzo<br>sono i 2 Deep</h2>
+        <div class="section-divider"></div>
+        <p>Un duo che trasforma brani pop e rock in gioielli ska-reggae acustici, dove ukulele, chitarra, percussioni e l'immancabile kazoo creano un sound fresco e coinvolgente — accordato a 432 Hz per un'esperienza sonora più naturale e armoniosa.</p>
+        <p>Katia ha cantato in cori, fatto esplodere palchi rock con gli Afotherica e ballato sugli accordi ska degli Sklero Zero. Il filo conduttore? Quella che lei chiama <strong>"pesante leggerezza"</strong>: la capacità di dire cose serie con un sorriso stampato in faccia.</p>
+        <p>Lorenzo viene dal death metal (sì, proprio lui) ed è passato per il folk europeo prima di scoprire che tre accordi acustici possono essere altrettanto potenti. Suona nelle case di riposo per volontariato e probabilmente è la persona più poliedrica che conoscerete.</p>
+        <p>Insieme accordano tutto a 432 Hz — e poi ci mettono il kazoo sopra.</p>
+        <div class="bio-tags">
+          <span class="bio-tag">Ska-Reggae</span>
+          <span class="bio-tag">Acustico</span>
+          <span class="bio-tag">432 Hz</span>
+          <span class="bio-tag">Ukulele</span>
+          <span class="bio-tag">Kazoo</span>
+          <span class="bio-tag">Cover rivisitate</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEMBERS -->
+<section id="members">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">Il Duo</span>
+      <h2 class="section-title">Chi li fa</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="members-grid">
+      <div class="member-card reveal">
+        <div class="member-photo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" color="#d4a843">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="member-info">
+          <h3>Katia</h3>
+          <span class="member-role">Voce · Percussioni</span>
+          <p>Dalla corale all'Afotherica al palco ska con gli Sklero Zero. Katia canta, percuote e porta quella filosofia della "pesante leggerezza" che è diventata il marchio di fabbrica del duo.</p>
+        </div>
+      </div>
+      <div class="member-card reveal">
+        <div class="member-photo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" color="#d4a843">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="member-info">
+          <h3>Lorenzo</h3>
+          <span class="member-role">Chitarra · Ukulele · Kazoo</span>
+          <p>Dal death metal dei Delirium X Tremens al folk europeo fino all'acustico. Polistrumentista con il cuore nel volontariato musicale, ha trovato nell'acustico una dimensione tutta sua.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOUND -->
+<section id="sound">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">Il Sound</span>
+      <h2 class="section-title">Cosa troverete</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="sound-grid">
+      <div class="sound-card reveal">
+        <div class="sound-num">01</div>
+        <h3>Cover rivisitate</h3>
+        <p>Brani pop e rock che conoscete a memoria, reinterpretati in chiave ska-reggae acustica. Li riconoscerete, ma non li avete mai sentiti così.</p>
+      </div>
+      <div class="sound-card reveal">
+        <div class="sound-num">02</div>
+        <h3>432 Hz</h3>
+        <p>Tutto accordato a 432 Hz, la frequenza che si dice suoni più "naturale" per il corpo umano. Sarà un caso, ma le serate filano sempre lisce.</p>
+      </div>
+      <div class="sound-card reveal">
+        <div class="sound-num">03</div>
+        <h3>Il Kazoo</h3>
+        <p>C'è. C'è sempre. Prepararsi ad amarlo o a farsi una domanda su voi stessi. Non ci sono vie di mezzo con il kazoo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">Gallery</span>
+      <h2 class="section-title">Qualche momento</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="gallery-grid reveal">
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span>Foto in arrivo</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATTI -->
+<section id="contatti">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="reveal">
+        <span class="section-label">Contatti</span>
+        <h2 class="section-title">Organizziamo<br>qualcosa?</h2>
+        <div class="section-divider"></div>
+        <p class="contact-intro">Disponibili per serate, eventi privati, matrimoni, locali, sagre, cene aziendali — ovunque ci sia voglia di musica vera e un po' di sana follia.</p>
+        <div class="contact-items">
+          <div class="contact-item">
+            <label>WhatsApp</label>
+            <a href="https://wa.me/393494787002?text=Ciao%202Deep!%20Vorrei%20info%20per%20una%20serata." target="_blank">+39 349 478 7002</a>
+          </div>
+          <div class="contact-item">
+            <label>Instagram</label>
+            <a href="https://www.instagram.com/" target="_blank">@2deep_music</a>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <form class="contact-form" onsubmit="handleContact(event)">
+          <div class="form-row">
+            <input type="text" placeholder="Nome" required>
+            <input type="email" placeholder="Email" required>
+          </div>
+          <input type="text" placeholder="Tipo di evento (serata, matrimonio…)">
+          <textarea placeholder="Raccontaci la tua idea…" required></textarea>
+          <button type="submit" class="btn-primary" style="border:none;cursor:pointer;">Invia messaggio</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 <span>2 Deep</span> — Ska Reggae Acustico · Tutti i diritti riservati</p>
+</footer>
+
+<!-- WhatsApp float -->
+<a class="wa-float" href="https://wa.me/393494787002?text=Ciao%202Deep!%20Vorrei%20info%20per%20una%20serata." target="_blank" rel="noopener noreferrer" aria-label="Contattaci su WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<script>
+  // Reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // Contact form placeholder
+  function handleContact(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.textContent = 'Messaggio inviato ✓';
+    btn.style.background = '#2d5a27';
+    setTimeout(() => { e.target.reset(); btn.textContent = 'Invia messaggio'; btn.style.background = ''; }, 3000);
+  }
+</script>
+
+</body>
+</html>
