@@ -17,7 +17,11 @@
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--white);font-family:var(--sans);font-weight:300;line-height:1.7;overflow-x:hidden}
     nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 3rem;background:rgba(12,24,16,0.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(200,146,42,0.07)}
-    .nav-logo{font-family:var(--serif);font-size:1.4rem;color:var(--amber);text-decoration:none;letter-spacing:.04em}
+    .nav-logo{font-family:var(--serif);font-size:1.4rem;color:var(--amber);text-decoration:none;letter-spacing:.04em;display:flex;align-items:center}
+    .site-logo{height:38px;width:auto;filter:brightness(0) invert(1);opacity:.9;transition:opacity .3s}
+    .site-logo:hover{opacity:1}
+    .nav-logo-text{display:block}
+    .footer-logo{height:48px;width:auto;filter:brightness(0) invert(1);opacity:.5;margin-bottom:.8rem}
     .nav-links{display:flex;gap:2.2rem;list-style:none}
     .nav-links a{color:var(--gray);text-decoration:none;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;transition:color .3s}
     .nav-links a:hover{color:var(--amber)}
@@ -174,7 +178,10 @@
 <body>
 
 <nav>
-  <a class="nav-logo" href="#hero">2 Deep</a>
+  <a class="nav-logo" href="#hero">
+    <img id="nav-logo-img" class="site-logo" src="" alt="2 Deep" style="display:none">
+    <span class="nav-logo-text" id="nav-logo-text">2 Deep</span>
+  </a>
   <ul class="nav-links" id="navLinks">
     <li><a href="#vibes" onclick="closeNav()">Il Sound</a></li>
     <li><a href="#venues" onclick="closeNav()">Per i Locali</a></li>
@@ -412,6 +419,7 @@
 </section>
 
 <footer>
+  <img id="footer-logo-img" class="footer-logo" src="" alt="2 Deep" style="display:none">
   <p>© 2025 <span>2 Deep</span> — Ska Reggae Acustico · Tutti i diritti riservati</p>
 </footer>
 

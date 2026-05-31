@@ -56,6 +56,15 @@
     document.querySelectorAll(`[data-img-role="${img.role}"]`).forEach(el => {
       el.innerHTML = `<img src="${url}" alt="${img.alt_text || ''}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
     });
+    // Logo (navbar + footer)
+    if (img.role === 'logo') {
+      const navImg  = document.getElementById('nav-logo-img');
+      const navText = document.getElementById('nav-logo-text');
+      const footImg = document.getElementById('footer-logo-img');
+      if (navImg)  { navImg.src  = url; navImg.style.display  = 'block'; }
+      if (navText) navText.style.display = 'none';
+      if (footImg) { footImg.src = url; footImg.style.display = 'block'; }
+    }
     // Sound circle
     if (img.role === 'sound') {
       const imgEl = document.getElementById('sound-circle-img');
