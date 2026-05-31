@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2 Deep — Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg:#f5f0eb;--text:#0a0a0a;--primary:#c8922a;--primary-dark:#a07020;--border:#ddd;--white:#fff;--danger:#dc3545;--success:#28a745}
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);padding:1rem}
+        .container{max-width:800px;margin:0 auto;background:var(--white);padding:2rem;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,.05)}
+        h1,h2,h3{margin-bottom:1rem}
+        #auth-section{display:flex;flex-direction:column;gap:1rem;max-width:300px;margin:5rem auto;text-align:center}
+        input,textarea,select{width:100%;padding:.8rem;margin-bottom:1rem;border:1px solid var(--border);border-radius:4px;font-family:inherit;font-size:1rem}
+        button{padding:.8rem 1.5rem;border:none;background:var(--text);color:var(--white);cursor:pointer;border-radius:4px;font-weight:500;transition:.2s;font-family:inherit}
+        button:hover{background:var(--primary-dark)}
+        button:disabled{opacity:.6;cursor:not-allowed}
+        button.danger{background:var(--danger)}
+        button.success{background:var(--success)}
+        #dashboard-section{display:none}
+        .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+        .tabs{display:flex;gap:.5rem;overflow-x:auto;margin-bottom:2rem;padding-bottom:.5rem}
+        .tab-btn{background:#eee;color:var(--text);white-space:nowrap;padding:.6rem 1rem}
+        .tab-btn.active{background:var(--primary);color:var(--white)}
+        .tab-content{display:none}
+        .tab-content.active{display:block}
+        .form-group{margin-bottom:1.5rem}
+        label{display:block;font-weight:500;margin-bottom:.5rem;font-size:.9rem}
+        .data-item{display:flex;justify-content:space-between;align-items:center;padding:1rem;border:1px solid var(--border);margin-bottom:.5rem;border-radius:4px;gap:1rem}
+        .data-item-actions{display:flex;gap:.5rem;flex-shrink:0}
+        .data-item-actions button{padding:.4rem .8rem;font-size:.8rem}
+        #toast-container{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+        .toast{padding:1rem 1.5rem;border-radius:4px;color:var(--white);box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:.9rem;animation:slideIn .3s}
+        .toast.success{background:var(--success)}
+        .toast.error{background:var(--danger)}
+        @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+        .section-save-btn{margin-top:1rem;width:100%;background:var(--primary)}
+        @media(max-width:540px){.data-item{flex-direction:column;align-items:flex-start}.data-item-actions{flex-direction:column;width:100%}.data-item-actions button,.data-item-actions>div{width:100%}}
+    </style>
+</head>
+<body>
+<div id="toast-container"></div>
+<div class="container">
+
+    <div id="auth-section">
+        <h2>2 Deep — Admin</h2>
+        <p style="font-size:.9rem;color:#666;margin-bottom:1rem">Accedi con le credenziali fornite.</p>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button id="login-btn">Accedi</button>
+    </div>
+
+    <div id="dashboard-section">
+        <div class="top-bar">
+            <h2>2 Deep Admin</h2>
+            <button id="logout-btn" style="background:transparent;color:var(--text);border:1px solid var(--border)">Esci</button>
+        </div>
+        <div id="loading-bar" style="display:none;padding:.7rem 1rem;border-radius:4px;font-size:.85rem;margin-bottom:1rem"></div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-target="tab-hero">Hero</button>
+            <button class="tab-btn" data-target="tab-testi">Testi</button>
+            <button class="tab-btn" data-target="tab-membri">Il Duo</button>
+            <button class="tab-btn" data-target="tab-eventi">Date</button>
+            <button class="tab-btn" data-target="tab-contatti">Contatti</button>
+        </div>
+
+        <!-- Hero -->
+        <div id="tab-hero" class="tab-content active">
+            <h3>Testi Hero</h3>
+            <form id="form-hero">
+                <div class="form-group"><label>Label superiore</label><input type="text" data-key="label"></div>
+                <div class="form-group"><label>Titolo (nome del duo)</label><input type="text" data-key="title"></div>
+                <div class="form-group"><label>Tagline (corsivo sotto il titolo)</label><input type="text" data-key="tagline"></div>
+                <div class="form-group"><label>Descrizione</label><textarea data-key="desc" rows="3"></textarea></div>
+                <button type="submit" class="section-save-btn">Salva Hero</button>
+            </form>
+        </div>
+
+        <!-- Testi generali -->
+        <div id="tab-testi" class="tab-content">
+            <h3>Sezione "Per i Locali"</h3>
+            <form id="form-venues">
+                <div class="form-group"><label>Label sezione</label><input type="text" data-key="label"></div>
+                <div class="form-group"><label>Titolo</label><input type="text" data-key="title"></div>
+                <div class="form-group"><label>Descrizione</label><textarea data-key="desc" rows="3"></textarea></div>
+                <button type="submit" class="section-save-btn">Salva Testi Locali</button>
+            </form>
+            <hr style="margin:2rem 0;border:0;border-top:1px solid var(--border)">
+            <h3>Chi siamo</h3>
+            <form id="form-about">
+                <div class="form-group"><label>Testo bio duo</label><textarea data-key="text" rows="5"></textarea></div>
+                <button type="submit" class="section-save-btn">Salva Chi Siamo</button>
+            </form>
+        </div>
+
+        <!-- Membri -->
+        <div id="tab-membri" class="tab-content">
+            <h3>Il Duo — Card retro</h3>
+            <p style="font-size:.85rem;color:#666;margin-bottom:1.5rem">Queste info appaiono nelle card dei membri sul sito.</p>
+            <form id="form-membri">
+                <div class="form-group"><label>Katia — Nome</label><input type="text" data-key="katia_name"></div>
+                <div class="form-group"><label>Katia — Ruolo</label><input type="text" data-key="katia_role"></div>
+                <div class="form-group"><label>Katia — Bio</label><textarea data-key="katia_bio" rows="3"></textarea></div>
+                <hr style="margin:1.5rem 0;border:0;border-top:1px solid var(--border)">
+                <div class="form-group"><label>Lorenzo — Nome</label><input type="text" data-key="lorenzo_name"></div>
+                <div class="form-group"><label>Lorenzo — Ruolo</label><input type="text" data-key="lorenzo_role"></div>
+                <div class="form-group"><label>Lorenzo — Bio</label><textarea data-key="lorenzo_bio" rows="3"></textarea></div>
+                <button type="submit" class="section-save-btn">Salva Il Duo</button>
+            </form>
+        </div>
+
+        <!-- Date -->
+        <div id="tab-eventi" class="tab-content">
+            <h3>Gestione Date</h3>
+            <div style="background:#fafafa;padding:1rem;border:1px solid var(--border);margin-bottom:2rem;border-radius:4px">
+                <form id="form-new-event">
+                    <h4 style="margin-bottom:1rem">Aggiungi Data</h4>
+                    <div style="display:flex;gap:1rem;margin-bottom:1rem">
+                        <div style="flex:1"><label>Data</label><input type="date" id="ev-date" required></div>
+                        <div style="flex:1"><label>Ore</label><input type="time" id="ev-time"></div>
+                    </div>
+                    <div class="form-group"><label>Locale / Venue</label><input type="text" id="ev-venue" required></div>
+                    <div class="form-group"><label>Città</label><input type="text" id="ev-city" required></div>
+                    <div class="form-group"><label>Note (opzionale)</label><input type="text" id="ev-desc"></div>
+                    <label><input type="checkbox" id="ev-pub" checked style="width:auto;margin:0 .4rem 0 0"> Pubblica subito</label>
+                    <button type="submit" class="section-save-btn" style="background:var(--text)">Aggiungi</button>
+                </form>
+            </div>
+            <h4>Date a sistema</h4>
+            <ul id="events-admin-list" class="data-list" style="list-style:none"></ul>
+        </div>
+
+        <!-- Contatti -->
+        <div id="tab-contatti" class="tab-content">
+            <h3>Informazioni Contatto</h3>
+            <form id="form-contatti">
+                <div class="form-group"><label>Testo introduttivo</label><textarea data-key="desc" rows="3"></textarea></div>
+                <div class="form-group"><label>WhatsApp (numero con prefisso)</label><input type="text" data-key="whatsapp" placeholder="+393494787002"></div>
+                <div class="form-group"><label>Instagram handle</label><input type="text" data-key="instagram"></div>
+                <div class="form-group"><label>Email (opzionale)</label><input type="email" data-key="email"></div>
+                <button type="submit" class="section-save-btn">Salva Contatti</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
