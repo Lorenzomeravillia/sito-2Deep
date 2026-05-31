@@ -45,7 +45,7 @@
     .btn-outline:hover{border-color:var(--amber);background:var(--amber-d)}
     .hero-photo-wrap{position:relative}
     .hero-photo-wrap::before{content:'';position:absolute;inset:-12px;border:1px solid rgba(200,146,42,.2);border-radius:4px;pointer-events:none}
-    .hero-photo{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:3px;display:block;background:rgba(200,146,42,.05)}
+    .hero-photo{width:100%;height:auto;object-fit:contain;border-radius:3px;display:block}
     .hero-photo-placeholder{width:100%;aspect-ratio:3/4;border-radius:3px;background:linear-gradient(160deg,rgba(30,64,32,.8),rgba(12,24,16,.9));border:1px solid rgba(200,146,42,.08);display:flex;align-items:center;justify-content:center}
     .hero-photo-placeholder svg{width:64px;height:64px;opacity:.15}
     .scroll-line{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--gray);font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;animation:bob 2.2s ease-in-out infinite}
@@ -166,7 +166,7 @@
       .hero-content{text-align:center}
       .hero-ctas{justify-content:center}
       .hero-photo-wrap::before{inset:-8px}
-      .hero-photo,.hero-photo-placeholder{aspect-ratio:16/9}
+      .hero-photo-placeholder{aspect-ratio:16/9}
       .vibes-grid,.venues-grid,.members-grid,.contact-grid{grid-template-columns:1fr}
       .sound-layout{grid-template-columns:1fr;gap:3rem}
       .vibe-card{border-right:none;border-bottom:1px solid rgba(200,146,42,.1)}
