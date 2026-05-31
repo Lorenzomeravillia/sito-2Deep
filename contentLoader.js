@@ -45,14 +45,13 @@
   // ── Images ──
   (images || []).forEach(img => {
     const url = `${BUCKET_URL}/${img.filename}`;
-    // Hero background
-    document.querySelectorAll(`[data-bg-role="${img.role}"]`).forEach(el => {
-      el.style.backgroundImage = `url('${url}')`;
-      el.style.backgroundSize  = (img.bg_size || 100) + '%';
-      el.style.backgroundPosition = 'center';
-      el.style.backgroundRepeat = 'no-repeat';
-      el.style.filter = `brightness(${img.brightness || 100}%)`;
-    });
+    // Hero photo (split layout)
+    if (img.role === 'hero') {
+      const heroImg = document.getElementById('hero-photo');
+      const heroPlaceholder = document.getElementById('hero-photo-placeholder');
+      if (heroImg) { heroImg.src = url; heroImg.style.display = 'block'; }
+      if (heroPlaceholder) heroPlaceholder.style.display = 'none';
+    }
     // Member avatar
     document.querySelectorAll(`[data-img-role="${img.role}"]`).forEach(el => {
       el.innerHTML = `<img src="${url}" alt="${img.alt_text || ''}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;

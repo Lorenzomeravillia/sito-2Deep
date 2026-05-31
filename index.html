@@ -25,19 +25,25 @@
     .nav-cta:hover{background:#b07d20!important}
     .nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
     .nav-hamburger span{width:24px;height:2px;background:var(--amber);transition:all .3s}
-    #hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;text-align:center;padding:7rem 2rem 5rem}
-    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 65%,rgba(30,64,32,.5) 0%,transparent 68%),linear-gradient(180deg,var(--bg) 0%,#080f09 100%)}
-    .hero-bg::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(-25deg,transparent,transparent 50px,rgba(200,146,42,.025) 50px,rgba(200,146,42,.025) 51px)}
-    .hero-content{position:relative;z-index:1;max-width:760px}
+    #hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:7rem 2rem 5rem}
+    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 30% 60%,rgba(30,64,32,.4) 0%,transparent 70%),linear-gradient(135deg,var(--bg) 0%,#080f09 100%)}
+    .hero-bg::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(-25deg,transparent,transparent 50px,rgba(200,146,42,.018) 50px,rgba(200,146,42,.018) 51px)}
+    .hero-split{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;max-width:1080px;margin:0 auto;width:100%}
+    .hero-content{text-align:left}
     .hero-label{font-size:.68rem;letter-spacing:.42em;text-transform:uppercase;color:var(--amber);margin-bottom:1.4rem;display:block}
-    h1{font-family:var(--serif);font-size:clamp(4rem,11vw,7.5rem);font-weight:400;line-height:.95;color:var(--white);margin-bottom:1.2rem;letter-spacing:-.02em}
-    .hero-tagline{font-family:var(--serif);font-style:italic;font-size:clamp(1.1rem,2.8vw,1.5rem);color:var(--amber);margin-bottom:1.8rem;line-height:1.4}
-    .hero-desc{font-size:1rem;color:var(--gray);max-width:540px;margin:0 auto 3rem;line-height:1.8}
-    .hero-ctas{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+    h1{font-family:var(--serif);font-size:clamp(3.2rem,8vw,6rem);font-weight:400;line-height:.95;color:var(--white);margin-bottom:1.2rem;letter-spacing:-.02em}
+    .hero-tagline{font-family:var(--serif);font-style:italic;font-size:clamp(1rem,2.2vw,1.3rem);color:var(--amber);margin-bottom:1.8rem;line-height:1.5}
+    .hero-desc{font-size:.95rem;color:var(--gray);margin-bottom:2.5rem;line-height:1.85}
+    .hero-ctas{display:flex;gap:1rem;flex-wrap:wrap}
     .btn-primary{display:inline-block;background:var(--amber);color:var(--bg);padding:.9rem 2.2rem;font-family:var(--sans);font-size:.78rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:background .3s;border:none;cursor:pointer}
     .btn-primary:hover{background:#b07d20}
     .btn-outline{display:inline-block;border:1px solid rgba(200,146,42,.4);color:var(--amber);padding:.9rem 2.2rem;font-family:var(--sans);font-size:.78rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all .3s}
     .btn-outline:hover{border-color:var(--amber);background:var(--amber-d)}
+    .hero-photo-wrap{position:relative}
+    .hero-photo-wrap::before{content:'';position:absolute;inset:-12px;border:1px solid rgba(200,146,42,.2);border-radius:4px;pointer-events:none}
+    .hero-photo{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:3px;display:block;background:rgba(200,146,42,.05)}
+    .hero-photo-placeholder{width:100%;aspect-ratio:3/4;border-radius:3px;background:linear-gradient(160deg,rgba(30,64,32,.8),rgba(12,24,16,.9));border:1px solid rgba(200,146,42,.08);display:flex;align-items:center;justify-content:center}
+    .hero-photo-placeholder svg{width:64px;height:64px;opacity:.15}
     .scroll-line{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--gray);font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;animation:bob 2.2s ease-in-out infinite}
     .scroll-line::after{content:'';width:1px;height:44px;background:linear-gradient(to bottom,var(--amber),transparent)}
     @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
@@ -151,6 +157,11 @@
       .nav-hamburger{display:flex}
       .nav-links.open{display:flex;flex-direction:column;position:fixed;inset:0;background:var(--bg);align-items:center;justify-content:center;gap:2.5rem;z-index:99}
       .nav-links.open a{font-size:1.2rem}
+      .hero-split{grid-template-columns:1fr;gap:3rem;text-align:center}
+      .hero-content{text-align:center}
+      .hero-ctas{justify-content:center}
+      .hero-photo-wrap::before{inset:-8px}
+      .hero-photo,.hero-photo-placeholder{aspect-ratio:16/9}
       .vibes-grid,.venues-grid,.members-grid,.contact-grid{grid-template-columns:1fr}
       .sound-layout{grid-template-columns:1fr;gap:3rem}
       .vibe-card{border-right:none;border-bottom:1px solid rgba(200,146,42,.1)}
@@ -178,15 +189,23 @@
 </nav>
 
 <section id="hero">
-  <div class="hero-bg" data-bg-role="hero"></div>
-  <div class="hero-content">
-    <span class="hero-label" data-content="hero.label">Ska · Reggae · Acustico · Live</span>
-    <h1 data-content="hero.title">2 Deep</h1>
-    <p class="hero-tagline" data-content="hero.tagline">Quando la musica è giusta, nessuno ha fretta di andare</p>
-    <p class="hero-desc" data-content="hero.desc">Il duo acustico ska-reggae che trasforma una serata normale in qualcosa che i tuoi clienti ricorderanno — e torneranno a cercare.</p>
-    <div class="hero-ctas">
-      <a href="#contatti" class="btn-primary">Prenota il duo</a>
-      <a href="#vibes" class="btn-outline">Scopri il sound</a>
+  <div class="hero-bg"></div>
+  <div class="hero-split">
+    <div class="hero-content">
+      <span class="hero-label" data-content="hero.label">Ska · Reggae · Acustico · Live</span>
+      <h1 data-content="hero.title">2 Deep</h1>
+      <p class="hero-tagline" data-content="hero.tagline">Quando la musica è giusta, nessuno ha fretta di andare</p>
+      <p class="hero-desc" data-content="hero.desc">Il duo acustico ska-reggae che trasforma una serata normale in qualcosa che i tuoi clienti ricorderanno — e torneranno a cercare.</p>
+      <div class="hero-ctas">
+        <a href="#contatti" class="btn-primary">Prenota il duo</a>
+        <a href="#vibes" class="btn-outline">Scopri il sound</a>
+      </div>
+    </div>
+    <div class="hero-photo-wrap">
+      <img id="hero-photo" class="hero-photo" src="" alt="2 Deep live" style="display:none">
+      <div class="hero-photo-placeholder" id="hero-photo-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#c8922a" stroke-width="1"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </div>
     </div>
   </div>
   <div class="scroll-line">Scorri</div>
