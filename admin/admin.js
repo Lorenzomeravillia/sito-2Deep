@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('form-membri').addEventListener('submit',   e => saveSection(e, 'members'));
     document.getElementById('form-contatti').addEventListener('submit', e => saveSection(e, 'contact'));
     document.getElementById('form-new-event').addEventListener('submit', addEvent);
+    document.getElementById('form-password').addEventListener('submit', changePassword);
 
     checkSession();
 });
@@ -75,6 +76,23 @@ async function login() {
         else { showToast('Accesso effettuato ✓'); checkSession(); }
     } catch (e) { showToast('Eccezione: ' + e.message, 'error'); }
     finally { btn.innerText = 'Accedi'; btn.disabled = false; }
+}
+
+async function changePassword(e) {
+    e.preventDefault();
+    const np = document.getElementById('new-password').value;
+    const cp = document.getElementById('confirm-password').value;
+    if (np.length < 6) { showToast('La password deve essere di almeno 6 caratteri.', 'error'); return; }
+    if (np !== cp) { showToast('Le password non coincidono.', 'error'); return; }
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.innerText = 'Aggiornamento...'; btn.disabled = true;
+    try {
+        const { error } = await tdAdmin.auth.updateUser({ password: np });
+        if (error) throw error;
+        showToast('Password aggiornata ✓');
+        e.target.reset();
+    } catch (err) { showToast('Errore: ' + err.message, 'error'); }
+    finally { btn.innerText = 'Aggiorna Password'; btn.disabled = false; }
 }
 
 async function logout() {

@@ -64,6 +64,7 @@
             <button class="tab-btn" data-target="tab-membri">Il Duo</button>
             <button class="tab-btn" data-target="tab-eventi">Date</button>
             <button class="tab-btn" data-target="tab-contatti">Contatti</button>
+            <button class="tab-btn" data-target="tab-password">🔑 Password</button>
         </div>
 
         <!-- Hero -->
@@ -130,6 +131,16 @@
             </div>
             <h4>Date a sistema</h4>
             <ul id="events-admin-list" class="data-list" style="list-style:none"></ul>
+        </div>
+
+        <!-- Password -->
+        <div id="tab-password" class="tab-content">
+            <h3>Cambia Password</h3>
+            <form id="form-password" style="max-width:360px;margin-top:1.5rem">
+                <div class="form-group"><label>Nuova password</label><input type="password" id="new-password" placeholder="Minimo 6 caratteri" minlength="6"></div>
+                <div class="form-group"><label>Conferma password</label><input type="password" id="confirm-password" placeholder="Ripeti la password"></div>
+                <button type="submit" class="section-save-btn">Aggiorna Password</button>
+            </form>
         </div>
 
         <!-- Contatti -->
