@@ -36,6 +36,9 @@
         .toast.error{background:var(--danger)}
         @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
         .section-save-btn{margin-top:1rem;width:100%;background:var(--primary)}
+        .img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;margin-bottom:1rem}
+        .img-card{border:1px solid var(--border);border-radius:4px;padding:.5rem;font-size:.8rem}
+        .img-status{font-size:.75rem;margin-bottom:.3rem}
         @media(max-width:540px){.data-item{flex-direction:column;align-items:flex-start}.data-item-actions{flex-direction:column;width:100%}.data-item-actions button,.data-item-actions>div{width:100%}}
     </style>
 </head>
@@ -64,6 +67,7 @@
             <button class="tab-btn" data-target="tab-membri">Il Duo</button>
             <button class="tab-btn" data-target="tab-eventi">Date</button>
             <button class="tab-btn" data-target="tab-contatti">Contatti</button>
+            <button class="tab-btn" data-target="tab-foto">Foto</button>
             <button class="tab-btn" data-target="tab-password">🔑 Password</button>
         </div>
 
@@ -131,6 +135,61 @@
             </div>
             <h4>Date a sistema</h4>
             <ul id="events-admin-list" class="data-list" style="list-style:none"></ul>
+        </div>
+
+        <!-- Foto -->
+        <div id="tab-foto" class="tab-content">
+            <h3>Carica Foto</h3>
+            <div style="background:#fafafa;padding:1rem;border:1px solid var(--border);margin-bottom:2rem;border-radius:4px">
+                <form id="form-upload-photo">
+                    <div class="form-group">
+                        <label>Cartella</label>
+                        <select id="upload-folder">
+                            <option value="members">members</option>
+                            <option value="hero">hero</option>
+                            <option value="gallery">gallery</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Ruolo (es. hero, member, gallery)</label><input type="text" id="upload-role"></div>
+                    <div class="form-group"><label>File</label><input type="file" id="upload-file" accept="image/*" onchange="previewUploadFile(this)" style="padding:.4rem"></div>
+                    <img id="upload-preview" src="" style="display:none;max-width:100%;max-height:200px;margin-bottom:1rem;border-radius:4px;">
+                    <div class="form-group"><label>Alt text</label><input type="text" id="upload-alt"></div>
+                    <div class="form-group"><label>Ordine</label><input type="number" id="upload-order" value="1" min="1"></div>
+                    <label><input type="checkbox" id="upload-active" checked style="width:auto;margin:0 .4rem 0 0"> Attiva subito</label>
+                    <button type="submit" class="section-save-btn" style="background:var(--text)">Carica Foto</button>
+                </form>
+            </div>
+            <h4 style="margin-bottom:1rem">Foto a sistema</h4>
+            <div id="images-container"></div>
+        </div>
+
+        <!-- Modal modifica foto -->
+        <div id="modal-edit-photo" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;">
+            <div style="background:#fff;border-radius:8px;padding:2rem;max-width:500px;width:90%;max-height:90vh;overflow-y:auto;">
+                <h3 style="margin-bottom:1rem">Modifica Foto</h3>
+                <p id="edit-img-filename" style="font-size:.8rem;color:#999;margin-bottom:1rem;word-break:break-all;"></p>
+                <div id="edit-img-preview" style="width:100%;height:180px;margin-bottom:1rem;border-radius:4px;background:#eee;background-size:cover;background-position:center;"></div>
+                <form id="form-edit-photo">
+                    <input type="hidden" id="edit-img-id">
+                    <div class="form-group"><label>Alt text</label><input type="text" id="edit-img-alt"></div>
+                    <div class="form-group"><label>Ruolo</label><input type="text" id="edit-img-role"></div>
+                    <div class="form-group"><label>Ordine</label><input type="number" id="edit-img-order" min="1"></div>
+                    <div class="form-group">
+                        <label>Zoom (<span id="edit-img-bgsize-val">100</span>%)</label>
+                        <input type="range" id="edit-img-bgsize" min="50" max="200" value="100" style="padding:0">
+                    </div>
+                    <div class="form-group">
+                        <label>Luminosità (<span id="edit-img-brightness-val">100</span>%)</label>
+                        <input type="range" id="edit-img-brightness" min="20" max="150" value="100" style="padding:0">
+                    </div>
+                    <label style="margin-bottom:1rem;display:flex;align-items:center;gap:.5rem"><input type="checkbox" id="edit-img-active" style="width:auto;margin:0"> Attiva</label>
+                    <div style="display:flex;gap:.5rem;margin-top:1rem">
+                        <button type="submit" style="flex:1">Salva Modifiche</button>
+                        <button type="button" class="danger" onclick="deleteImage(document.getElementById('edit-img-id').value)" style="flex:1">Elimina</button>
+                        <button type="button" onclick="closeEditModal()" style="flex:1;background:#eee;color:#333">Annulla</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Password -->

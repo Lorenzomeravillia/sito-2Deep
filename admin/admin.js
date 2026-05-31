@@ -13,9 +13,13 @@ function showToast(msg, type = 'success') {
 const _SB_URL = 'https://jvcvxzampxopvihahwbh.supabase.co';
 const _SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2Y3Z4emFtcHhvcHZpaGFod2JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzMDMyNDMsImV4cCI6MjA4Nzg3OTI0M30.x2seoq8KYJdWLles7H8n0uD2Qm77MCbWEGNDnN6DWrc';
 
-let tdAdmin = null;
+const BUCKET    = 'td-site';
+const BUCKET_URL = () => `${_SB_URL}/storage/v1/object/public/${BUCKET}`;
+
+let tdAdmin     = null;
 let contentData = [];
 let eventsData  = [];
+let imagesData  = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     try {
@@ -45,6 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('form-membri').addEventListener('submit',   e => saveSection(e, 'members'));
     document.getElementById('form-contatti').addEventListener('submit', e => saveSection(e, 'contact'));
     document.getElementById('form-new-event').addEventListener('submit', addEvent);
+    document.getElementById('form-upload-photo').addEventListener('submit', uploadPhoto);
+    document.getElementById('form-edit-photo').addEventListener('submit', saveImageEdit);
+    document.getElementById('modal-edit-photo').addEventListener('click', function(e) {
+        if (e.target === this) closeEditModal();
+    });
     document.getElementById('form-password').addEventListener('submit', changePassword);
 
     checkSession();
@@ -105,16 +114,20 @@ async function logout() {
 async function loadAdminData() {
     setLoading(true);
     try {
-        const [cnt, ev] = await Promise.all([
+        const [cnt, ev, img] = await Promise.all([
             tdAdmin.from('site_content').select('*'),
-            tdAdmin.from('site_events').select('*').order('event_date', { ascending: true })
+            tdAdmin.from('site_events').select('*').order('event_date', { ascending: true }),
+            tdAdmin.from('site_images').select('*').order('display_order')
         ]);
         if (cnt.error) throw cnt.error;
         if (ev.error)  throw ev.error;
+        if (img.error) throw img.error;
         contentData = cnt.data || [];
         eventsData  = ev.data  || [];
+        imagesData  = img.data || [];
         populateForms();
         renderEvents();
+        renderImages();
         setLoading(false);
     } catch (e) {
         setLoading(false, true);
@@ -207,6 +220,179 @@ async function deleteEvent(id) {
     const { error } = await tdAdmin.from('site_events').delete().eq('id', id);
     if (error) showToast('Errore: ' + error.message, 'error');
     else { showToast('Eliminata'); loadAdminData(); }
+}
+
+// ── Folder → role auto-derive ──
+document.addEventListener('DOMContentLoaded', () => {
+    const folderEl = document.getElementById('upload-folder');
+    const roleEl   = document.getElementById('upload-role');
+    if (folderEl && roleEl) {
+        folderEl.addEventListener('change', () => { roleEl.value = folderEl.value; });
+        roleEl.value = folderEl.value;
+    }
+});
+
+function previewUploadFile(input) {
+    const preview = document.getElementById('upload-preview');
+    const file = input.files[0];
+    if (!file) { preview.style.display = 'none'; return; }
+    const reader = new FileReader();
+    reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+    reader.readAsDataURL(file);
+}
+
+async function uploadPhoto(e) {
+    e.preventDefault();
+    const file    = document.getElementById('upload-file').files[0];
+    const folder  = document.getElementById('upload-folder').value;
+    const role    = document.getElementById('upload-role').value.trim();
+    const alt     = document.getElementById('upload-alt').value.trim();
+    const order   = parseInt(document.getElementById('upload-order').value) || 1;
+    const active  = document.getElementById('upload-active').checked;
+    if (!file) { showToast('Seleziona un file.', 'error'); return; }
+    const safeName = file.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '').toLowerCase();
+    const path = `${folder}/${safeName}`;
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.innerText = 'Caricamento...'; btn.disabled = true;
+    try {
+        const { error: upErr } = await tdAdmin.storage.from(BUCKET).upload(path, file, { upsert: true, contentType: file.type });
+        if (upErr) throw new Error('Storage: ' + upErr.message);
+        const { error: dbErr } = await tdAdmin.from('site_images').insert([{
+            filename: path, role, alt_text: alt, display_order: order, is_active: active, bg_size: 100, brightness: 100
+        }]);
+        if (dbErr) throw new Error('DB: ' + dbErr.message);
+        showToast('Foto caricata ✓');
+        e.target.reset();
+        document.getElementById('upload-preview').style.display = 'none';
+        loadAdminData();
+    } catch (err) { showToast('Errore: ' + err.message, 'error'); }
+    finally { btn.innerText = 'Carica Foto'; btn.disabled = false; }
+}
+
+function editImage(id) {
+    const img = imagesData.find(i => i.id === id);
+    if (!img) return;
+    document.getElementById('edit-img-id').value        = img.id;
+    document.getElementById('edit-img-alt').value       = img.alt_text || '';
+    document.getElementById('edit-img-role').value      = img.role || '';
+    document.getElementById('edit-img-order').value     = img.display_order || 1;
+    document.getElementById('edit-img-active').checked  = img.is_active;
+    document.getElementById('edit-img-filename').innerText = img.filename;
+    const bgSize = img.bg_size || 100;
+    const bright = img.brightness || 100;
+    const sliderZ = document.getElementById('edit-img-bgsize');
+    const sliderB = document.getElementById('edit-img-brightness');
+    sliderZ.value = bgSize; document.getElementById('edit-img-bgsize-val').innerText = bgSize + '%';
+    sliderB.value = bright; document.getElementById('edit-img-brightness-val').innerText = bright + '%';
+    const preview = document.getElementById('edit-img-preview');
+    preview.style.backgroundImage = `url('${BUCKET_URL()}/${img.filename}')`;
+    preview.style.backgroundSize = bgSize + '%';
+    preview.style.backgroundPosition = 'center';
+    preview.style.backgroundRepeat = 'no-repeat';
+    preview.style.backgroundColor = '#111';
+    preview.style.filter = `brightness(${bright}%)`;
+    sliderZ.oninput = function() {
+        document.getElementById('edit-img-bgsize-val').innerText = this.value + '%';
+        preview.style.backgroundSize = this.value + '%';
+    };
+    sliderB.oninput = function() {
+        document.getElementById('edit-img-brightness-val').innerText = this.value + '%';
+        preview.style.filter = `brightness(${this.value}%)`;
+    };
+    document.getElementById('modal-edit-photo').style.display = 'flex';
+}
+
+function closeEditModal() {
+    document.getElementById('modal-edit-photo').style.display = 'none';
+}
+
+async function saveImageEdit(e) {
+    e.preventDefault();
+    const id  = document.getElementById('edit-img-id').value;
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.innerText = 'Salvataggio...'; btn.disabled = true;
+    try {
+        const { error } = await tdAdmin.from('site_images').update({
+            alt_text: document.getElementById('edit-img-alt').value.trim(),
+            role: document.getElementById('edit-img-role').value.trim(),
+            display_order: parseInt(document.getElementById('edit-img-order').value) || 1,
+            is_active: document.getElementById('edit-img-active').checked,
+            bg_size: parseInt(document.getElementById('edit-img-bgsize').value) || 100,
+            brightness: parseInt(document.getElementById('edit-img-brightness').value) || 100
+        }).eq('id', id);
+        if (error) throw error;
+        showToast('Modifiche salvate ✓');
+        closeEditModal();
+        loadAdminData();
+    } catch (err) { showToast('Errore: ' + err.message, 'error'); }
+    finally { btn.innerText = 'Salva Modifiche'; btn.disabled = false; }
+}
+
+async function deleteImage(id) {
+    const img = imagesData.find(i => i.id === id);
+    if (!img || !confirm(`Eliminare "${img.filename}"?`)) return;
+    try {
+        await tdAdmin.storage.from(BUCKET).remove([img.filename]);
+        const { error } = await tdAdmin.from('site_images').delete().eq('id', id);
+        if (error) throw error;
+        showToast('Foto eliminata ✓');
+        closeEditModal();
+        loadAdminData();
+    } catch (err) { showToast('Errore: ' + err.message, 'error'); }
+}
+
+function renderImages() {
+    const container = document.getElementById('images-container');
+    if (!container) return;
+    container.innerHTML = '';
+    if (!imagesData.length) {
+        container.innerHTML = '<p style="color:#999;padding:1rem 0;">Nessuna immagine.</p>';
+        return;
+    }
+    const grouped = {};
+    imagesData.forEach(img => {
+        const folder = img.filename?.includes('/') ? img.filename.split('/')[0] : 'root';
+        if (!grouped[folder]) grouped[folder] = [];
+        grouped[folder].push(img);
+    });
+    for (const [folder, imgs] of Object.entries(grouped)) {
+        const wrap = document.createElement('div');
+        wrap.style.marginBottom = '2rem';
+        wrap.innerHTML = `<h4 style="margin-bottom:.8rem;text-transform:capitalize;">📁 ${folder}/</h4>`;
+        const grid = document.createElement('div');
+        grid.className = 'img-grid';
+        imgs.forEach(img => {
+            const card = document.createElement('div');
+            card.className = 'img-card';
+            const imgEl = document.createElement('img');
+            imgEl.src = BUCKET_URL() + '/' + img.filename;
+            imgEl.alt = img.alt_text || '';
+            imgEl.style.cssText = 'width:100%;height:auto;display:block;border-radius:4px;margin-bottom:.5rem;';
+            imgEl.onerror = function() { this.style.cssText += 'background:#eee;min-height:60px;'; this.removeAttribute('src'); };
+            const info = document.createElement('div');
+            info.innerHTML = `<div class="img-status">${img.is_active ? '✅ Attiva' : '⬜ Nascosta'}</div>
+                <div style="font-size:.75rem;color:#555"><strong>${img.role || '—'}</strong> | ord: ${img.display_order}</div>`;
+            const actions = document.createElement('div');
+            actions.style.cssText = 'display:flex;gap:.4rem;margin-top:.5rem;';
+            const btnEdit = document.createElement('button');
+            btnEdit.textContent = '✏️';
+            btnEdit.style.cssText = 'flex:1;padding:.3rem;font-size:.75rem;';
+            btnEdit.onclick = () => editImage(img.id);
+            const btnDel = document.createElement('button');
+            btnDel.textContent = '🗑️';
+            btnDel.className = 'danger';
+            btnDel.style.cssText = 'flex:1;padding:.3rem;font-size:.75rem;';
+            btnDel.onclick = () => deleteImage(img.id);
+            actions.appendChild(btnEdit);
+            actions.appendChild(btnDel);
+            card.appendChild(imgEl);
+            card.appendChild(info);
+            card.appendChild(actions);
+            grid.appendChild(card);
+        });
+        wrap.appendChild(grid);
+        container.appendChild(wrap);
+    }
 }
 
 function renderEvents() {
