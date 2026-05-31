@@ -28,7 +28,11 @@
     .nav-cta{background:var(--amber)!important;color:var(--bg)!important;padding:.45rem 1.1rem;border-radius:2px}
     .nav-cta:hover{background:#b07d20!important}
     .nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;z-index:102;position:relative}
-    .nav-hamburger span{width:24px;height:2px;background:var(--amber);transition:all .3s}
+    .nav-hamburger span{width:24px;height:2px;background:var(--amber);transition:transform .3s,opacity .3s}
+    .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .nav-hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+    .nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    .nav-links a.active{color:var(--amber)}
     .mobile-menu{position:fixed;top:0;right:0;bottom:0;width:min(320px,85vw);background:var(--bg2);z-index:200;display:flex;flex-direction:column;justify-content:center;padding:2.5rem 2rem;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);border-left:1px solid rgba(200,146,42,.15)}
     .mobile-menu.open{transform:translateX(0)}
     .mobile-menu ul{list-style:none;display:flex;flex-direction:column;gap:2rem}
@@ -474,15 +478,36 @@
   const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}}),{threshold:.1});
   document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
   function toggleNav(){
-    document.getElementById('mobileMenu').classList.toggle('open');
-    document.getElementById('menuOverlay').classList.toggle('open');
-    document.body.style.overflow = document.getElementById('mobileMenu').classList.contains('open') ? 'hidden' : '';
+    const burger = document.getElementById('hamburger');
+    const menu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('menuOverlay');
+    const isOpen = menu.classList.toggle('open');
+    overlay.classList.toggle('open', isOpen);
+    burger.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
   }
   function closeNav(){
     document.getElementById('mobileMenu').classList.remove('open');
     document.getElementById('menuOverlay').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
     document.body.style.overflow = '';
   }
+
+  // Scroll spy — evidenzia la voce di menu della sezione visibile
+  (function(){
+    const sections = ['video','vibes','venues','sound','members','repertorio','events-section','faq','contatti'];
+    const links = document.querySelectorAll('.nav-links a');
+    const spy = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          links.forEach(a => a.classList.remove('active'));
+          const active = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    sections.forEach(id => { const el = document.getElementById(id); if (el) spy.observe(el); });
+  })();
   function handleForm(e){e.preventDefault();const btn=e.target.querySelector('button');btn.textContent='Richiesta inviata ✓';btn.style.background='#1e4020';setTimeout(()=>{e.target.reset();btn.textContent='Invia richiesta';btn.style.background=''},3500)}
   document.querySelectorAll('.member-card').forEach(card=>{
     card.addEventListener('click',()=>card.classList.toggle('flipped'));
