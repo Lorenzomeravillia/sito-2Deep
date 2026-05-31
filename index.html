@@ -120,19 +120,15 @@
     .event-city{font-size:.82rem;color:var(--gray)}
     .event-desc{font-size:.8rem;color:rgba(200,146,42,.7);margin-top:.2rem}
     #contatti{background:var(--bg)}
-    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+    .contact-center{max-width:540px;margin:0 auto;text-align:center}
     .contact-intro{font-size:1rem;color:var(--gray);line-height:1.85;margin-bottom:2.5rem}
-    .contact-items{display:flex;flex-direction:column;gap:1.4rem}
+    .contact-items{display:flex;flex-direction:column;gap:1.2rem;margin-bottom:2.8rem}
     .contact-item label{font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:.25rem}
     .contact-item a{color:var(--white);text-decoration:none;font-size:1rem;transition:color .3s}
     .contact-item a:hover{color:var(--amber)}
-    .contact-form{display:flex;flex-direction:column;gap:.9rem}
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
-    .contact-form input,.contact-form textarea,.contact-form select{width:100%;background:rgba(200,146,42,.04);border:1px solid rgba(200,146,42,.15);color:var(--white);padding:.85rem 1rem;font-family:var(--sans);font-size:.93rem;border-radius:2px;outline:none;transition:border-color .3s}
-    .contact-form input::placeholder,.contact-form textarea::placeholder{color:var(--gray)}
-    .contact-form select option{background:#1a2e1c}
-    .contact-form input:focus,.contact-form textarea:focus,.contact-form select:focus{border-color:rgba(200,146,42,.4)}
-    .contact-form textarea{resize:vertical;min-height:120px}
+    .btn-wa{display:flex;align-items:center;justify-content:center;gap:.9rem;background:#25d366;color:#fff;padding:1.1rem 2.4rem;font-family:var(--sans);font-size:.85rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;border-radius:3px;transition:background .3s,transform .2s;width:100%}
+    .btn-wa:hover{background:#1ebe5d;transform:translateY(-2px)}
+    .btn-wa svg{width:22px;height:22px;fill:#fff;flex-shrink:0}
     footer{padding:2.2rem 2rem;border-top:1px solid rgba(200,146,42,.07);text-align:center;font-size:.78rem;color:var(--gray)}
     footer span{color:var(--amber)}
     /* Repertorio */
@@ -167,11 +163,11 @@
       .hero-ctas{justify-content:center}
       .hero-photo-wrap::before{inset:-8px}
       .hero-photo-placeholder{aspect-ratio:16/9}
-      .vibes-grid,.venues-grid,.members-grid,.contact-grid{grid-template-columns:1fr}
+      .vibes-grid,.venues-grid,.members-grid{grid-template-columns:1fr}
       .sound-layout{grid-template-columns:1fr;gap:3rem}
       .vibe-card{border-right:none;border-bottom:1px solid rgba(200,146,42,.1)}
       .vibe-card:last-child{border-bottom:none}
-      .form-row{grid-template-columns:1fr}
+
     }
     @media(max-width:480px){section{padding:5rem 1.2rem}h1{font-size:3.5rem}}
   </style>
@@ -392,29 +388,18 @@
 
 <section id="contatti">
   <div class="container">
-    <div class="contact-grid">
-      <div class="reveal">
-        <span class="section-label" data-content="contact.label">Contatti</span>
-        <h2 class="section-title" data-content="contact.title">Parlaci della tua serata</h2>
-        <div class="section-divider"></div>
-        <p class="contact-intro" data-content="contact.desc">Pub, birrerie, enoteche, sagre, eventi privati — scriveteci e troviamo la formula giusta per il vostro locale.</p>
-        <div class="contact-items">
-          <div class="contact-item"><label>WhatsApp</label><a href="https://wa.me/393488414630" target="_blank" data-href="contact.whatsapp">+39 348 841 4630</a></div>
-          <div class="contact-item"><label>Instagram</label><a href="https://www.instagram.com/" target="_blank" data-href="contact.instagram" data-content-text-same="true">@2deep_music</a></div>
-        </div>
+    <div class="contact-center reveal">
+      <span class="section-label" data-content="contact.label">Contatti</span>
+      <h2 class="section-title" data-content="contact.title">Parlaci della tua serata</h2>
+      <div class="section-divider"></div>
+      <p class="contact-intro" data-content="contact.desc">Pub, birrerie, enoteche, sagre, eventi privati — scriveteci e troviamo la formula giusta per il vostro locale.</p>
+      <div class="contact-items">
+        <div class="contact-item"><label>Instagram</label><a href="https://www.instagram.com/" target="_blank" data-href="contact.instagram" data-content-text-same="true">@2deep_music</a></div>
       </div>
-      <div class="reveal">
-        <form class="contact-form" onsubmit="handleForm(event)">
-          <div class="form-row">
-            <input type="text" placeholder="Nome / Locale" required>
-            <input type="tel" placeholder="Telefono / WhatsApp">
-          </div>
-          <select><option value="" disabled selected>Tipo di locale</option><option>Pub / Birreria</option><option>Enoteca / Wine Bar</option><option>Ristorante / Locale</option><option>Sagra / Evento</option><option>Altro</option></select>
-          <input type="text" placeholder="Città e periodo di interesse">
-          <textarea placeholder="Qualche dettaglio in più (capienza, orari, budget…)"></textarea>
-          <button type="submit" class="btn-primary">Invia richiesta</button>
-        </form>
-      </div>
+      <a class="btn-wa" href="https://wa.me/393488414630?text=Ciao%202Deep!%20Vorrei%20info%20per%20una%20serata%20nel%20mio%20locale." target="_blank" rel="noopener noreferrer" data-href="contact.whatsapp">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Scrivici su WhatsApp
+      </a>
     </div>
   </div>
 </section>
