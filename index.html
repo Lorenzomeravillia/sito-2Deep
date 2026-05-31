@@ -17,7 +17,9 @@
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--white);font-family:var(--sans);font-weight:300;line-height:1.7;overflow-x:hidden}
     nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 3rem;background:rgba(12,24,16,0.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(200,146,42,0.07)}
-    .nav-logo{font-family:var(--serif);font-size:1.4rem;color:var(--amber);text-decoration:none;letter-spacing:.04em;display:flex;align-items:center}
+    .nav-logo{font-family:var(--serif);font-size:1.4rem;color:var(--amber);text-decoration:none;letter-spacing:.04em;display:flex;align-items:center;gap:.5rem}
+    .nav-section-label{display:none;font-family:var(--sans);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gray);opacity:0;transition:opacity .3s}
+    .nav-section-label.visible{opacity:1}
     .site-logo{height:38px;width:auto;opacity:.9;transition:opacity .3s}
     .site-logo:hover{opacity:1}
     .nav-logo-text{display:block}
@@ -177,6 +179,7 @@
       nav{padding:1rem 1.5rem}
       .nav-links{display:none}
       .nav-hamburger{display:flex}
+      .nav-section-label{display:inline}
       .hero-split{grid-template-columns:1fr;gap:3rem;text-align:center}
       .hero-content{text-align:center}
       .hero-ctas{justify-content:center}
@@ -198,6 +201,7 @@
   <a class="nav-logo" href="#hero">
     <img id="nav-logo-img" class="site-logo" src="" alt="2 Deep" style="display:none">
     <span class="nav-logo-text" id="nav-logo-text">2 Deep</span>
+    <span class="nav-section-label" id="navSectionLabel"></span>
   </a>
   <ul class="nav-links" id="navLinks">
     <li><a href="#video" onclick="closeNav()">Video</a></li>
@@ -493,20 +497,40 @@
     document.body.style.overflow = '';
   }
 
-  // Scroll spy — evidenzia la voce di menu della sezione visibile
+  // Scroll spy — evidenzia la voce di menu e mostra il nome sezione nella navbar mobile
   (function(){
-    const sections = ['video','vibes','venues','sound','members','repertorio','events-section','faq','contatti'];
+    const sectionMap = {
+      'hero':           '',
+      'video':          'Video',
+      'vibes':          'Il Sound',
+      'venues':         'Per i Locali',
+      'sound':          'Il Sound',
+      'members':        'Il Duo',
+      'events-section': 'Date',
+      'repertorio':     'Repertorio',
+      'faq':            'Info',
+      'contatti':       'Contatti'
+    };
     const links = document.querySelectorAll('.nav-links a');
+    const label = document.getElementById('navSectionLabel');
     const spy = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           links.forEach(a => a.classList.remove('active'));
-          const active = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
+          const id = entry.target.id;
+          const active = document.querySelector(`.nav-links a[href="#${id}"]`);
           if (active) active.classList.add('active');
+          const name = sectionMap[id] ?? '';
+          if (name) {
+            label.textContent = '· ' + name;
+            label.classList.add('visible');
+          } else {
+            label.classList.remove('visible');
+          }
         }
       });
     }, { rootMargin: '-40% 0px -55% 0px' });
-    sections.forEach(id => { const el = document.getElementById(id); if (el) spy.observe(el); });
+    Object.keys(sectionMap).forEach(id => { const el = document.getElementById(id); if (el) spy.observe(el); });
   })();
   function handleForm(e){e.preventDefault();const btn=e.target.querySelector('button');btn.textContent='Richiesta inviata ✓';btn.style.background='#1e4020';setTimeout(()=>{e.target.reset();btn.textContent='Invia richiesta';btn.style.background=''},3500)}
   document.querySelectorAll('.member-card').forEach(card=>{
