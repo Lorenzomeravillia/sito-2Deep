@@ -18,10 +18,10 @@
     body{background:var(--bg);color:var(--white);font-family:var(--sans);font-weight:300;line-height:1.7;overflow-x:hidden}
     nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 3rem;background:rgba(12,24,16,0.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(200,146,42,0.07)}
     .nav-logo{font-family:var(--serif);font-size:1.4rem;color:var(--amber);text-decoration:none;letter-spacing:.04em;display:flex;align-items:center}
-    .site-logo{height:38px;width:auto;filter:brightness(0) invert(1);opacity:.9;transition:opacity .3s}
+    .site-logo{height:38px;width:auto;mix-blend-mode:screen;opacity:.9;transition:opacity .3s}
     .site-logo:hover{opacity:1}
     .nav-logo-text{display:block}
-    .footer-logo{height:48px;width:auto;filter:brightness(0) invert(1);opacity:.5;margin-bottom:.8rem}
+    .footer-logo{height:48px;width:auto;mix-blend-mode:screen;opacity:.6;margin-bottom:.8rem}
     .nav-links{display:flex;gap:2.2rem;list-style:none}
     .nav-links a{color:var(--gray);text-decoration:none;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;transition:color .3s}
     .nav-links a:hover{color:var(--amber)}
@@ -77,9 +77,10 @@
     .venues-note strong{color:var(--white);font-weight:400}
     #sound{background:var(--bg2)}
     .sound-layout{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
-    .sound-circle{width:300px;height:300px;border-radius:50%;border:1px solid rgba(200,146,42,.15);display:flex;align-items:center;justify-content:center;margin:0 auto;position:relative}
+    .sound-circle{width:300px;height:300px;border-radius:50%;border:1px solid rgba(200,146,42,.15);display:flex;align-items:center;justify-content:center;margin:0 auto;position:relative;overflow:hidden}
     .sound-circle::before{content:'';position:absolute;inset:20px;border-radius:50%;border:1px solid rgba(200,146,42,.08)}
     .sound-circle::after{content:'';position:absolute;inset:45px;border-radius:50%;background:rgba(30,64,32,.4);border:1px solid rgba(200,146,42,.05)}
+    #sound-circle-img{width:100%;height:100%;object-fit:cover;mix-blend-mode:screen;position:relative;z-index:1}
     .sound-circle-text{position:relative;z-index:1;text-align:center}
     .sound-circle-text .big{font-family:var(--serif);font-size:2rem;color:var(--amber);display:block}
     .sound-circle-text .small{font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gray)}
