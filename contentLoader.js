@@ -57,6 +57,13 @@
     document.querySelectorAll(`[data-img-role="${img.role}"]`).forEach(el => {
       el.innerHTML = `<img src="${url}" alt="${img.alt_text || ''}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
     });
+    // Sound circle
+    if (img.role === 'sound') {
+      const imgEl = document.getElementById('sound-circle-img');
+      const fallback = document.getElementById('sound-circle-fallback');
+      if (imgEl) { imgEl.src = url; imgEl.style.display = 'block'; }
+      if (fallback) fallback.style.display = 'none';
+    }
   });
 
   // ── Repertoire ──
