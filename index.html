@@ -202,9 +202,15 @@
     .song-title{color:var(--white);font-size:.95rem}
     .song-artist{color:var(--gray);font-size:.78rem;flex-shrink:0}
     .rep-note{margin-top:2rem;font-size:.85rem;color:var(--gray);font-style:italic}
+    .rep-toggle{display:inline-flex;align-items:center;gap:.6rem;background:none;border:1px solid rgba(200,146,42,.35);color:var(--amber);padding:.6rem 1.3rem;font-family:var(--sans);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:border-color .3s,color .3s;margin-top:1.5rem}
+    .rep-toggle:hover{border-color:var(--amber)}
+    .rep-toggle .rep-arrow{display:inline-block;transition:transform .3s;font-style:normal}
+    .rep-toggle.open .rep-arrow{transform:rotate(180deg)}
+    .rep-body{overflow:hidden;max-height:0;transition:max-height .45s cubic-bezier(.4,0,.2,1)}
     /* Video */
     #video{background:var(--bg)}
-    .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin-top:1.5rem}
+    .video-grid{display:flex;flex-wrap:wrap;gap:1.5rem;margin-top:1.5rem;justify-content:center}
+    .video-grid .video-card{flex:0 1 340px;min-width:260px;max-width:100%}
     .video-card{background:rgba(200,146,42,.03);border:1px solid rgba(200,146,42,.08);border-radius:3px;overflow:hidden;transition:border-color .3s}
     .video-card:hover{border-color:rgba(200,146,42,.25)}
     .video-thumb{position:relative;padding-bottom:56.25%;overflow:hidden}
@@ -467,11 +473,16 @@
       <span class="section-label">Cosa suoniamo</span>
       <h2 class="section-title">Repertorio</h2>
       <div class="section-divider"></div>
-      <p style="color:var(--gray);max-width:600px;margin-bottom:.5rem;font-size:1rem;line-height:1.8;">Il nostro repertorio attraversa pop, rock, reggae e canzone italiana, ma sempre filtrato dal nostro modo di suonare: acustico, ritmico, leggero, con un'identità riconoscibile.</p>
-      <p style="color:var(--gray);max-width:600px;margin-bottom:2.5rem;font-size:1rem;line-height:1.8;">Non facciamo semplicemente "cover": cerchiamo di prendere brani conosciuti e portarli in un'altra atmosfera, più rilassata, più sorridente, più nostra.</p>
+      <p style="color:var(--gray);max-width:600px;margin-bottom:.5rem;font-size:1rem;line-height:1.8;">Il nostro repertorio attraversa pop, rock, reggae e canzone italiana, filtrato dal nostro modo di suonare: acustico, ritmico, leggero, con un'identità riconoscibile.</p>
+      <p style="color:var(--gray);max-width:600px;margin-bottom:.5rem;font-size:1rem;line-height:1.8;">Non facciamo semplicemente "cover": cerchiamo di prendere brani conosciuti e portarli in un'altra atmosfera, più rilassata, più sorridente, più nostra.</p>
+      <button class="rep-toggle" id="rep-toggle" aria-expanded="false">
+        <span id="rep-toggle-label">Vedi tutti i brani</span> <em class="rep-arrow">▾</em>
+      </button>
     </div>
-    <div class="song-grid reveal" id="repertoire-grid"></div>
-    <p class="rep-note reveal" id="rep-note"></p>
+    <div class="rep-body" id="rep-body">
+      <div class="song-grid reveal" id="repertoire-grid" style="margin-top:1.8rem"></div>
+      <p class="rep-note reveal" id="rep-note"></p>
+    </div>
   </div>
 </section>
 
@@ -577,6 +588,27 @@
   document.querySelectorAll('.member-card').forEach(card=>{
     card.addEventListener('click',()=>card.classList.toggle('flipped'));
   });
+  (function(){
+    const btn = document.getElementById('rep-toggle');
+    const body = document.getElementById('rep-body');
+    if(!btn||!body) return;
+    const lbl = document.getElementById('rep-toggle-label');
+    btn.addEventListener('click',function(){
+      const open = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open);
+      if(open){
+        body.style.maxHeight = body.scrollHeight + 'px';
+        if(lbl) lbl.textContent = 'Nascondi brani';
+      } else {
+        body.style.maxHeight = '0';
+        if(lbl) lbl.textContent = 'Vedi tutti i brani';
+      }
+    });
+    // se il contenuto viene iniettato dinamicamente mentre il pannello è aperto, ricalcola
+    new MutationObserver(function(){
+      if(btn.classList.contains('open')) body.style.maxHeight = body.scrollHeight + 'px';
+    }).observe(body,{childList:true,subtree:true});
+  })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script src="config.js" defer></script>
