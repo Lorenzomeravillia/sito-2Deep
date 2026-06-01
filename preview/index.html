@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2 Deep — Preview</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0c1810;--bg2:#101d12;--green:#1e4020;--amber:#c8922a;
+      --amber-d:rgba(200,146,42,0.12);--white:#f2ede4;--gray:#7d9a7a;
+      --serif:'Playfair Display',serif;--sans:'DM Sans',sans-serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--white);font-family:var(--sans);font-weight:300;line-height:1.7;overflow-x:hidden}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.1rem 3rem;background:rgba(12,24,16,0.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(200,146,42,0.07)}
+    .nav-logo{font-family:var(--serif);font-size:1.4rem;color:var(--amber);text-decoration:none;letter-spacing:.04em;display:flex;align-items:center;gap:.5rem}
+    .nav-logo-text{display:block}
+    .site-logo{height:38px;width:auto;opacity:.9;transition:opacity .3s}
+    .site-logo:hover{opacity:1}
+    .btn-nav-wa{display:inline-flex;align-items:center;gap:.5rem;background:#25d366;color:#fff;padding:.55rem 1.2rem;font-family:var(--sans);font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;border-radius:3px;transition:background .3s}
+    .btn-nav-wa:hover{background:#1ebe5d}
+    .btn-nav-wa svg{width:16px;height:16px;fill:#fff;flex-shrink:0}
+
+    /* SECTIONS */
+    section{padding:7rem 2rem}
+    .container{max-width:1080px;margin:0 auto}
+    .section-label{font-size:.63rem;letter-spacing:.42em;text-transform:uppercase;color:var(--amber);margin-bottom:.7rem;display:block}
+    .section-title{font-family:var(--serif);font-size:clamp(1.9rem,4.5vw,2.9rem);font-weight:400;color:var(--white);margin-bottom:.9rem}
+    .section-divider{width:38px;height:1px;background:var(--amber);margin-bottom:2.8rem}
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.visible{opacity:1;transform:none}
+
+    /* HERO */
+    #hero{padding:8rem 2rem 5rem;background:var(--bg2)}
+    .hero-text{text-align:center;max-width:680px;margin:0 auto 4rem}
+    .hero-label{font-size:.68rem;letter-spacing:.42em;text-transform:uppercase;color:var(--amber);margin-bottom:1.2rem;display:block}
+    h1{font-family:var(--serif);font-size:clamp(3rem,7vw,5.5rem);font-weight:400;line-height:.95;color:var(--white);margin-bottom:1.2rem;letter-spacing:-.02em}
+    .hero-desc{font-size:1rem;color:var(--gray);line-height:1.85;max-width:560px;margin:0 auto}
+
+    /* Preview badge */
+    .preview-badge{display:inline-block;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;font-weight:500;padding:.3rem .9rem;border-radius:2px;margin-bottom:.9rem;color:var(--bg)}
+    .preview-badge.variant-a{background:var(--amber)}
+    .preview-badge.variant-b{background:rgba(200,146,42,0.7)}
+    .preview-badge.variant-c{background:rgba(200,146,42,0.5);color:var(--white)}
+
+    /* Hero variants */
+    .hero-variant{padding:3rem 0;border-bottom:1px solid rgba(200,146,42,.1)}
+    .hero-variant:last-child{border-bottom:none}
+    .hero-variants{max-width:800px;margin:0 auto}
+    .video-wrapper{position:relative;padding-bottom:56.25%;overflow:hidden;border-radius:3px;background:var(--bg);margin-bottom:1.5rem}
+    .video-wrapper iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+    .video-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border:1px dashed rgba(200,146,42,.35);border-radius:3px;background:rgba(200,146,42,.03);color:var(--gray);font-size:.88rem;letter-spacing:.04em}
+    .hero-variant-ctas{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem}
+    .btn-primary{display:inline-block;background:var(--amber);color:var(--bg);padding:.9rem 2.2rem;font-family:var(--sans);font-size:.78rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:background .3s;border:none;cursor:pointer}
+    .btn-primary:hover{background:#b07d20}
+    .btn-outline{display:inline-block;border:1px solid rgba(200,146,42,.4);color:var(--amber);padding:.9rem 2.2rem;font-family:var(--sans);font-size:.78rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all .3s}
+    .btn-outline:hover{border-color:var(--amber);background:var(--amber-d)}
+
+    /* VIDEO SECTION */
+    #video{background:var(--bg)}
+    .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin-top:1.5rem}
+    .video-card{background:rgba(200,146,42,.03);border:1px solid rgba(200,146,42,.08);border-radius:3px;overflow:hidden;transition:border-color .3s}
+    .video-card:hover{border-color:rgba(200,146,42,.25)}
+    .video-thumb{position:relative;padding-bottom:56.25%;overflow:hidden}
+    .video-thumb iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+    .video-info{padding:1rem 1.2rem}
+    .video-info h3{font-family:var(--serif);font-weight:400;font-size:1.05rem;color:var(--white);margin-bottom:.3rem}
+    .video-info p{font-size:.82rem;color:var(--gray);line-height:1.6}
+
+    /* VENUES PLAYED */
+    #locali-suonati{background:var(--bg2)}
+    .venues-played-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem;margin-top:2.5rem}
+    .venue-card{min-height:160px;background:rgba(200,146,42,.04);border:1px solid rgba(200,146,42,.12);border-radius:3px;padding:2rem 1.8rem;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;transition:border-color .3s}
+    .venue-card:hover{border-color:rgba(200,146,42,.3)}
+    .venue-card-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.18}
+    .venue-card-content{position:relative;z-index:1}
+    .venue-card-name{font-family:var(--serif);font-size:1.35rem;font-weight:400;color:var(--amber);margin-bottom:.2rem}
+    .venue-card-city{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gray);margin-bottom:.6rem}
+    .venue-card-quote{font-size:.88rem;color:var(--gray);font-style:italic;line-height:1.6}
+
+    /* PER I LOCALI */
+    #locali{background:var(--bg)}
+    .venue-types-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem;margin-top:2.5rem;margin-bottom:3.5rem}
+    .venue-type-card{padding:1.8rem 2rem;border:1px solid rgba(200,146,42,.1);background:rgba(200,146,42,.03);border-radius:3px;transition:border-color .3s,background .3s}
+    .venue-type-card:hover{border-color:rgba(200,146,42,.25);background:rgba(200,146,42,.06)}
+    .venue-type-card h3{font-family:var(--serif);font-size:1.1rem;font-weight:400;color:var(--white);margin-bottom:.5rem}
+    .venue-type-card p{font-size:.86rem;color:var(--gray);line-height:1.7}
+    .scheda-title{font-family:var(--serif);font-weight:400;color:var(--white);margin-bottom:1.2rem;font-size:1.1rem}
+    .setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem 2rem;padding:1.8rem 2rem;border-left:3px solid var(--amber);background:rgba(200,146,42,.05)}
+    .setup-item{display:flex;flex-direction:column;gap:.15rem;padding:.7rem 0;border-bottom:1px solid rgba(200,146,42,.1)}
+    .setup-label{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--amber)}
+    .setup-val{font-size:.92rem;color:var(--gray)}
+
+    /* IL DUO */
+    #duo{background:var(--bg2)}
+    .duo-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-top:2.5rem}
+    .duo-member{padding:2rem 1.8rem;border:1px solid rgba(200,146,42,.08);background:rgba(200,146,42,.02);border-radius:3px}
+    .duo-member-avatar{width:80px;height:80px;border-radius:50%;background:var(--green);border:2px solid rgba(200,146,42,.25);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:1.2rem}
+    .duo-member-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+    .duo-member-name{font-family:var(--serif);font-size:1.3rem;font-weight:400;color:var(--white);margin-bottom:.2rem}
+    .duo-member-role{font-size:.65rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin-bottom:.8rem;display:block}
+    .duo-member-bio{font-size:.9rem;color:var(--gray);line-height:1.8}
+    .duo-432-note{margin-top:2.5rem;font-size:.88rem;color:var(--gray);font-style:italic;text-align:center;max-width:560px;margin-left:auto;margin-right:auto;padding-top:1.5rem;border-top:1px solid rgba(200,146,42,.1)}
+
+    /* CONTATTI */
+    #contatti{background:var(--bg)}
+    .contact-center{max-width:540px;margin:0 auto;text-align:center}
+    .contact-intro{font-size:1rem;color:var(--gray);line-height:1.85;margin-bottom:2.5rem}
+    .btn-wa{display:flex;align-items:center;justify-content:center;gap:.9rem;background:#25d366;color:#fff;padding:1.1rem 2.4rem;font-family:var(--sans);font-size:.85rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;border-radius:3px;transition:background .3s,transform .2s;width:100%}
+    .btn-wa:hover{background:#1ebe5d;transform:translateY(-2px)}
+    .btn-wa svg{width:22px;height:22px;fill:#fff;flex-shrink:0}
+
+    /* FAQ accordion */
+    .faq-accordion{margin-top:2.5rem;text-align:left}
+    .faq-accordion-item{border-bottom:1px solid rgba(200,146,42,.12)}
+    .faq-accordion-q{font-family:var(--serif);font-size:1rem;color:var(--white);padding:1.1rem 0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;user-select:none}
+    .faq-accordion-q:hover{color:var(--amber)}
+    .faq-accordion-icon{color:var(--amber);font-size:1.1rem;flex-shrink:0;transition:transform .2s}
+    .faq-accordion-item.open .faq-accordion-icon{transform:rotate(45deg)}
+    .faq-accordion-a{font-size:.9rem;color:var(--gray);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .2s}
+    .faq-accordion-item.open .faq-accordion-a{max-height:200px;padding-bottom:1.1rem}
+
+    /* FOOTER */
+    footer{padding:2.2rem 2rem;border-top:1px solid rgba(200,146,42,.07);text-align:center;font-size:.78rem;color:var(--gray)}
+    footer span{color:var(--amber)}
+    .footer-logo{height:48px;width:auto;opacity:.8;margin-bottom:.8rem}
+
+    /* WA FLOAT */
+    .wa-float{position:fixed;bottom:2rem;right:2rem;width:54px;height:54px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 18px rgba(37,211,102,.3);transition:transform .3s,box-shadow .3s;text-decoration:none}
+    .wa-float:hover{transform:scale(1.1);box-shadow:0 6px 26px rgba(37,211,102,.45)}
+    .wa-float svg{width:26px;height:26px;fill:#fff}
+
+    @media(max-width:900px){
+      nav{padding:1rem 1.5rem}
+      .venues-played-grid,.duo-grid,.venue-types-grid{grid-template-columns:1fr}
+      .setup-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){section{padding:5rem 1.2rem}h1{font-size:3.2rem}}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero">
+    <img id="nav-logo-img" class="site-logo" src="" alt="2 Deep" style="display:none">
+    <span class="nav-logo-text" id="nav-logo-text">2 Deep</span>
+  </a>
+  <a class="btn-nav-wa" href="https://wa.me/393488414630?text=Ciao%202Deep!%20Vorrei%20info%20per%20una%20serata%20nel%20mio%20locale." target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Scrivici
+  </a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-text reveal">
+    <span class="hero-label">SKA · REGGAE · ACUSTICO · LIVE</span>
+    <h1>2 Deep</h1>
+    <p class="hero-desc">Duo acustico ska-reggae per locali, enoteche e feste. Brani che conosci, in levare: caldi, leggeri, al volume giusto per stare bene in un locale.</p>
+  </div>
+
+  <div class="hero-variants">
+    <!-- Variante A -->
+    <div class="hero-variant reveal">
+      <span class="preview-badge variant-a">Variante A — Montagne</span>
+      <div class="video-wrapper" id="video-wrap-a">
+        <div class="video-placeholder" id="video-ph-a">Video da caricare dall'admin</div>
+      </div>
+      <div class="hero-variant-ctas">
+        <a href="#video" class="btn-primary">Guardaci suonare</a>
+        <a href="https://wa.me/393488414630?text=Ciao%202Deep!%20Vorrei%20info%20per%20una%20serata%20nel%20mio%20locale." class="btn-outline" target="_blank" rel="noopener">Scrivici su WhatsApp</a>
+      </div>
+    </div>
+
+    <!-- Variante B -->
+    <div class="hero-variant reveal">
+      <span class="preview-badge variant-b">Variante B — Prato</span>
+      <div class="video-wrapper" id="video-wrap-b">
+        <div class="video-placeholder" id="video-ph-b">Video da caricare dall'admin</div>
+      </div>
+      <div class="hero-variant-ctas">
+        <a href="#video" class="btn-primary">Guardaci suonare</a>
+        <a href="https://wa.me/393488414630?text=Ciao%202Deep!%20Vorrei%20info%20per%20una%20serata%20nel%20mio%20locale." class="btn-outline" target="_blank" rel="noopener">Scrivici su WhatsApp</a>
+      </div>
+    </div>
+
+    <!-- Variante C -->
+    <div class="hero-variant reveal">
+      <span class="preview-badge variant-c">Variante C — Locale</span>
+      <div class="video-wrapper" id="video-wrap-c">
+        <div class="video-placeholder" id="video-ph-c">Video da caricare dall'admin</div>
+      </div>
+      <div class="hero-variant-ctas">
+        <a href="#video" class="btn-primary">Guardaci suonare</a>
+        <a href="https://wa.me/393488414630?text=Ciao%202Deep!%20Vorrei%20info%20per%20una%20serata%20nel%20mio%20locale." class="btn-outline" target="_blank" rel="noopener">Scrivici su WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO LIVE -->
+<section id="video" style="display:none">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">DAL VIVO</span>
+      <h2 class="section-title">Qualche serata vera</h2>
+      <div class="section-divider"></div>
+      <p style="color:var(--gray);max-width:600px;margin-bottom:2.5rem;font-size:1rem;line-height:1.8;">Riprese così com'erano. Servono a far sentire il suono e il clima.</p>
+    </div>
+    <div class="video-grid reveal" id="videos-grid"></div>
+  </div>
+</section>
+
+<!-- DOVE ABBIAMO SUONATO -->
+<section id="locali-suonati">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">PROVA SOCIALE</span>
+      <h2 class="section-title">Locali dove siamo già stati di casa</h2>
+      <div class="section-divider"></div>
+    </div>
+    <!-- Compila i 4 locali dall'admin — tab "Locali" -->
+    <div class="venues-played-grid reveal" id="venues-played-grid">
+      <!-- Loaded from td.site_venues_played -->
+    </div>
+  </div>
+</section>
+
+<!-- PER I LOCALI + SCHEDA TECNICA -->
+<section id="locali">
+  <div class="container">
+    <div class="reveal">
+      <h2 class="section-title">Pensato per i locali</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="venue-types-grid">
+      <div class="venue-type-card reveal">
+        <h3>Pub &amp; Birrerie</h3>
+        <p>Ritmo, leggerezza e un clima informale. Lo ska-reggae acustico sta bene dove le persone entrano per bere qualcosa e finiscono per restare più del previsto.</p>
+      </div>
+      <div class="venue-type-card reveal">
+        <h3>Enoteche &amp; Wine Bar</h3>
+        <p>Un suono caldo e curato, calibrato sull'ambiente. La musica accompagna le conversazioni e dà tono alla serata.</p>
+      </div>
+      <div class="venue-type-card reveal">
+        <h3>Sagre &amp; Feste</h3>
+        <p>Brani riconoscibili, energia dal vivo e un repertorio che parla a pubblici diversi.</p>
+      </div>
+      <div class="venue-type-card reveal">
+        <h3>Locali &amp; Ristoranti</h3>
+        <p>Una presenza musicale che dà carattere alla serata e accompagna il servizio.</p>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <p class="scheda-title">Cosa serve per farci suonare</p>
+      <div class="setup-grid">
+        <div class="setup-item"><span class="setup-label">Spazio</span><span class="setup-val">circa 3×3 metri</span></div>
+        <div class="setup-item"><span class="setup-label">Corrente</span><span class="setup-val">una presa normale</span></div>
+        <div class="setup-item"><span class="setup-label">Volume</span><span class="setup-val">regolabile, adatto a locali dove si conversa</span></div>
+        <div class="setup-item"><span class="setup-label">Set</span><span class="setup-val">45–60 min, da concordare</span></div>
+        <div class="setup-item"><span class="setup-label">Montaggio</span><span class="setup-val">rapido, autonomo</span></div>
+        <div class="setup-item"><span class="setup-label">Adatti a</span><span class="setup-val">pub, enoteche, birrerie, feste private, piccoli eventi</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IL DUO -->
+<section id="duo">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">IL DUO</span>
+      <h2 class="section-title">Katia e Lorenzo</h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="duo-grid">
+      <div class="duo-member reveal">
+        <div class="duo-member-avatar" id="avatar-katia">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#c8922a" stroke-width="1" width="36" height="36"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="duo-member-name" id="member-katia-name">Katia</div>
+        <span class="duo-member-role" id="member-katia-role">Voce · Percussioni</span>
+        <p class="duo-member-bio" id="member-katia-bio">Voce e percussioni. Arriva dal canto corale, dal rock e dallo ska: tre mondi che nel duo diventano presenza scenica, ritmo e naturalezza. È quella che tiene il contatto più diretto con la serata.</p>
+      </div>
+      <div class="duo-member reveal">
+        <div class="duo-member-avatar" id="avatar-lorenzo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#c8922a" stroke-width="1" width="36" height="36"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="duo-member-name" id="member-lorenzo-name">Lorenzo</div>
+        <span class="duo-member-role" id="member-lorenzo-role">Chitarra · Chitarra Arpa · Voce</span>
+        <p class="duo-member-bio" id="member-lorenzo-bio">Chitarra, chitarra arpa e voce. Viene dallo studio della chitarra jazz e da molti anni di musica dal vivo. Nel duo costruisce il tappeto armonico e ritmico: il motore caldo su cui si appoggiano voce, levare e groove.</p>
+      </div>
+    </div>
+    <p class="duo-432-note reveal">Suoniamo accordati a 432 Hz: una scelta di suono, più calda e morbida. Conta l'effetto, non la teoria.</p>
+  </div>
+</section>
+
+<!-- CONTATTI -->
+<section id="contatti">
+  <div class="container">
+    <div class="contact-center reveal">
+      <h2 class="section-title">Raccontaci la tua serata</h2>
+      <div class="section-divider" style="margin-left:auto;margin-right:auto"></div>
+      <p class="contact-intro">Scrivici su WhatsApp indicando data, luogo, tipo di evento e orario indicativo.</p>
+      <a class="btn-wa" href="https://wa.me/393488414630?text=Ciao%202Deep!%20Vorrei%20info%20per%20una%20serata%20nel%20mio%20locale." target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Scrivici su WhatsApp
+      </a>
+
+      <div class="faq-accordion" id="faq-accordion">
+        <div class="faq-accordion-item">
+          <div class="faq-accordion-q">Quanto spazio serve?<span class="faq-accordion-icon">+</span></div>
+          <div class="faq-accordion-a">Circa 3×3 metri, con una presa di corrente.</div>
+        </div>
+        <div class="faq-accordion-item">
+          <div class="faq-accordion-q">Il volume è adatto a una cena?<span class="faq-accordion-icon">+</span></div>
+          <div class="faq-accordion-a">Sì, il progetto nasce per creare atmosfera lasciando spazio alle conversazioni. Il livello si regola in base al locale.</div>
+        </div>
+        <div class="faq-accordion-item">
+          <div class="faq-accordion-q">Fate anche feste private?<span class="faq-accordion-icon">+</span></div>
+          <div class="faq-accordion-a">Sì, se il contesto è adatto al repertorio. Scriveteci.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <img id="footer-logo-img" class="footer-logo" src="" alt="2 Deep" style="display:none">
+  <p>© 2025 <span>2 Deep</span> — Ska Reggae Acustico · Tutti i diritti riservati</p>
+</footer>
+
+<a class="wa-float" href="https://wa.me/393488414630?text=Ciao%202Deep!%20Vorrei%20info%20per%20una%20serata%20nel%20mio%20locale." target="_blank" rel="noopener noreferrer" aria-label="Contattaci su WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+  // Reveal on scroll
+  const obs = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+  }), { threshold: .1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-accordion-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.closest('.faq-accordion-item');
+      item.classList.toggle('open');
+    });
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="../config.js" defer></script>
+<script>
+  // Preview content loader — runs after supabase + config are loaded
+  window.addEventListener('load', async function () {
+    if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY || !window.supabase) return;
+    const { createClient } = window.supabase;
+    const db = createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY, { db: { schema: 'td' } });
+    const BUCKET_URL = `${window.SUPABASE_URL}/storage/v1/object/public/td-site`;
+
+    const [
+      { data: content },
+      { data: videos },
+      { data: venues },
+      { data: images }
+    ] = await Promise.all([
+      db.from('site_content').select('*').in('section', ['preview', 'members']),
+      db.from('site_videos').select('*').eq('is_visible', true).order('display_order', { ascending: true }),
+      db.from('site_venues_played').select('*').eq('is_active', true).order('display_order', { ascending: true }),
+      db.from('site_images').select('*').eq('is_active', true).order('display_order')
+    ]);
+
+    // ── Content: hero video keys + member bios ──
+    const contentMap = {};
+    (content || []).forEach(c => { contentMap[`${c.section}.${c.content_key}`] = c.content_value; });
+
+    // Hero video iframes
+    [['a', 'video-wrap-a', 'video-ph-a'], ['b', 'video-wrap-b', 'video-ph-b'], ['c', 'video-wrap-c', 'video-ph-c']].forEach(([v, wrapId, phId]) => {
+      const val = contentMap[`preview.hero_video_${v}`] || '';
+      const ytId = val.match(/(?:youtu\.be\/|v=|embed\/)([^#&?]{11})/)?.[1] || (val.length === 11 ? val : null);
+      const wrap = document.getElementById(wrapId);
+      const ph = document.getElementById(phId);
+      if (ytId && wrap) {
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube.com/embed/${ytId}`;
+        iframe.allowFullscreen = true;
+        iframe.loading = 'lazy';
+        iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;';
+        if (ph) ph.remove();
+        wrap.appendChild(iframe);
+      }
+    });
+
+    // Member bios from DB
+    const memberFields = {
+      'katia_name':   'member-katia-name',
+      'katia_role':   'member-katia-role',
+      'katia_bio':    'member-katia-bio',
+      'lorenzo_name': 'member-lorenzo-name',
+      'lorenzo_role': 'member-lorenzo-role',
+      'lorenzo_bio':  'member-lorenzo-bio'
+    };
+    Object.entries(memberFields).forEach(([key, elId]) => {
+      const val = contentMap[`members.${key}`];
+      const el = document.getElementById(elId);
+      if (val && el) el.textContent = val;
+    });
+
+    // ── Images: logo + member avatars ──
+    (images || []).forEach(img => {
+      const url = `${BUCKET_URL}/${img.filename}`;
+      if (img.role === 'logo') {
+        const navImg  = document.getElementById('nav-logo-img');
+        const navText = document.getElementById('nav-logo-text');
+        const footImg = document.getElementById('footer-logo-img');
+        if (navImg)  { navImg.src = url; navImg.style.display = 'block'; }
+        if (navText) navText.style.display = 'none';
+        if (footImg) { footImg.src = url; footImg.style.display = 'block'; }
+      }
+      if (img.role === 'katia') {
+        const av = document.getElementById('avatar-katia');
+        if (av) av.innerHTML = `<img src="${url}" alt="Katia" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      }
+      if (img.role === 'lorenzo') {
+        const av = document.getElementById('avatar-lorenzo');
+        if (av) av.innerHTML = `<img src="${url}" alt="Lorenzo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      }
+    });
+
+    // ── Videos grid ──
+    const vidGrid = document.getElementById('videos-grid');
+    if (vidGrid && videos && videos.length) {
+      vidGrid.innerHTML = '';
+      videos.forEach(v => {
+        const ytId = (v.youtube_url || '').match(/(?:youtu\.be\/|v=|embed\/)([^#&?]{11})/)?.[1];
+        if (!ytId) return;
+        const card = document.createElement('div');
+        card.className = 'video-card';
+        card.innerHTML = `
+          <div class="video-thumb"><iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen loading="lazy"></iframe></div>
+          <div class="video-info">${v.title ? `<h3>${v.title}</h3>` : ''}${v.description ? `<p>${v.description}</p>` : ''}</div>`;
+        vidGrid.appendChild(card);
+      });
+      document.getElementById('video').style.display = '';
+    }
+
+    // ── Venues played grid ──
+    const venuesGrid = document.getElementById('venues-played-grid');
+    if (venuesGrid && venues && venues.length) {
+      venuesGrid.innerHTML = '';
+      venues.forEach(venue => {
+        const card = document.createElement('div');
+        card.className = 'venue-card';
+        const hasBg = venue.photo_url && venue.photo_url.trim();
+        card.innerHTML = `
+          ${hasBg ? `<div class="venue-card-bg" style="background-image:url('${venue.photo_url}')"></div>` : ''}
+          <div class="venue-card-content">
+            <div class="venue-card-name">${venue.name}</div>
+            <div class="venue-card-city">${venue.city}</div>
+            ${venue.quote ? `<div class="venue-card-quote">"${venue.quote}"</div>` : ''}
+          </div>`;
+        venuesGrid.appendChild(card);
+      });
+    } else if (venuesGrid) {
+      venuesGrid.innerHTML = '<p style="color:var(--gray);font-size:.9rem;grid-column:1/-1;">Nessun locale ancora. Compila dalla tab "Locali" nell\'admin.</p>';
+    }
+  });
+</script>
+</body>
+</html>
