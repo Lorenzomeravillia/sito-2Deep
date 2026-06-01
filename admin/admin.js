@@ -27,7 +27,6 @@ let eventsData    = [];
 let imagesData    = [];
 let videosData    = [];
 let repertoireData = [];
-let venuesPlayedData = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     try {
@@ -130,31 +129,28 @@ async function logout() {
 async function loadAdminData() {
     setLoading(true);
     try {
-        const [cnt, ev, img, vid, rep, vp] = await Promise.all([
+        const [cnt, ev, img, vid, rep] = await Promise.all([
             tdAdmin.from('site_content').select('*'),
             tdAdmin.from('site_events').select('*').order('event_date', { ascending: true }),
             tdAdmin.from('site_images').select('*').order('display_order'),
             tdAdmin.from('site_videos').select('*').order('display_order', { ascending: true }),
-            tdAdmin.from('site_repertoire').select('*').order('display_order', { ascending: true }),
-            tdAdmin.from('site_venues_played').select('*').order('display_order', { ascending: true })
+            tdAdmin.from('site_repertoire').select('*').order('display_order', { ascending: true })
         ]);
         if (cnt.error) throw cnt.error;
         if (ev.error)  throw ev.error;
         if (img.error) throw img.error;
         if (vid.error) throw vid.error;
         if (rep.error) throw rep.error;
-        contentData      = cnt.data || [];
-        eventsData       = ev.data  || [];
-        imagesData       = img.data || [];
-        videosData       = vid.data || [];
-        repertoireData   = rep.data || [];
-        venuesPlayedData = vp.data  || [];
+        contentData    = cnt.data || [];
+        eventsData     = ev.data  || [];
+        imagesData     = img.data || [];
+        videosData     = vid.data || [];
+        repertoireData = rep.data || [];
         populateForms();
         renderEvents();
         renderImages();
         renderVideos();
         renderRepertoire();
-        renderVenuesPlayed();
         setLoading(false);
     } catch (e) {
         setLoading(false, true);
@@ -608,57 +604,4 @@ function renderEvents() {
             </div>`;
         list.appendChild(li);
     });
-}
-
-// ── Venues Played ──
-function renderVenuesPlayed() {
-    const container = document.getElementById('venues-played-admin-list');
-    if (!container) return;
-    container.innerHTML = '';
-    if (!venuesPlayedData.length) {
-        container.innerHTML = '<p style="color:#999;padding:1rem 0;">Nessun locale.</p>';
-        return;
-    }
-    venuesPlayedData.forEach(venue => {
-        const wrap = document.createElement('div');
-        wrap.style.cssText = 'border:1px solid var(--border);border-radius:4px;padding:1rem;margin-bottom:1rem;background:#fafafa';
-        wrap.innerHTML = `
-            <h4 style="margin-bottom:.8rem;font-size:.9rem;color:#555">Locale #${venue.display_order}</h4>
-            <div class="form-group">
-                <label>Nome locale</label>
-                <input type="text" id="vp-name-${venue.id}" value="${(venue.name || '').replace(/"/g,'&quot;')}" placeholder="Nome del locale">
-            </div>
-            <div class="form-group">
-                <label>Città</label>
-                <input type="text" id="vp-city-${venue.id}" value="${(venue.city || '').replace(/"/g,'&quot;')}" placeholder="Città">
-            </div>
-            <div class="form-group">
-                <label>Citazione del gestore (opzionale)</label>
-                <input type="text" id="vp-quote-${venue.id}" value="${(venue.quote || '').replace(/"/g,'&quot;')}" placeholder="Es: Torneranno sicuro!">
-            </div>
-            <div style="display:flex;gap:.5rem;align-items:center">
-                <button onclick="saveVenuePlayed(${venue.id})" style="background:var(--primary);flex:1">Salva</button>
-                <label style="display:flex;align-items:center;gap:.4rem;font-size:.85rem;cursor:pointer;margin:0">
-                    <input type="checkbox" id="vp-active-${venue.id}" ${venue.is_active ? 'checked' : ''} style="width:auto;margin:0">
-                    Attivo
-                </label>
-            </div>`;
-        container.appendChild(wrap);
-    });
-}
-
-async function saveVenuePlayed(id) {
-    const name  = document.getElementById(`vp-name-${id}`)?.value.trim();
-    const city  = document.getElementById(`vp-city-${id}`)?.value.trim();
-    const quote = document.getElementById(`vp-quote-${id}`)?.value.trim() || null;
-    const active = document.getElementById(`vp-active-${id}`)?.checked ?? true;
-    if (!name || !city) { showToast('Nome e città sono obbligatori.', 'error'); return; }
-    try {
-        const { error } = await tdAdmin.from('site_venues_played').update({
-            name, city, quote, is_active: active
-        }).eq('id', id);
-        if (error) throw error;
-        showToast('Locale salvato ✓');
-        loadAdminData();
-    } catch (err) { showToast('Errore: ' + err.message, 'error'); }
 }
