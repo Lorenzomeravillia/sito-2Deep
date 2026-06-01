@@ -240,6 +240,14 @@
 
     }
     @media(max-width:480px){section{padding:5rem 1.2rem}h1{font-size:3.5rem}}
+    /* 432 Hz accordion */
+    .hz-toggle{display:inline-flex;align-items:center;gap:.8rem;background:none;border:1px solid rgba(200,146,42,.35);color:var(--amber);padding:.7rem 1.4rem;font-family:var(--sans);font-size:.82rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:border-color .3s}
+    .hz-toggle:hover{border-color:var(--amber)}
+    .hz-toggle .hz-arrow{display:inline-block;transition:transform .3s;font-style:normal}
+    .hz-toggle.open .hz-arrow{transform:rotate(180deg)}
+    .hz-body{overflow:hidden;max-height:0;transition:max-height .45s cubic-bezier(.4,0,.2,1)}
+    .hz-content{padding:1.8rem 0 .5rem;display:flex;flex-direction:column;gap:1.1rem;max-width:640px}
+    .hz-content p{font-size:.92rem;color:var(--gray);line-height:1.85}
   </style>
 </head>
 <body>
@@ -388,6 +396,20 @@
           <span class="sound-tag">Ska-Reggae</span><span class="sound-tag">Acustico</span>
           <span class="sound-tag">Cover</span><span class="sound-tag">Live</span>
           <span class="sound-tag">Ukulele</span><span class="sound-tag">Chitarra</span>
+        </div>
+      </div>
+    </div>
+    <!-- Accordion 432 Hz -->
+    <div class="hz-accordion reveal" style="margin-top:3.5rem;border-top:1px solid rgba(200,146,42,.12);padding-top:2.5rem">
+      <button class="hz-toggle" id="hz-toggle" aria-expanded="false">
+        <span>Ti incuriosisce il 432 Hz?</span>
+        <em class="hz-arrow">▾</em>
+      </button>
+      <div class="hz-body" id="hz-body">
+        <div class="hz-content">
+          <p data-content="hz.block1"></p>
+          <p data-content="hz.block2"></p>
+          <p data-content="hz.block3"></p>
         </div>
       </div>
     </div>
@@ -588,6 +610,19 @@
   document.querySelectorAll('.member-card').forEach(card=>{
     card.addEventListener('click',()=>card.classList.toggle('flipped'));
   });
+  (function(){
+    const btn = document.getElementById('hz-toggle');
+    const body = document.getElementById('hz-body');
+    if(!btn||!body) return;
+    btn.addEventListener('click',function(){
+      const open = btn.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open);
+      body.style.maxHeight = open ? body.scrollHeight + 'px' : '0';
+    });
+    new MutationObserver(function(){
+      if(btn.classList.contains('open')) body.style.maxHeight = body.scrollHeight + 'px';
+    }).observe(body,{childList:true,subtree:true});
+  })();
   (function(){
     const btn = document.getElementById('rep-toggle');
     const body = document.getElementById('rep-body');
