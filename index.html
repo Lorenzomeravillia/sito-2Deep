@@ -152,12 +152,15 @@
     .members-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-top:3rem}
     /* Flip card */
     .member-card{cursor:pointer;perspective:1000px;-webkit-perspective:1000px;min-height:380px;position:relative}
-    .member-card-inner{position:relative;width:100%;min-height:380px;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,0,.2,1)}
-    .member-card.flipped .member-card-inner{transform:rotateY(180deg)}
-    .member-card-front,.member-card-back{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1px solid rgba(200,146,42,.15);background:rgba(200,146,42,.02);border-radius:3px;padding:2.2rem 1.8rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:border-color .3s,box-shadow .3s}
-    .member-card:not(.flipped) .member-card-front{animation:card-glow 3s ease-in-out infinite}
+    /* glow sul wrapper esterno, fuori dal contesto preserve-3d — evita bug iOS Safari */
+    .member-card:not(.flipped){animation:card-glow 3s ease-in-out infinite}
     @keyframes card-glow{0%,100%{box-shadow:0 0 0 rgba(200,146,42,0)}50%{box-shadow:0 0 18px rgba(200,146,42,.18)}}
-    .member-card-back{transform:rotateY(180deg);justify-content:flex-start;text-align:left}
+    .member-card-inner{position:relative;width:100%;min-height:380px;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,0,.2,1);will-change:transform}
+    .member-card.flipped .member-card-inner{transform:rotateY(180deg);-webkit-transform:rotateY(180deg)}
+    .member-card-front,.member-card-back{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1px solid rgba(200,146,42,.15);background:rgba(200,146,42,.02);border-radius:3px;padding:2.2rem 1.8rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:border-color .3s}
+    /* translateZ(1px) forza layer GPU separati su WebKit — previene trasparenza tra le facce */
+    .member-card-front{transform:translateZ(1px);-webkit-transform:translateZ(1px)}
+    .member-card-back{transform:rotateY(180deg) translateZ(1px);-webkit-transform:rotateY(180deg) translateZ(1px);justify-content:flex-start;text-align:left}
     .member-avatar{width:150px;height:150px;border-radius:50%;background:var(--green);border:2px solid rgba(200,146,42,.25);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:1.4rem}
     .member-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
     .member-avatar svg{width:48px;height:48px;opacity:.2}
@@ -265,7 +268,7 @@
     .faq-body p{padding:.7rem 0 .4rem;font-size:.9rem;color:var(--gray);line-height:1.7}
     /* card keyboard focus */
     .member-card:focus{outline:none}
-    .member-card:focus-visible .member-card-front{box-shadow:0 0 0 2px var(--amber)}
+    .member-card:focus-visible{box-shadow:0 0 0 2px var(--amber)}
   </style>
 </head>
 <body>
