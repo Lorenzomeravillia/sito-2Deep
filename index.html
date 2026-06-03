@@ -9,7 +9,8 @@
   <meta name="description" content="2 Deep è un duo acustico ska-reggae disponibile per pub, enoteche, birrerie, sagre ed eventi privati nelle province di Belluno, Treviso nord e Pordenone. Musica dal vivo, setup minimo, atmosfera garantita.">
   <meta name="keywords" content="duo ska reggae acustico, musica dal vivo Belluno, musica live Treviso, band acustica Pordenone, duo musicale Veneto, duo musicale Friuli, musica pub birrerie, live music eventi privati, ska reggae acustico Belluno, 2 Deep duo">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://sito-blackandwhite-cin3.vercel.app/">
+  <link rel="canonical" href="https://sito-2-deep.vercel.app/">
+  <meta name="theme-color" content="#0c1810">
 
   <!-- Geo meta -->
   <meta name="geo.region" content="IT-VEN">
@@ -17,8 +18,10 @@
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sito-2-deep.vercel.app/">
   <meta property="og:title" content="2 Deep — Duo Ska-Reggae Acustico">
   <meta property="og:description" content="Duo acustico ska-reggae per locali, sagre ed eventi. Disponibili nelle province di Belluno, Treviso nord e Pordenone.">
+  <meta property="og:image" content="https://jvcvxzampxopvihahwbh.supabase.co/storage/v1/object/public/td-site/hero/img_3378.jpeg">
   <meta property="og:locale" content="it_IT">
 
   <!-- Structured data: MusicGroup locale -->
@@ -29,7 +32,7 @@
     "name": "2 Deep",
     "description": "Duo acustico ska-reggae per locali, pub, enoteche, sagre ed eventi privati.",
     "genre": ["Ska", "Reggae", "Acoustic"],
-    "url": "https://sito-blackandwhite-cin3.vercel.app/",
+    "url": "https://sito-2-deep.vercel.app/",
     "areaServed": [
       { "@type": "AdministrativeArea", "name": "Provincia di Belluno" },
       { "@type": "AdministrativeArea", "name": "Provincia di Treviso nord" },
@@ -131,7 +134,7 @@
     .venues-note strong{color:var(--white);font-weight:400}
     #sound{background:var(--bg2)}
     .sound-layout{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
-    .sound-circle{width:300px;height:300px;border-radius:50%;border:1px solid rgba(200,146,42,.15);display:flex;align-items:center;justify-content:center;margin:0 auto;position:relative;overflow:hidden}
+    .sound-circle{width:min(300px,80vw);height:min(300px,80vw);border-radius:50%;border:1px solid rgba(200,146,42,.15);display:flex;align-items:center;justify-content:center;margin:0 auto;position:relative;overflow:hidden}
     .sound-circle::before{content:'';position:absolute;inset:20px;border-radius:50%;border:1px solid rgba(200,146,42,.08)}
     .sound-circle::after{content:'';position:absolute;inset:45px;border-radius:50%;background:rgba(30,64,32,.4);border:1px solid rgba(200,146,42,.05)}
     #sound-circle-img{width:100%;height:100%;object-fit:contain;position:relative;z-index:1}
@@ -204,8 +207,8 @@
     .song-title{color:var(--white);font-size:.95rem}
     .song-artist{color:var(--gray);font-size:.78rem;flex-shrink:0}
     .rep-note{margin-top:2rem;font-size:.85rem;color:var(--gray);font-style:italic}
-    .rep-toggle{display:inline-flex;align-items:center;gap:.6rem;background:none;border:1px solid rgba(200,146,42,.35);color:var(--amber);padding:.6rem 1.3rem;font-family:var(--sans);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:border-color .3s,color .3s;margin-top:1.5rem}
-    .rep-toggle:hover{border-color:var(--amber)}
+    .rep-toggle{display:inline-flex;align-items:center;gap:.6rem;background:none;border:1px solid rgba(200,146,42,.45);color:var(--amber);padding:.6rem 1.3rem;font-family:var(--sans);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:border-color .3s,color .3s,box-shadow .3s;margin-top:1.5rem;animation:hz-glow 3s ease-in-out infinite}
+    .rep-toggle:hover,.rep-toggle.open{border-color:var(--amber);box-shadow:0 0 18px rgba(200,146,42,.3);animation:none}
     .rep-toggle .rep-arrow{display:inline-block;transition:transform .3s;font-style:normal}
     .rep-toggle.open .rep-arrow{transform:rotate(180deg)}
     .rep-body{overflow:hidden;max-height:0;transition:max-height .45s cubic-bezier(.4,0,.2,1)}
@@ -237,7 +240,8 @@
       .vibes-grid,.venues-grid,.members-grid{grid-template-columns:1fr}
       .setup-grid{grid-template-columns:1fr}
       .sound-layout{grid-template-columns:1fr;gap:3rem}
-      .vibe-card{border-right:none;border-bottom:1px solid rgba(200,146,42,.1)}
+      .vibe-card{border-right:none;border-top:none;border-bottom:1px solid rgba(200,146,42,.12)}
+      .vibe-card:first-child{border-top:1px solid rgba(200,146,42,.12)}
       .vibe-card:last-child{border-bottom:none}
 
     }
@@ -251,6 +255,17 @@
     .hz-body{overflow:hidden;max-height:0;transition:max-height .45s cubic-bezier(.4,0,.2,1)}
     .hz-content{padding:1.8rem 0 .5rem;display:flex;flex-direction:column;gap:1.1rem;max-width:640px}
     .hz-content p{font-size:.92rem;color:var(--gray);line-height:1.85}
+    /* FAQ accordion */
+    .faq-q{font-family:var(--serif);font-size:1rem;color:var(--white);margin-bottom:0;font-weight:400;background:none;border:none;width:100%;text-align:left;cursor:pointer;padding:.2rem 0;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+    .faq-q:hover{color:var(--amber)}
+    .faq-arrow{font-style:normal;font-size:.8rem;color:rgba(200,146,42,.6);transition:transform .3s;flex-shrink:0}
+    .faq-q[aria-expanded="true"] .faq-arrow{transform:rotate(180deg)}
+    .faq-q[aria-expanded="true"]{color:var(--amber)}
+    .faq-body{overflow:hidden;max-height:0;transition:max-height .38s cubic-bezier(.4,0,.2,1)}
+    .faq-body p{padding:.7rem 0 .4rem;font-size:.9rem;color:var(--gray);line-height:1.7}
+    /* card keyboard focus */
+    .member-card:focus{outline:none}
+    .member-card:focus-visible .member-card-front{box-shadow:0 0 0 2px var(--amber)}
   </style>
 </head>
 <body>
@@ -424,7 +439,7 @@
       <div class="section-divider"></div>
     </div>
     <div class="members-grid">
-      <div class="member-card reveal">
+      <div class="member-card reveal" tabindex="0">
         <div class="member-card-inner">
           <div class="member-card-front">
             <div class="member-avatar" data-img-role="katia">
@@ -449,7 +464,7 @@
           </div>
         </div>
       </div>
-      <div class="member-card reveal">
+      <div class="member-card reveal" tabindex="0">
         <div class="member-card-inner">
           <div class="member-card-front">
             <div class="member-avatar" data-img-role="lorenzo">
@@ -515,11 +530,26 @@
       <h2 class="section-title">Cosa chiedono i gestori</h2>
       <div class="section-divider"></div>
       <div class="faq-list">
-        <div class="faq-item"><p class="faq-q">Quanto spazio serve?</p><p class="faq-a">Circa 3×3 metri. Ci adattiamo a spazi anche più piccoli se il contesto lo permette.</p></div>
-        <div class="faq-item"><p class="faq-q">Portate voi l'impianto?</p><p class="faq-a">Sì, per situazioni piccole e medie siamo completamente autonomi. Una presa di corrente è sufficiente.</p></div>
-        <div class="faq-item"><p class="faq-q">Il volume è adatto a una cena o a un'enoteca?</p><p class="faq-a">Sì, il progetto nasce proprio per creare atmosfera lasciando spazio alle conversazioni. Il livello si regola in base al locale.</p></div>
-        <div class="faq-item"><p class="faq-q">Fate anche feste private?</p><p class="faq-a">Sì, se il contesto è adatto al nostro repertorio. Scriveteci e valutiamo insieme.</p></div>
-        <div class="faq-item"><p class="faq-q">Quanto dura un set?</p><p class="faq-a">Da concordare: di solito uno o due set da 45–60 minuti, con pausa. Siamo flessibili in base alla serata.</p></div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">Quanto spazio serve? <em class="faq-arrow">▾</em></button>
+          <div class="faq-body"><p class="faq-a">Circa 3×3 metri. Ci adattiamo a spazi anche più piccoli se il contesto lo permette.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">Portate voi l'impianto? <em class="faq-arrow">▾</em></button>
+          <div class="faq-body"><p class="faq-a">Sì, per situazioni piccole e medie siamo completamente autonomi. Una presa di corrente è sufficiente.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">Il volume è adatto a una cena o a un'enoteca? <em class="faq-arrow">▾</em></button>
+          <div class="faq-body"><p class="faq-a">Sì, il progetto nasce proprio per creare atmosfera lasciando spazio alle conversazioni. Il livello si regola in base al locale.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">Fate anche feste private? <em class="faq-arrow">▾</em></button>
+          <div class="faq-body"><p class="faq-a">Sì, se il contesto è adatto al nostro repertorio. Scriveteci e valutiamo insieme.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">Quanto dura un set? <em class="faq-arrow">▾</em></button>
+          <div class="faq-body"><p class="faq-a">Da concordare: di solito uno o due set da 45–60 minuti, con pausa. Siamo flessibili in base alla serata.</p></div>
+        </div>
       </div>
     </div>
   </div>
@@ -533,7 +563,7 @@
       <div class="section-divider"></div>
       <p class="contact-intro" data-content="contact.desc">Vuoi capire se siamo adatti alla tua serata? Scrivici su WhatsApp indicando data, luogo, tipo di evento e orario indicativo. Ti rispondiamo con disponibilità, proposta e informazioni tecniche.</p>
       <div class="contact-items">
-        <div class="contact-item"><label>Instagram</label><a href="https://www.instagram.com/" target="_blank" data-href="contact.instagram" data-content-text-same="true">@2deep_music</a></div>
+        <div class="contact-item"><label>Instagram</label><a href="https://www.instagram.com/2deep_music/" target="_blank" data-href="contact.instagram" data-content-text-same="true">@2deep_music</a></div>
       </div>
       <a class="btn-wa" href="https://wa.me/393488414630?text=Ciao%202Deep!%20Vorrei%20info%20per%20una%20serata%20nel%20mio%20locale." target="_blank" rel="noopener noreferrer" data-href="contact.whatsapp">
         <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -609,6 +639,15 @@
   function handleForm(e){e.preventDefault();const btn=e.target.querySelector('button');btn.textContent='Richiesta inviata ✓';btn.style.background='#1e4020';setTimeout(()=>{e.target.reset();btn.textContent='Invia richiesta';btn.style.background=''},3500)}
   document.querySelectorAll('.member-card').forEach(card=>{
     card.addEventListener('click',()=>card.classList.toggle('flipped'));
+    card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();card.classList.toggle('flipped');}});
+  });
+  document.querySelectorAll('.faq-q').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const expanded = this.getAttribute('aria-expanded')==='true';
+      const body = this.nextElementSibling;
+      this.setAttribute('aria-expanded', !expanded);
+      body.style.maxHeight = expanded ? '0' : body.scrollHeight+'px';
+    });
   });
   (function(){
     const btn = document.getElementById('hz-toggle');
