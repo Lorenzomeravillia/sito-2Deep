@@ -173,7 +173,10 @@
     .member-back-btn:hover{color:var(--amber)}
     .member-role-tag{font-size:.63rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin-bottom:.3rem;display:block}
     @media(max-width:600px){.members-grid{grid-template-columns:1fr}.member-card,.member-card-inner{min-height:340px}}
-    #events-section{background:var(--bg2);display:none}
+    #events-section{background:var(--bg2)}
+    .past-toggle{display:inline-flex;align-items:center;gap:.6rem;background:none;border:1px solid rgba(200,146,42,.3);color:var(--gray);padding:.5rem 1.1rem;font-family:var(--sans);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:border-color .3s,color .3s;margin-top:1.2rem}
+    .past-toggle:hover{border-color:var(--amber);color:var(--amber)}
+    .past-body{max-height:0;overflow:hidden;transition:max-height .45s ease}
     .event-item{display:flex;gap:2rem;align-items:center;padding:1.4rem 0;border-bottom:1px solid rgba(200,146,42,.07)}
     .event-item:first-child{border-top:1px solid rgba(200,146,42,.07)}
     .event-item.past{opacity:.5}
@@ -287,6 +290,7 @@
     <li><a href="#vibes" onclick="closeNav()">Il Sound</a></li>
     <li><a href="#venues" onclick="closeNav()">Per i Locali</a></li>
     <li><a href="#members" onclick="closeNav()">Il Duo</a></li>
+    <li><a href="#events-section" onclick="closeNav()">Date</a></li>
     <li><a href="#repertorio" onclick="closeNav()">Repertorio</a></li>
     <li><a href="#contatti" class="nav-cta" onclick="closeNav()">Contattaci</a></li>
   </ul>
@@ -303,6 +307,7 @@
     <li><a href="#vibes" onclick="closeNav()">Il Sound</a></li>
     <li><a href="#venues" onclick="closeNav()">Per i Locali</a></li>
     <li><a href="#members" onclick="closeNav()">Il Duo</a></li>
+    <li><a href="#events-section" onclick="closeNav()">Date</a></li>
     <li><a href="#repertorio" onclick="closeNav()">Repertorio</a></li>
     <li><a href="#contatti" onclick="closeNav()">Contattaci</a></li>
   </ul>
@@ -510,9 +515,11 @@
       <span class="events-sub-label">Prossime serate</span>
       <div id="events-future" style="display:flex;flex-direction:column;gap:0;"></div>
     </div>
-    <div class="reveal" id="events-past-wrap" style="display:none;margin-top:2rem">
-      <span class="events-sub-label">Dove abbiamo suonato</span>
-      <div id="events-past" style="display:flex;flex-direction:column;gap:0;"></div>
+    <div class="reveal" id="events-past-wrap" style="display:none;margin-top:.5rem">
+      <button class="past-toggle" id="past-toggle" aria-expanded="false">Dove abbiamo suonato <em id="past-arrow">▾</em></button>
+      <div class="past-body" id="past-body">
+        <div id="events-past" style="display:flex;flex-direction:column;gap:0;padding-top:.5rem"></div>
+      </div>
     </div>
   </div>
 </section>

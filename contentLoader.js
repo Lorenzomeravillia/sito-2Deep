@@ -138,8 +138,23 @@
     if (past.length && pastWrap && pastList) {
       past.forEach(ev => pastList.appendChild(buildEventItem(ev, true)));
       pastWrap.style.display = '';
+      const pastBtn  = document.getElementById('past-toggle');
+      const pastBody = document.getElementById('past-body');
+      const pastArrow = document.getElementById('past-arrow');
+      if (pastBtn && pastBody) {
+        pastBtn.addEventListener('click', function() {
+          const open = pastBtn.getAttribute('aria-expanded') === 'true';
+          if (open) {
+            pastBody.style.maxHeight = '0';
+            pastBtn.setAttribute('aria-expanded', 'false');
+            if (pastArrow) pastArrow.style.transform = '';
+          } else {
+            pastBody.style.maxHeight = pastBody.scrollHeight + 'px';
+            pastBtn.setAttribute('aria-expanded', 'true');
+            if (pastArrow) pastArrow.style.transform = 'rotate(180deg)';
+          }
+        });
+      }
     }
-
-    document.getElementById('events-section').style.display = '';
   }
 })();
