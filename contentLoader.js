@@ -105,24 +105,41 @@
   }
 
   // ── Events ──
-  const evList = document.getElementById('events-list');
-  if (evList && events && events.length) {
-    evList.innerHTML = '';
-    events.forEach(ev => {
+  if (events && events.length) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const future = events.filter(ev => new Date(ev.event_date) >= today);
+    const past   = events.filter(ev => new Date(ev.event_date) <  today).reverse();
+
+    function buildEventItem(ev, isPast) {
       const d = new Date(ev.event_date);
       const day   = d.toLocaleDateString('it-IT', { day: '2-digit' });
       const month = d.toLocaleDateString('it-IT', { month: 'short' }).toUpperCase();
-      const li = document.createElement('div');
-      li.className = 'event-item';
-      li.innerHTML = `
+      const el = document.createElement('div');
+      el.className = 'event-item' + (isPast ? ' past' : '');
+      el.innerHTML = `
         <div class="event-date"><span class="event-day">${day}</span><span class="event-month">${month}</span></div>
         <div class="event-info">
           <strong class="event-venue">${ev.venue}</strong>
           <span class="event-city">${ev.city}${ev.event_time ? ' · ' + ev.event_time.slice(0,5) : ''}</span>
           ${ev.description ? `<span class="event-desc">${ev.description}</span>` : ''}
         </div>`;
-      evList.appendChild(li);
-    });
+      return el;
+    }
+
+    const futureWrap = document.getElementById('events-future-wrap');
+    const futureList = document.getElementById('events-future');
+    if (future.length && futureWrap && futureList) {
+      future.forEach(ev => futureList.appendChild(buildEventItem(ev, false)));
+      futureWrap.style.display = '';
+    }
+
+    const pastWrap = document.getElementById('events-past-wrap');
+    const pastList = document.getElementById('events-past');
+    if (past.length && pastWrap && pastList) {
+      past.forEach(ev => pastList.appendChild(buildEventItem(ev, true)));
+      pastWrap.style.display = '';
+    }
+
     document.getElementById('events-section').style.display = '';
   }
 })();
