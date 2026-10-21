@@ -176,13 +176,16 @@
     #events-section{background:var(--bg2);display:none}
     .event-item{display:flex;gap:2rem;align-items:center;padding:1.4rem 0;border-bottom:1px solid rgba(200,146,42,.07)}
     .event-item:first-child{border-top:1px solid rgba(200,146,42,.07)}
+    .event-item.past{opacity:.5}
     .event-date{text-align:center;flex-shrink:0;width:50px}
     .event-day{font-family:var(--serif);font-size:1.8rem;color:var(--amber);display:block;line-height:1}
+    .event-item.past .event-day{color:var(--gray)}
     .event-month{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray)}
     .event-info{display:flex;flex-direction:column;gap:.2rem}
     .event-venue{color:var(--white);font-weight:400;font-size:1rem}
     .event-city{font-size:.82rem;color:var(--gray)}
     .event-desc{font-size:.8rem;color:rgba(200,146,42,.7);margin-top:.2rem}
+    .events-sub-label{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gray);margin:2rem 0 .5rem;display:block}
     #contatti{background:var(--bg)}
     .contact-center{max-width:540px;margin:0 auto;text-align:center}
     .contact-intro{font-size:1rem;color:var(--gray);line-height:1.85;margin-bottom:2.5rem}
@@ -500,10 +503,17 @@
   <div class="container">
     <div class="reveal">
       <span class="section-label">Date</span>
-      <h2 class="section-title">Prossime serate</h2>
+      <h2 class="section-title">Live</h2>
       <div class="section-divider"></div>
     </div>
-    <div class="reveal" id="events-list" style="display:flex;flex-direction:column;gap:0;"></div>
+    <div class="reveal" id="events-future-wrap" style="display:none">
+      <span class="events-sub-label">Prossime serate</span>
+      <div id="events-future" style="display:flex;flex-direction:column;gap:0;"></div>
+    </div>
+    <div class="reveal" id="events-past-wrap" style="display:none;margin-top:2rem">
+      <span class="events-sub-label">Dove abbiamo suonato</span>
+      <div id="events-past" style="display:flex;flex-direction:column;gap:0;"></div>
+    </div>
   </div>
 </section>
 
