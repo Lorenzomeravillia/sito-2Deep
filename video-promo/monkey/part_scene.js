@@ -323,7 +323,7 @@ function infoCard(t){
   ftext('NOVEMBRE',cx,cy,w-16,3,'#ffe03a');cy+=27;
   ftext('DALLE 18:00',cx,cy,w-16,3,'#ffffff');cy+=29;
   ftext("MONKEY'S BAR",cx,cy,w-16,3,'#ff7ad8');cy+=27;
-  ctext('CUGNAN · BORGO VALBELLUNA',cx,cy,[1,2],'#5fe0ff');cy+=18;
+  ctext('CUGNAN · PONTE NELLE ALPI',cx,cy,[1,2],'#5fe0ff');cy+=18;
   ctext('2DEEP · MUSICA DAL VIVO',cx,cy,[1,2],'#ffffff');cy+=22;
   const bl=Math.floor(t*2)%2===0;
   ftext('MANDALO A CHI',cx,cy,w-16,2,bl?'#7dff8a':'#ffffff');cy+=19;ftext('STA SUL DIVANO',cx,cy,w-16,2,bl?'#7dff8a':'#ffffff');cy+=21;
