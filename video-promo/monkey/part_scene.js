@@ -10,9 +10,9 @@ function setFormat(f){FMT=f==='landscape'?'landscape':'portrait';const l=isL();L
 const wideView=()=>W===270||W===480;
 /* layout. Reel safe zone (portrait): text between y 42 and ~250 (wide: 53-312), clear of the right-hand buttons */
 function LAY(wide=wideView()){
-  if(isL())return wide?{feet:227,lane:211,vx0:48,vy0:45,barX:206,card:[104,20,272,230],clearY:16,trioEnd:350}
+  if(isL())return wide?{feet:227,lane:211,vx0:48,vy0:45,barX:206,card:[90,22,272,224],clearY:16,trioEnd:386}
     :{feet:182,lane:166,hud:6,cap:38,mid:98,heroX:96,hitX:292,bossX:250};
-  return wide?{feet:330,lane:314,vx0:27,vy0:68,barX:62,card:[14,90,242,218],clearY:64,trioEnd:178}
+  return wide?{feet:340,lane:324,vx0:27,vy0:78,barX:62,card:[14,52,242,224],clearY:64,trioEnd:178}
     :{feet:262,lane:246,hud:42,cap:82,mid:154,heroX:40,hitX:172,bossX:118};}
 
 /* ---------------- the night ---------------- */
@@ -145,10 +145,10 @@ function hud(t){
 /* enemy cards: big name, what it stands for in two lines, framed and steady for 2.4 s */
 function captions(t){
   const L=LAY();
-  CAPS.forEach(c=>{const a=t-c.t;if(a<0||a>c.d)return;const sl=slam(t,c.t),hgt=isL()?46:64,out=a>c.d-0.15?Math.round((a-(c.d-0.15))/0.15*W):0;
+  CAPS.forEach(c=>{const a=t-c.t;if(a<0||a>c.d)return;const sl=slam(t,c.t),hgt=isL()?46:68,out=a>c.d-0.15?Math.round((a-(c.d-0.15))/0.15*W):0;
     panel(6-out,L.cap-4,W-12,hgt,c.col);
     ftext(c.name,W/2-out,L.cap+2-sl,W-28,3,c.col);
-    if(isL())ctext(c.sub.join(' '),W/2-out,L.cap+26,2,'#ffffff');else{ctext(c.sub[0],W/2-out,L.cap+26,2,'#ffffff');ctext(c.sub[1],W/2-out,L.cap+40,2,'#ffffff');}});
+    if(isL())ctext(c.sub.join(' '),W/2-out,L.cap+26,2,'#ffffff');else{ctext(c.sub[0],W/2-out,L.cap+26,2,'#ffffff');ctext(c.sub[1],W/2-out,L.cap+44,2,'#ffffff');}});
 }
 
 /* ---------------- menu ---------------- */
@@ -319,14 +319,14 @@ function infoCard(t){
   rr(x+3,yy+3,w,hh,'#000000');rr(x,yy,w,hh,'#0c0a2af4');if(a<1)return;
   rainbowBorder(x,y,w,h,t);
   const cx=x+w/2;let cy=y+9;
-  ftext('SABATO 14',cx,cy,w-16,3,'#ffe03a',{shadow:'#ff4a5a',sd:2});cy+=25;
-  ftext('NOVEMBRE',cx,cy,w-16,3,'#ffe03a');cy+=25;
+  ftext('SABATO 14',cx,cy,w-16,3,'#ffe03a',{shadow:'#ff4a5a',sd:2});cy+=28;
+  ftext('NOVEMBRE',cx,cy,w-16,3,'#ffe03a');cy+=27;
   ftext('DALLE 18:00',cx,cy,w-16,3,'#ffffff');cy+=29;
-  ftext("MONKEY'S BAR",cx,cy,w-16,3,'#ff7ad8');cy+=26;
+  ftext("MONKEY'S BAR",cx,cy,w-16,3,'#ff7ad8');cy+=27;
   ctext('CUGNAN · BORGO VALBELLUNA',cx,cy,[1,2],'#5fe0ff');cy+=18;
   ctext('2DEEP · MUSICA DAL VIVO',cx,cy,[1,2],'#ffffff');cy+=22;
   const bl=Math.floor(t*2)%2===0;
-  ftext('MANDALO A CHI',cx,cy,w-16,2,bl?'#7dff8a':'#ffffff');cy+=17;ftext('STA SUL DIVANO',cx,cy,w-16,2,bl?'#7dff8a':'#ffffff');cy+=21;
+  ftext('MANDALO A CHI',cx,cy,w-16,2,bl?'#7dff8a':'#ffffff');cy+=19;ftext('STA SUL DIVANO',cx,cy,w-16,2,bl?'#7dff8a':'#ffffff');cy+=21;
   ctext('@2DEEPLIVEMUSIC',cx,cy,[1,2],'#5fe0ff');
 }
 
