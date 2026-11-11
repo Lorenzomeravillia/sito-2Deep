@@ -10,9 +10,9 @@ function setFormat(f){FMT=f==='landscape'?'landscape':'portrait';const l=isL();L
 const wideView=()=>W===270||W===480;
 /* layout. Reel safe zone (portrait): text between y 42 and ~250 (wide: 53-312), clear of the right-hand buttons */
 function LAY(wide=wideView()){
-  if(isL())return wide?{feet:227,lane:211,vx0:48,vy0:45,barX:206,card:[90,22,272,224],clearY:16,trioEnd:386}
+  if(isL())return wide?{feet:227,lane:211,vx0:48,vy0:45,barX:206,card:[90,12,272,248],clearY:16,trioEnd:386}
     :{feet:182,lane:166,hud:6,cap:38,mid:98,heroX:96,hitX:292,bossX:250};
-  return wide?{feet:340,lane:324,vx0:27,vy0:78,barX:62,card:[14,52,242,224],clearY:64,trioEnd:178}
+  return wide?{feet:352,lane:336,vx0:27,vy0:90,barX:62,card:[14,50,242,246],clearY:64,trioEnd:178}
     :{feet:262,lane:246,hud:42,cap:82,mid:154,heroX:40,hitX:172,bossX:118};}
 
 /* ---------------- the night ---------------- */
@@ -319,15 +319,16 @@ function infoCard(t){
   rr(x+3,yy+3,w,hh,'#000000');rr(x,yy,w,hh,'#0c0a2af4');if(a<1)return;
   rainbowBorder(x,y,w,h,t);
   const cx=x+w/2;let cy=y+9;
-  ftext('SABATO 14',cx,cy,w-16,3,'#ffe03a',{shadow:'#ff4a5a',sd:2});cy+=28;
-  ftext('NOVEMBRE',cx,cy,w-16,3,'#ffe03a');cy+=27;
+  ftext('SABATO 14',cx,cy,w-16,3,'#ffe03a',{shadow:'#ff4a5a',sd:2});cy+=26;
+  ftext('NOVEMBRE',cx,cy,w-16,3,'#ffe03a');cy+=25;
   ftext('DALLE 18:00',cx,cy,w-16,3,'#ffffff');cy+=29;
-  ftext("MONKEY'S BAR",cx,cy,w-16,3,'#ff7ad8');cy+=27;
-  ctext('CUGNAN · PONTE NELLE ALPI',cx,cy,[1,2],'#5fe0ff');cy+=18;
-  ctext('2DEEP · MUSICA DAL VIVO',cx,cy,[1,2],'#ffffff');cy+=22;
+  ftext("MONKEY'S BAR",cx,cy,w-16,3,'#ff7ad8');cy+=26;
+  ftext('CUGNAN',cx,cy,w-16,2,'#5fe0ff');cy+=17;
+  ftext('PONTE NELLE ALPI',cx,cy,w-16,2,'#5fe0ff');cy+=22;
+  ftext('2DEEP LIVE',cx,cy,w-16,3,'#ffffff',{shadow:'#ff7ad8',sd:2});cy+=29;
   const bl=Math.floor(t*2)%2===0;
   ftext('MANDALO A CHI',cx,cy,w-16,2,bl?'#7dff8a':'#ffffff');cy+=19;ftext('STA SUL DIVANO',cx,cy,w-16,2,bl?'#7dff8a':'#ffffff');cy+=21;
-  ctext('@2DEEPLIVEMUSIC',cx,cy,[1,2],'#5fe0ff');
+  ftext('@2DEEPLIVEMUSIC',cx,cy,w-16,2,'#5fe0ff');
 }
 
 /* ---------------- master render: logical scene, then copy to the output ---------------- */
