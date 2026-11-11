@@ -137,7 +137,7 @@ r$.start.addEventListener('click',async()=>{
   const t1=performance.now();
   try{
     const blob=method==='rt'?await renderRealtime(o,setP,job,ac):await renderFast(o,setP,job);
-    const name='2Deep_prossimi_livelli_'+(isL()?'16x9':'9x16')+(o.fps===60?'_60fps':'')+'.mp4';
+    const name=VIDEO_NAME+'_'+(isL()?'16x9':'9x16')+(o.fps===60?'_60fps':'')+'.mp4';
     lastVideo={blob,name};window.__lastVideo=blob;
     r$.save.textContent='⬇ Salva MP4 · '+mb(blob.size);r$.save.hidden=false;
     setR('Video pronto in '+Math.round((performance.now()-t1)/1000)+' s · '+mb(blob.size)+(o.audio?'':' · senza audio')+'.','ok');
@@ -150,14 +150,14 @@ r$.start.addEventListener('click',async()=>{
   }finally{
     if(ac)try{ac.close();}catch(e){}
     t0=performance.now();
-    if(pendingCfg&&d$.panel.hidden){const c=pendingCfg;pendingCfg=null;adopt(c);}
+    HOOK.afterExport();
   }
 });
 r$.save.addEventListener('click',saveVideo);
 r$.cover.addEventListener('click',async()=>{
-  const {c,x}=bigCanvas();frame(x,0);
+  const {c,x}=bigCanvas();frame(x,COVER_T);
   const blob=await new Promise(r=>c.toBlob(r,'image/png'));if(!blob){setR('Non riesco a creare l’immagine.','warn');return;}
-  window.__lastCover=blob;const r=await offer('2Deep_copertina_'+(isL()?'16x9':'9x16')+'.png',blob);
+  window.__lastCover=blob;const r=await offer(VIDEO_NAME+'_copertina_'+(isL()?'16x9':'9x16')+'.png',blob);
   setR(r==='saved'||r==='shared'?'Copertina pronta: usala come immagine di copertina del Reel o come post.':SAVE_MSG[r]||SAVE_MSG.error,r==='saved'||r==='shared'?'ok':'warn');
 });
 r$.audio.addEventListener('change',describe);
@@ -170,7 +170,7 @@ r$.open.addEventListener('click',openRender);
 r$.close.addEventListener('click',closeRender);
 r$.panel.addEventListener('click',e=>{if(e.target===r$.panel)closeRender();});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!r$.panel.hidden)closeRender();});
-ui.play.addEventListener('click',()=>{d$.panel.hidden=true;r$.panel.hidden=true;});
+ui.play.addEventListener('click',()=>{HOOK.closePanels();r$.panel.hidden=true;});
 /* format switch: the page preview follows the choice, and the choice is remembered on this device */
 function applyFmt(f,save){setFormat(f);fit();if(save)try{localStorage.setItem('2deep-fmt',f);}catch(e){}}
 document.querySelectorAll('input[name="fmt"]').forEach(r=>r.addEventListener('change',()=>{if(r.checked)applyFmt(r.value,true);}));

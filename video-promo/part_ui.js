@@ -1,3 +1,5 @@
+/* hooks a scene's own panels can fill in (the dates editor uses them) */
+const HOOK={afterExport(){},closePanels(){}};
 /* ---------------- playback + controls ---------------- */
 function fit(){const dpr=window.devicePixelRatio||1,vw=innerWidth*dpr,vh=innerHeight*dpr;let s=Math.floor(Math.min(vw/W,vh/H));if(s<1)s=Math.min(vw/W,vh/H);cv.style.width=(W*s/dpr)+'px';cv.style.height=(H*s/dpr)+'px';}
 const $=id=>document.getElementById(id);
@@ -13,7 +15,7 @@ function stop(){au.pause();playing=false;t0=performance.now();showBar(true);}
 /* one rendered soundtrack per settings combination: preview and Applica share it, so applying what you just heard is instant */
 let stCache={key:'',uri:''};
 const optKey=o=>JSON.stringify(Object.keys(o).sort().map(k=>[k,o[k]]));
-async function soundtrackUri(opts){const key=optKey(opts)+'|'+PAST.map(r=>r[2]).join('');if(stCache.key===key)return stCache.uri;const uri='data:audio/wav;base64,'+b64(pcm16(await renderSoundtrack(opts,32000)));stCache={key,uri};return uri;}
+async function soundtrackUri(opts){const key=optKey(opts)+'|'+AUDIO_KEY();if(stCache.key===key)return stCache.uri;const uri='data:audio/wav;base64,'+b64(pcm16(await renderSoundtrack(opts,32000)));stCache={key,uri};return uri;}
 async function prepare(opts,label,user){
   const say=user||!previewing;
   busy=true;ui.play.disabled=true;ui.apply.disabled=true;if(say)setStatus('Preparo la musica…');

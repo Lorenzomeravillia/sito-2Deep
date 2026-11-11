@@ -198,10 +198,12 @@ a.btn{text-decoration:none;display:inline-block}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="/config.js"></script>
 <script>window.SUPABASE_ADMIN_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2Y3Z4emFtcHhvcHZpaGFod2JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzMDMyNDMsImV4cCI6MjA4Nzg3OTI0M30.x2seoq8KYJdWLles7H8n0uD2Qm77MCbWEGNDnN6DWrc";/* same public key admin/admin.js uses to log in */</script>
-<script src="/assets/2deep-engine.js?v=61014616f0"></script>
+<script src="/assets/2deep-engine.js?v=532d2ccad9"></script>
 <script>
 (()=>{
 "use strict";
+/* hooks a scene's own panels can fill in (the dates editor uses them) */
+const HOOK={afterExport(){},closePanels(){}};
 /* ---------------- playback + controls ---------------- */
 function fit(){const dpr=window.devicePixelRatio||1,vw=innerWidth*dpr,vh=innerHeight*dpr;let s=Math.floor(Math.min(vw/W,vh/H));if(s<1)s=Math.min(vw/W,vh/H);cv.style.width=(W*s/dpr)+'px';cv.style.height=(H*s/dpr)+'px';}
 const $=id=>document.getElementById(id);
@@ -217,7 +219,7 @@ function stop(){au.pause();playing=false;t0=performance.now();showBar(true);}
 /* one rendered soundtrack per settings combination: preview and Applica share it, so applying what you just heard is instant */
 let stCache={key:'',uri:''};
 const optKey=o=>JSON.stringify(Object.keys(o).sort().map(k=>[k,o[k]]));
-async function soundtrackUri(opts){const key=optKey(opts)+'|'+PAST.map(r=>r[2]).join('');if(stCache.key===key)return stCache.uri;const uri='data:audio/wav;base64,'+b64(pcm16(await renderSoundtrack(opts,32000)));stCache={key,uri};return uri;}
+async function soundtrackUri(opts){const key=optKey(opts)+'|'+AUDIO_KEY();if(stCache.key===key)return stCache.uri;const uri='data:audio/wav;base64,'+b64(pcm16(await renderSoundtrack(opts,32000)));stCache={key,uri};return uri;}
 async function prepare(opts,label,user){
   const say=user||!previewing;
   busy=true;ui.play.disabled=true;ui.apply.disabled=true;if(say)setStatus('Preparo la musica…');
@@ -402,6 +404,8 @@ if(d$.reset)d$.reset.addEventListener('click',async()=>{if(!STORE.reset)return;d
   let r;try{r=await STORE.reset();}catch(e){r={ok:false,msg:'Ripristino non riuscito: riprova tra poco.'};}
   d$.reset.disabled=false;fillEditor();setD(r.msg,r.ok?'ok':'warn');});
 syncAria();
+HOOK.afterExport=()=>{if(pendingCfg&&d$.panel.hidden){const c=pendingCfg;pendingCfg=null;adopt(c);}};
+HOOK.closePanels=()=>{d$.panel.hidden=true;};
 
 /* ---------------- site store: dates come from the 2deep.it database (td.site_events = the "Date" tab of the admin).
    Changes made here for the video only (shorter names, scene, closing phrase, hidden rows) are saved as overrides
@@ -624,7 +628,7 @@ r$.start.addEventListener('click',async()=>{
   const t1=performance.now();
   try{
     const blob=method==='rt'?await renderRealtime(o,setP,job,ac):await renderFast(o,setP,job);
-    const name='2Deep_prossimi_livelli_'+(isL()?'16x9':'9x16')+(o.fps===60?'_60fps':'')+'.mp4';
+    const name=VIDEO_NAME+'_'+(isL()?'16x9':'9x16')+(o.fps===60?'_60fps':'')+'.mp4';
     lastVideo={blob,name};window.__lastVideo=blob;
     r$.save.textContent='⬇ Salva MP4 · '+mb(blob.size);r$.save.hidden=false;
     setR('Video pronto in '+Math.round((performance.now()-t1)/1000)+' s · '+mb(blob.size)+(o.audio?'':' · senza audio')+'.','ok');
@@ -637,14 +641,14 @@ r$.start.addEventListener('click',async()=>{
   }finally{
     if(ac)try{ac.close();}catch(e){}
     t0=performance.now();
-    if(pendingCfg&&d$.panel.hidden){const c=pendingCfg;pendingCfg=null;adopt(c);}
+    HOOK.afterExport();
   }
 });
 r$.save.addEventListener('click',saveVideo);
 r$.cover.addEventListener('click',async()=>{
-  const {c,x}=bigCanvas();frame(x,0);
+  const {c,x}=bigCanvas();frame(x,COVER_T);
   const blob=await new Promise(r=>c.toBlob(r,'image/png'));if(!blob){setR('Non riesco a creare l’immagine.','warn');return;}
-  window.__lastCover=blob;const r=await offer('2Deep_copertina_'+(isL()?'16x9':'9x16')+'.png',blob);
+  window.__lastCover=blob;const r=await offer(VIDEO_NAME+'_copertina_'+(isL()?'16x9':'9x16')+'.png',blob);
   setR(r==='saved'||r==='shared'?'Copertina pronta: usala come immagine di copertina del Reel o come post.':SAVE_MSG[r]||SAVE_MSG.error,r==='saved'||r==='shared'?'ok':'warn');
 });
 r$.audio.addEventListener('change',describe);
@@ -657,7 +661,7 @@ r$.open.addEventListener('click',openRender);
 r$.close.addEventListener('click',closeRender);
 r$.panel.addEventListener('click',e=>{if(e.target===r$.panel)closeRender();});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!r$.panel.hidden)closeRender();});
-ui.play.addEventListener('click',()=>{d$.panel.hidden=true;r$.panel.hidden=true;});
+ui.play.addEventListener('click',()=>{HOOK.closePanels();r$.panel.hidden=true;});
 /* format switch: the page preview follows the choice, and the choice is remembered on this device */
 function applyFmt(f,save){setFormat(f);fit();if(save)try{localStorage.setItem('2deep-fmt',f);}catch(e){}}
 document.querySelectorAll('input[name="fmt"]').forEach(r=>r.addEventListener('change',()=>{if(r.checked)applyFmt(r.value,true);}));

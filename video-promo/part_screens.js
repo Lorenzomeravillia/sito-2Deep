@@ -170,5 +170,7 @@ function render(t){
   t=((t%DUR)+DUR)%DUR;
   if(t<T.ls1End)lsScene(t,1);else if(t<T.score)mapScene(t);else if(t<T.ls2)scoreScene(t);else if(t<T.close)lsScene(t,2);else closingScene(t-T.close);
 }
+/* what the shared player/renderer needs to know about this scene */
+const VIDEO_NAME='2Deep_prossimi_livelli',COVER_T=0,AUDIO_KEY=()=>PAST.map(r=>r[2]).join('');
 window.__setCfg=c=>setCfg(c);window.__cfg=()=>JSON.parse(JSON.stringify({CFG,LV:LV.map(({node,...r})=>r)}));
 window.__render=render;window.__DUR=DUR;window.__setFormat=setFormat;
