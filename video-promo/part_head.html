@@ -91,8 +91,8 @@ a.btn{text-decoration:none;display:inline-block}
 <div class="bar" id="bar">
   <button id="play" class="btn primary" type="button" disabled>▶ Audio</button>
   <button id="openMusic" class="btn" type="button">♪ Musica</button>
-  <button id="openDates" class="btn" type="button">✎ Date</button>
-  <button id="openRender" class="btn rec" type="button">● Render MP4</button>
+<!--DATES-->  <button id="openDates" class="btn" type="button">✎ Date</button>
+<!--/DATES-->  <button id="openRender" class="btn rec" type="button">● Render MP4</button>
 <!--BAR_EXTRA--></div>
 <div class="panel" id="panel" hidden role="dialog" aria-modal="true" aria-labelledby="pTitle">
   <div class="sheet">
@@ -113,15 +113,15 @@ a.btn{text-decoration:none;display:inline-block}
     </div>
     <label class="chk"><input type="checkbox" id="sfx" checked> Effetti sonori del gioco (lucchetti, monete, passi)</label>
     <div class="row"><label for="vol">Volume musica</label><input id="vol" type="range" min="0" max="150" step="5" value="100"><output id="volV" for="vol">100%</output></div>
-    <p class="note">La colonna sonora dura sempre 36,8 secondi, esattamente quanto il video. ▶ Anteprima ti fa sentire subito le scelte di questa schermata e si aggiorna da sola quando cambi tracce o suoni. Applica le rende la musica del video e del render MP4.</p>
+    <p class="note">La colonna sonora dura sempre {DURS} secondi, esattamente quanto il video. ▶ Anteprima ti fa sentire subito le scelte di questa schermata e si aggiorna da sola quando cambi tracce o suoni. Applica le rende la musica del video e del render MP4.</p>
     <div class="dock">
       <div class="pvrow"><button id="pvBtn" class="btn" type="button" aria-pressed="false">▶ Anteprima</button><button id="apply" class="btn primary" type="button">Applica</button></div>
-      <div class="row" id="pvRow" hidden><label for="pvSeek">Posizione</label><input id="pvSeek" type="range" min="0" max="36.8" step="0.1" value="0"><output id="pvTime" for="pvSeek">0:00.0</output></div>
+      <div class="row" id="pvRow" hidden><label for="pvSeek">Posizione</label><input id="pvSeek" type="range" min="0" max="{DUR}" step="0.1" value="0"><output id="pvTime" for="pvSeek">0:00.0</output></div>
       <p class="status" id="status" aria-live="polite"></p>
     </div>
   </div>
 </div>
-<div class="panel" id="dpanel" hidden role="dialog" aria-modal="true" aria-labelledby="dTitle">
+<!--DATES--><div class="panel" id="dpanel" hidden role="dialog" aria-modal="true" aria-labelledby="dTitle">
   <div class="sheet">
     <div class="head"><h2 id="dTitle">DATE E LOCALI</h2><button id="dclose" class="x" type="button" aria-label="Chiudi">✕</button></div>
     <p class="meta" id="dSource"></p>
@@ -143,7 +143,7 @@ a.btn{text-decoration:none;display:inline-block}
     <!--DATES_NOTE-->
   </div>
 </div>
-<div class="panel" id="rpanel" hidden role="dialog" aria-modal="true" aria-labelledby="rTitle">
+<!--/DATES--><div class="panel" id="rpanel" hidden role="dialog" aria-modal="true" aria-labelledby="rTitle">
   <div class="sheet">
     <div class="head"><h2 id="rTitle">RENDER MP4</h2><button id="rclose" class="x" type="button" aria-label="Chiudi">✕</button></div>
     <fieldset>
@@ -151,7 +151,7 @@ a.btn{text-decoration:none;display:inline-block}
       <label class="opt"><input type="radio" name="fmt" value="portrait" checked> Verticale 9:16 · 1080×1920, per Reel, Storie, TikTok e Shorts</label>
       <label class="opt"><input type="radio" name="fmt" value="landscape"> Orizzontale 16:9 · 1920×1080, per il feed di Facebook e YouTube</label>
     </fieldset>
-    <p class="meta">Dura 36,8 secondi e si apre sulla schermata con le date. Quando cambi formato, l’animazione dietro questo pannello si adatta subito.</p>
+    <p class="meta">Dura {DURS} secondi{RENDER_NOTE}. Quando cambi formato, l’animazione dietro questo pannello si adatta subito.</p>
     <fieldset>
       <legend>FLUIDITÀ</legend>
       <label class="opt"><input type="radio" name="fps" value="30" checked> 30 fotogrammi al secondo (consigliato)</label>

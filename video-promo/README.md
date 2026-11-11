@@ -80,3 +80,13 @@ Una pagina pubblica giocabile leggerebbe le date pubblicate con la chiave pubbli
 | `node regress.cjs build/page.html <cartella>` | Fotogrammi fissi nei due formati, con un hash per verificare che una modifica lasci il video identico |
 | `node scntest.cjs <nome> '<cfg json>' <t...>` | Fotogrammi con date a scelta (cartella `prev/`) |
 | `node export.cjs out.mp4 [portrait\|landscape]` | Esportazione MP4 senza interfaccia, con ffmpeg |
+
+## Promo di una singola serata (`monkey/`)
+
+Seconda scena dello stesso generatore: il picchiaduro a scorrimento per la serata al Monkey's Bar del 14 novembre. Usa lo stesso lettore, il pannello Musica con il caricamento MIDI, il render MP4 e la scelta 9:16 / 16:9. Il pannello Date resta fuori, perché i dati della serata sono nella scena (`NIGHT` in `monkey/part_scene.js`).
+
+- La scena viene disegnata su un canvas logico (216x384) e copiata a 5x sull'uscita 1080x1920. Lo zoom finale passa a un canvas largo (270x480) che cade a 4x esatti: l'inquadratura larga resta nitida.
+- La musica di default e gli effetti sono in `monkey/part_music.js` (`defaultSong`, `scheduleSfx`). Con un MIDI caricato, gli effetti restano sopra la musica del MIDI.
+- `python3 build.py` produce anche `build/monkey_artifact.html`, `monkey_page.html` e `monkey_test.html`.
+
+Ogni scena dichiara `VIDEO_NAME`, `COVER_T` (il momento usato per la copertina PNG) e `AUDIO_KEY()` (cosa invalida la cache dell'audio). Le canzoni di default sono in `part_levels_music.js` e `monkey/part_music.js`, il motore audio è in `part_audio.js`.

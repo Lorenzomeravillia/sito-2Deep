@@ -93,3 +93,5 @@ if(d$.reset)d$.reset.addEventListener('click',async()=>{if(!STORE.reset)return;d
   let r;try{r=await STORE.reset();}catch(e){r={ok:false,msg:'Ripristino non riuscito: riprova tra poco.'};}
   d$.reset.disabled=false;fillEditor();setD(r.msg,r.ok?'ok':'warn');});
 syncAria();
+HOOK.afterExport=()=>{if(pendingCfg&&d$.panel.hidden){const c=pendingCfg;pendingCfg=null;adopt(c);}};
+HOOK.closePanels=()=>{d$.panel.hidden=true;};
