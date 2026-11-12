@@ -1019,6 +1019,8 @@ async function renderSoundtrack(o,sr){
   if(!OAC)throw new Error('questo browser non supporta l’audio offline');
   const len=Math.round(sr*DUR),ac=new OAC(1,len,sr),E=new Engine(ac),mv=0.75*o.vol;
   if(o.mode==='midi'){const g=E.musicBus.gain;g.setValueAtTime(0,0);g.linearRampToValueAtTime(mv,0.04);g.setValueAtTime(mv,DUR-0.5);g.linearRampToValueAtTime(0,DUR);}else E.musicBus.gain.value=mv;
+  /* a scene can ask for moments of silence (MUSIC_GAPS: [[from,to],...]); they apply to a loaded MIDI too */
+  if(typeof MUSIC_GAPS!=='undefined')MUSIC_GAPS.forEach(([a,b])=>{const g=E.musicBus.gain;g.setValueAtTime(mv,a-0.012);g.linearRampToValueAtTime(0,a);g.setValueAtTime(0,b);g.linearRampToValueAtTime(mv,b+0.012);});
   (o.mode==='midi'?o.events:defaultSong()).forEach(e=>{if(e.t<DUR)E.note(e);});
   if(o.sfx)scheduleSfx(E);
   const buf=await new Promise((res,rej)=>{ac.oncomplete=e=>res(e.renderedBuffer);const p=ac.startRendering();if(p&&p.then)p.then(res,rej);});

@@ -90,3 +90,12 @@ Seconda scena dello stesso generatore: il picchiaduro a scorrimento per la serat
 - `python3 build.py` produce anche `build/monkey_artifact.html`, `monkey_page.html` e `monkey_test.html`.
 
 Ogni scena dichiara `VIDEO_NAME`, `COVER_T` (il momento usato per la copertina PNG) e `AUDIO_KEY()` (cosa invalida la cache dell'audio). Le canzoni di default sono in `part_levels_music.js` e `monkey/part_music.js`, il motore audio è in `part_audio.js`.
+
+## Promo SABATO_SERA.EXE (`desk/`)
+
+Terza scena, per la stessa serata del 14 novembre: un desktop anni 90 (modem, assistente scimmia, download del sabato sera, popup del divano, trillo di Katia, schermata blu con la parola segreta, cascata del Solitario, lettore con la notte al Monkey's, scheda con la data). Usa lo stesso lettore, il pannello Musica con il MIDI e il render MP4.
+
+- La parola segreta è `SECRET` in `desk/part_scene.js`; la schermata blu dura 0,6 s (`EV.bsod`).
+- La scena finale si disegna su un secondo canvas della stessa misura (`NSC`): la finestra del lettore lo mostra 1:1 e, quando si ingrandisce, lo scopre tutto.
+- `MUSIC_GAPS` (facoltativo, per scena) ferma la musica negli intervalli indicati, anche con un MIDI caricato: qui serve per il silenzio della schermata blu.
+- `python3 build.py` produce anche `build/desk_artifact.html`, `desk_page.html` e `desk_test.html`.
