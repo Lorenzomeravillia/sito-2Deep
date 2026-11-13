@@ -27,10 +27,10 @@ function calURL(l){const[y,m,d]=l.iso.split('-').map(Number),p=n=>String(n).padS
   return 'https://calendar.google.com/calendar/render?'+Object.entries(q).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');}
 
 /* ---------------- table geometry ---------------- */
-const WALLS=[],seg=(ax,ay,bx,by,o={})=>WALLS.push({ax,ay,bx,by,e:o.e??0.45,kick:o.kick||0,id:o.id||'',col:o.col||'wall',oneway:o.oneway||0});
+const WALLS=[],seg=(ax,ay,bx,by,o={})=>WALLS.push({ax,ay,bx,by,e:o.e??0.45,kick:o.kick||0,id:o.id||'',col:o.col||'wall',oneway:o.oneway||0,hide:o.hide||0});
 {const cx=135,cy=140,rx=125,ry=100,N=32;let px=cx+rx,py=cy;for(let i=1;i<=N;i++){const th=Math.PI*i/N,x=cx+rx*Math.cos(th),y=cy-ry*Math.sin(th);seg(px,py,x,y,{e:0.6});px=x;py=y;}}
 seg(10,140,10,365);seg(10,365,72,414,{col:'slope'});                   /* left wall and left inlane slope */
-seg(260,140,260,465);seg(242,465,260,465);seg(242,187,242,465);         /* outer right wall, plunger lane floor, lane divider */
+seg(260,140,260,465);seg(242,465,260,465,{hide:1});seg(242,187,242,465);         /* outer right wall, plunger lane floor (not drawn: the plunger's tip is the floor you see), lane divider */
 seg(242,92,242,187,{col:'post',e:0.3,oneway:1});                        /* one-way gate: out of the lane yes, back in no */
 seg(242,365,180,414,{col:'slope'});                                     /* right inlane slope */
 const SLINGS=[{a:[33,315],b:[33,355],c:[65,377],id:'slL'},{a:[209,315],b:[209,355],c:[177,377],id:'slR'}];
@@ -164,6 +164,7 @@ function update(dt){G.now+=dt;
 let K=1;const STATIC=document.createElement('canvas'),TAU=Math.PI*2;
 const rgba=(c,a)=>{const v=hx(c);return 'rgba('+v[0]+','+v[1]+','+v[2]+','+a+')';};
 /* a colour pushed towards white (f>0) or black (f<0): the lit and the shaded faces of the same object */
+Object.assign(FONT,{'%':["##...","##..#","...#.","..#..",".#...","#..##","...##"]});
 const shade=(c,f)=>{const v=hx(c),t=f<0?0:255,a=Math.abs(f);return 'rgb('+[0,1,2].map(i=>Math.round(v[i]+(t-v[i])*a)).join(',')+')';};
 function soft(x,y,r,col,a){const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,rgba(col,a));g.addColorStop(1,rgba(col,0));ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();}
 function circle(x,y,r,fill){ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fillStyle=fill;ctx.fill();}
@@ -205,7 +206,7 @@ function buildStatic(){STATIC.width=TW*K;STATIC.height=TH*K;const g=STATIC.getCo
   /* rails as tubes: a shadow cast on the playfield, a dark glowing body, the lit face, a highlight on the upper-left edge */
   g.lineCap='round';g.lineJoin='round';
   const path=ws=>{g.beginPath();ws.forEach(w=>{g.moveTo(w.ax,w.ay);g.lineTo(w.bx,w.by);});};
-  const groups=[['wall',C.wall],['slope',C.slope],['post',C.post]].map(([k,col])=>[WALLS.filter(w=>w.col===k),col]);
+  const groups=[['wall',C.wall],['slope',C.slope],['post',C.post]].map(([k,col])=>[WALLS.filter(w=>w.col===k&&!w.hide),col]);
   groups.forEach(([ws])=>{g.save();g.shadowColor='rgba(0,0,0,0.75)';g.shadowBlur=3*K;g.shadowOffsetX=1.8*K;g.shadowOffsetY=2.8*K;g.strokeStyle='rgba(0,0,0,0.6)';g.lineWidth=3;path(ws);g.stroke();g.restore();});
   groups.forEach(([ws,col])=>{g.save();g.shadowColor=rgba(col,0.4);g.shadowBlur=5*K;g.strokeStyle=shade(col,-0.5);g.lineWidth=3.3;path(ws);g.stroke();g.restore();
     g.save();g.translate(-0.25,-0.35);g.strokeStyle=shade(col,-0.05);g.lineWidth=2.1;path(ws);g.stroke();g.translate(-0.35,-0.4);g.strokeStyle=shade(col,0.65);g.lineWidth=0.8;path(ws);g.stroke();g.restore();});
@@ -305,15 +306,26 @@ function drawPlunger(){const p=G.state==='ready'?G.charge:0,y=465+p*10;rrect(245
   if(G.state==='ready')drawSpringHint();}
 /* the plunger lane shows the gesture: TIRA GIU written down the lane, three arrows, a fingertip sliding down onto the spring.
    While pulling, a power bar beside the lane fills from yellow to red */
+/* while pulling, a magnifier above the thumb shows the spring and the ball 2.4x larger, framed by a ring that fills with the
+   power (yellow to red). It copies that corner of the frame already drawn, so it shows exactly what is under the thumb */
+function drawLoupe(){if(!G.pulling||!DRAG)return;const R=30,Z=2.4,sx=251,sy=465,half=R/Z;
+  const cx=clamp(Math.min(DRAG.x-34,206),R+8,TW-R-8),cy=Math.max(R+44,Math.min(DRAG.y-88,sy-half-R-6));
+  ctx.save();ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=10*K;ctx.shadowOffsetY=3*K;circle(cx,cy,R+5,'#120d24');ctx.restore();
+  ctx.save();ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.clip();ctx.fillStyle='#16132e';ctx.fillRect(cx-R,cy-R,2*R,2*R);ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(cv,(sx-half)*K,(sy-half)*K,2*half*K,2*half*K,cx-R,cy-R,2*R,2*R);
+  const gl=ctx.createLinearGradient(cx,cy-R,cx,cy);gl.addColorStop(0,'rgba(255,255,255,0.16)');gl.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=gl;ctx.fillRect(cx-R,cy-R,2*R,R);ctx.restore();
+  ctx.lineWidth=4.5;ctx.lineCap='round';ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.beginPath();ctx.arc(cx,cy,R+2.5,0,TAU);ctx.stroke();
+  if(G.charge>0.005){const a0=-Math.PI/2,a1=a0+G.charge*TAU,c=G.charge<0.5?C.yel:G.charge<0.85?'#ffa040':C.red;ctx.strokeStyle=c;ctx.beginPath();ctx.arc(cx,cy,R+2.5,a0,a1);ctx.stroke();}
+  ctext(Math.round(G.charge*100)+'%',cx,cy+R+9,1,G.charge>=1?C.red:C.white);}
 function drawSpringHint(){
   if(G.pulling){const h=62*G.charge,g=ctx.createLinearGradient(0,465,0,403);g.addColorStop(0,C.yel);g.addColorStop(1,C.red);rrect(235.5,403,4.5,62,2);ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fill();
     if(h>0.5){rrect(235.5,465-h,4.5,h,2);ctx.fillStyle=g;ctx.fill();}return;}
   const fl=G.now-(G.hintFlash||-9)<1.2,on=!fl||Math.floor(G.now*8)%2===0;
-  if(on){ctx.save();ctx.translate(255.5,322);ctx.rotate(Math.PI/2);dt('TIRA GIU',0,0,1,fl?C.white:C.yel,{outline:'#2a1a00'});ctx.restore();}
-  for(let k=0;k<3;k++){const y=385+k*11,a=0.25+0.75*Math.max(0,Math.sin((G.now*3-k*0.7)*Math.PI)) ;ctx.strokeStyle=rgba(C.yel,a*(fl?1:0.85));ctx.lineWidth=1.6;ctx.lineCap='round';ctx.lineJoin='round';
+  if(on){ctx.save();ctx.translate(255.5,286);ctx.rotate(Math.PI/2);dt('TIRA GIU',0,0,1,fl?C.white:C.yel,{outline:'#2a1a00'});ctx.restore();}
+  for(let k=0;k<3;k++){const y=345+k*11,a=0.25+0.75*Math.max(0,Math.sin((G.now*3-k*0.7)*Math.PI)) ;ctx.strokeStyle=rgba(C.yel,a*(fl?1:0.85));ctx.lineWidth=1.6;ctx.lineCap='round';ctx.lineJoin='round';
     ctx.beginPath();ctx.moveTo(246.5,y);ctx.lineTo(251,y+4);ctx.lineTo(255.5,y);ctx.stroke();}
-  const u=(G.now%1.5)/1.5;if(u<0.8){const v=u/0.8,y=392+v*58,a=v<0.12?v/0.12:v>0.8?(1-v)/0.2:1;
-    ctx.strokeStyle='rgba(255,255,255,'+(0.28*a)+')';ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(251,392);ctx.lineTo(251,y);ctx.stroke();
+  const u=(G.now%1.5)/1.5;if(u<0.8){const v=u/0.8,y=344+v*62,a=v<0.12?v/0.12:v>0.8?(1-v)/0.2:1;
+    ctx.strokeStyle='rgba(255,255,255,'+(0.28*a)+')';ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(251,344);ctx.lineTo(251,y);ctx.stroke();
     circle(251,y,4.6,'rgba(255,255,255,'+(0.9*a)+')');ctx.strokeStyle=rgba(C.yel,a);ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(251,y,6.2,0,TAU);ctx.stroke();}}
 /* while the ball waits on the plunger: the three dates in big letters, ticked once their target has been hit in this game */
 function drawTourCard(){if(!LVL.length)return;let a=0;
@@ -351,7 +363,7 @@ function draw(){ctx=OUTX;ctx.setTransform(1,0,0,1,0,0);ctx.imageSmoothingEnabled
   drawLanes();drawDrops();drawLvt();drawSlings();drawLiveSign();drawHole();for(let k=0;k<3;k++)drawBumper(k);drawSofaTarget();
   drawBand();drawDrain();drawPlunger();FLIP.forEach(drawFlipper);
   if(G.state==='play'||G.state==='ready')for(const b of BALLS)sphere(b.x,b.y+(G.state==='ready'?G.charge*10:0),BR);
-  drawTourCard();drawPops();overlay();drawDMD();}
+  drawTourCard();drawPops();overlay();drawDMD();drawLoupe();}
 
 /* ---------------- sound: live effects on the shared synth, the music pre-rendered as an 8-bar loop ---------------- */
 let AC=null,SX=null,MUTED=false;
@@ -370,6 +382,7 @@ function initAudio(){if(AC)return;const Ctx=window.AudioContext||window.webkitAu
   if(SONGBUF)playSong(SONGBUF);}
 function sfx(k,a){if(!SX||MUTED)return;const t=AC.currentTime+0.005,X=SX,bl=(tt,n,d,v,duty=0.25)=>X.osc(tt,d,mtof(NN(n)),duty,v,{decay:d*0.6});
   switch(k){
+    case 'ratchet':X.noise(t,0.012,0.09,{hp:3500,decay:0.004});X.osc(t,0.03,500+a*90,0.25,0.05,{decay:0.015});if(a===10)bl(t+0.02,'C7',0.12,0.06);break;
     case 'flip':X.noise(t,0.03,0.1,{hp:2200,decay:0.01});X.osc(t,0.06,170,'sine',0.14,{sweep:80,decay:0.03});break;
     case 'bumper':X.noise(t,0.02,0.08,{hp:3000,decay:0.008});bl(t,['A5','C6','E6'][a],0.08,0.08);bl(t+0.03,['A6','C7','E7'][a],0.1,0.05,0.125);break;
     case 'sling':X.osc(t,0.06,300,0.5,0.08,{sweep:620,decay:0.03});break;
@@ -428,10 +441,12 @@ function shiftCheck(e){if(!e.shiftKey&&(HELD.has('ShiftLeft')||HELD.has('ShiftRi
    stronger the shot. Holding anywhere else on the table still charges it, as before. */
 let DRAG=null;const PULL=70;
 const toTable=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*TW,(e.clientY-r.top)/r.height*TH];};
-const inSpring=(x,y)=>x>=224&&y>=300;
+const inSpring=(x,y)=>x>=186&&y>=250;   /* the lower right of the table: the thumb can start well above the spring */
+/* felt and heard while pulling: a ratchet click and, where the phone can, a short buzz at every tenth of the pull */
+function springTicks(){const st=Math.floor(G.charge*10+1e-6);if(st===DRAG.step)return;if(st>DRAG.step){sfx('ratchet',st);try{if(navigator.vibrate)navigator.vibrate(st===10?18:6);}catch(e){}}DRAG.step=st;}
 function springRelease(){const p=G.charge;DRAG=null;G.pulling=false;if(G.state!=='ready')return;if(p>=0.08)launch();else{G.charge=0;G.hintFlash=G.now;}}
 stage.addEventListener('pointerdown',e=>{if(e.target.closest('#mute,#ig,#song,#songBtn'))return;e.preventDefault();if(e.pointerType==='mouse'&&e.button!==0)return;if(startOrResume())return;
-  const tt=toTable(e);if(G.state==='ready'&&!DRAG&&inSpring(tt[0],tt[1])){DRAG={id:e.pointerId,y0:tt[1],type:e.pointerType,t:nowMs()};G.charge=0;G.charging=false;G.pulling=true;try{stage.setPointerCapture(e.pointerId);}catch(_){}return;}
+  const tt=toTable(e);if(G.state==='ready'&&!DRAG&&inSpring(tt[0],tt[1])){DRAG={id:e.pointerId,y0:tt[1],x:tt[0],y:tt[1],step:0,type:e.pointerType,t:nowMs()};G.charge=0;G.charging=false;G.pulling=true;try{stage.setPointerCapture(e.pointerId);}catch(_){}return;}
   const r=cv.getBoundingClientRect(),side=e.clientX<r.left+r.width/2?'L':'R';press(side);PTR.set(e.pointerId,{side,type:e.pointerType,t:nowMs()});setFlips();
   if(G.state==='ready'&&chargePtr===null){chargePtr=e.pointerId;G.charging=true;}
   try{stage.setPointerCapture(e.pointerId);}catch(_){}});
@@ -439,7 +454,8 @@ const release=e=>{if(DRAG&&e.pointerId===DRAG.id){springRelease();return;}if(!PT
 stage.addEventListener('contextmenu',e=>e.preventDefault());
 ['pointerup','pointercancel'].forEach(t=>addEventListener(t,release,true));stage.addEventListener('lostpointercapture',release);
 addEventListener('pointermove',e=>{shiftCheck(e);
-  if(DRAG&&e.pointerId===DRAG.id){if(e.pointerType==='mouse'&&e.buttons===0)return springRelease();DRAG.t=nowMs();if(G.state==='ready')G.charge=clamp((toTable(e)[1]-DRAG.y0)/PULL);return;}
+  if(DRAG&&e.pointerId===DRAG.id){if(e.pointerType==='mouse'&&e.buttons===0)return springRelease();DRAG.t=nowMs();const tt=toTable(e);DRAG.x=tt[0];DRAG.y=tt[1];
+    if(G.state==='ready'){G.charge=clamp((tt[1]-DRAG.y0)/PULL);springTicks();}return;}
   const p=PTR.get(e.pointerId);if(!p)return;if(e.pointerType==='mouse'&&e.buttons===0)release(e);else p.t=nowMs();},true);
 /* the browser's own list of fingers on the glass: a finger that is not in it any more is not holding anything */
 function touchCheck(e){const live=e.touches.length;if(DRAG&&DRAG.type==='touch'){if(live===0&&e.type!=='touchstart')springRelease();else DRAG.t=nowMs();}for(const[id,p]of PTR)if(p.type==='touch'&&live===0)release({pointerId:id});if(live)for(const p of PTR.values())if(p.type==='touch')p.t=nowMs();}
