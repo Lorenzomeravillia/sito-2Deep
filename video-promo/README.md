@@ -93,9 +93,10 @@ Ogni scena dichiara `VIDEO_NAME`, `COVER_T` (il momento usato per la copertina P
 
 ## Promo SABATO_SERA.EXE (`desk/`)
 
-Terza scena, per la stessa serata del 14 novembre: un desktop anni 90 (modem, assistente scimmia, download del sabato sera, popup del divano, trillo di Katia, schermata blu con la parola segreta, cascata del Solitario, lettore con la notte al Monkey's, scheda con la data). Usa lo stesso lettore, il pannello Musica con il MIDI e il render MP4.
+Terza scena, per la stessa serata del 14 novembre: un desktop anni 90. Si apre con il suggerimento "TROVA LA PAROLA SEGRETA" sul suono del modem, poi la scimmia assistente chiede "VUOI USCIRE SABATO?" [SI] [SI], parte il download di 2DEEP_LIVE.EXE dal Monkey's, il divano lo blocca e la scimmia lo spinge nel cestino. Una schermata blu di 0,6 s nasconde la parola segreta, il download finisce e l'applicazione apre il palco del video "Prossimi livelli", con data e luogo.
 
-- La parola segreta è `SECRET` in `desk/part_scene.js`; la schermata blu dura 0,6 s (`EV.bsod`).
-- La scena finale si disegna su un secondo canvas della stessa misura (`NSC`): la finestra del lettore lo mostra 1:1 e, quando si ingrandisce, lo scopre tutto.
+- Regola di questo montaggio: una cosa alla volta sullo schermo, tre o quattro parole per finestra, ogni testo in vista almeno 2 secondi.
+- La parola segreta è `SECRET` in `desk/part_scene.js`; la schermata blu è `EV.bsod`.
+- Il finale non è riscritto: `build.py` (`stage_src`) prende da `part_side.js` e `part_core.js` il locale, il salto sul palco, il pubblico, i coriandoli e l'HUD KATIA / LORENZO, togliendo solo le scritte a comparsa.
 - `MUSIC_GAPS` (facoltativo, per scena) ferma la musica negli intervalli indicati, anche con un MIDI caricato: qui serve per il silenzio della schermata blu.
 - `python3 build.py` produce anche `build/desk_artifact.html`, `desk_page.html` e `desk_test.html`.

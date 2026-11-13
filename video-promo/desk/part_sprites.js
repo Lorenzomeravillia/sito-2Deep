@@ -55,3 +55,7 @@ const CARDS=[0,1,2,3].map(k=>{const P=new PG(18,24),c=k%2?'#d01020':'#141414';P.
   return P.canvas();});
 /* Katia's face for the chat window */
 const KFACE=(()=>{const c=mk(22,20),g=c.getContext('2d');g.drawImage(SPR.kat[0],0,0,22,20,0,0,22,20);return c;})();
+/* light bulb for the tip-of-the-day window, and the recycle bin filled up with the sofa */
+const BULB=sprite(["...####...","..#YYYY#..",".#YYWYYY#.","#YYWYYYYY#","#YYYYYYYY#","#YYYYYYYY#",".#YYYYYY#.","..#YYYY#..","...#YY#...","...GGGG...","...gggg...","...GGGG...","....gg...."],{'#':'#000000',Y:'#ffe03a',W:'#ffffff',G:'#b0b0b0',g:'#6a6a6a'});
+const TRASHF=(()=>{const P=new PG(16,20);P.r(1,5,14,2,'#d8d8d8');P.r(2,7,12,13,'#ececec');for(let x=4;x<13;x+=3)P.r(x,9,1,9,'#8a8a8a');P.r(13,7,1,13,'#9a9a9a');
+  P.r(3,1,5,4,'#e8384a');P.r(4,2,3,1,'#ff6a74');P.r(8,0,5,5,'#c02a3a');P.r(9,1,3,2,'#e8384a');P.r(2,3,2,2,'#ffe03a');return P.canvas('#000000');})();
