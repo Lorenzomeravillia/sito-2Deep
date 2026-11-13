@@ -20,7 +20,16 @@ body{background:var(--bg);color:var(--ink);margin:0;overflow:hidden;padding-left
   border:1px solid rgba(255,122,216,.6);background:linear-gradient(180deg,#3a1d52 0%,#1e1035 100%);
   box-shadow:0 4px 0 #0b0618,0 7px 16px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.16);transition:transform .08s ease,box-shadow .08s ease,filter .15s ease;-webkit-tap-highlight-color:transparent}
 #ig .act:hover{filter:brightness(1.12)}
-#ig .act:active{transform:translateY(3px);box-shadow:0 1px 0 #0b0618,0 3px 8px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.1)}
+#ig .act:active{animation:none;transform:translateY(3px);box-shadow:0 1px 0 #0b0618,0 3px 8px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.1)}
+/* the two invitations breathe: a soft glow in their own colour and a key that rises a little and settles, every 2.4 s
+   (the calendar a beat later); pressing stops it so the key can sink */
+#ig #igFollow{animation:breathePink 2.4s ease-in-out infinite}
+#ig #cal{animation:breatheCyan 2.4s ease-in-out .8s infinite}
+#ig #igFollow:active,#ig #cal:active{animation:none;transform:translateY(3px);box-shadow:0 1px 0 #0b0618,0 3px 8px rgba(0,0,0,.45)}
+@keyframes breathePink{0%,100%{transform:translateY(0);box-shadow:0 4px 0 #0b0618,0 7px 16px rgba(0,0,0,.5),0 0 0 0 rgba(255,122,216,0),inset 0 1px 0 rgba(255,255,255,.16)}
+  50%{transform:translateY(-2px);box-shadow:0 6px 0 #0b0618,0 10px 18px rgba(0,0,0,.5),0 0 22px 3px rgba(255,122,216,.55),inset 0 1px 0 rgba(255,255,255,.22)}}
+@keyframes breatheCyan{0%,100%{transform:translateY(0);box-shadow:0 4px 0 #0b0618,0 7px 16px rgba(0,0,0,.5),0 0 0 0 rgba(101,219,239,0),inset 0 1px 0 rgba(255,255,255,.16)}
+  50%{transform:translateY(-2px);box-shadow:0 6px 0 #0b0618,0 10px 18px rgba(0,0,0,.5),0 0 22px 3px rgba(101,219,239,.5),inset 0 1px 0 rgba(255,255,255,.22)}}
 #ig .act::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.2) 50%,transparent 62%);background-size:260% 100%;background-position:130% 0;animation:igshine 1.2s ease .6s 1 both}
 #cal.act::after{animation-delay:.85s}
 @keyframes igshine{to{background-position:-30% 0}}
@@ -36,7 +45,7 @@ body{background:var(--bg);color:var(--ink);margin:0;overflow:hidden;padding-left
 #ig .site{display:inline-flex;align-items:center;justify-content:center;gap:6px;align-self:center;font:11px/1 var(--pix);color:var(--cyan);text-decoration:underline;text-underline-offset:3px;padding:8px}
 #ig .site .go{width:12px;height:12px}
 #ig a:focus-visible,#ig button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
-@media (prefers-reduced-motion:reduce){#ig .act::after{animation:none;display:none}#ig .act{transition:none}}
+@media (prefers-reduced-motion:reduce){#ig .act::after{animation:none;display:none}#ig .act,#ig #igFollow,#ig #cal{transition:none;animation:none}}
 /* BRANO: the band's panel (only for people who can edit the page) */
 #songBtn{position:absolute;font:11px/1 var(--pix);letter-spacing:.06em;color:var(--cyan2);background:#120d24;border:1px solid var(--edge);padding:6px 8px;cursor:pointer}
 #songBtn:focus-visible,#song button:focus-visible,#song select:focus-visible,#song input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
@@ -92,7 +101,7 @@ body{background:var(--bg);color:var(--ink);margin:0;overflow:hidden;padding-left
       <span class="txt"><b>RIGIOCA DA CAPO</b></span></button>
     <a class="site" href="https://www.2deep.it" target="_blank" rel="noopener">TUTTE LE DATE SU 2DEEP.IT<svg class="go" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
   </div>
-  <button id="songBtn" type="button" hidden>BRANO</button>
+  <button id="songBtn" type="button" hidden>BRANO · ADMIN</button>
   <div id="song" hidden role="dialog" aria-modal="true" aria-labelledby="songT">
     <div class="sbox">
       <div class="shead"><h2 id="songT">BRANO DEL FLIPPER</h2><button id="sClose" type="button">CHIUDI</button></div>

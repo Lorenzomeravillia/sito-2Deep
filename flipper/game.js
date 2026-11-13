@@ -30,7 +30,7 @@ function calURL(l){const[y,m,d]=l.iso.split('-').map(Number),p=n=>String(n).padS
 const WALLS=[],seg=(ax,ay,bx,by,o={})=>WALLS.push({ax,ay,bx,by,e:o.e??0.45,kick:o.kick||0,id:o.id||'',col:o.col||'wall',oneway:o.oneway||0,hide:o.hide||0});
 {const cx=135,cy=140,rx=125,ry=100,N=32;let px=cx+rx,py=cy;for(let i=1;i<=N;i++){const th=Math.PI*i/N,x=cx+rx*Math.cos(th),y=cy-ry*Math.sin(th);seg(px,py,x,y,{e:0.6});px=x;py=y;}}
 seg(10,140,10,365);seg(10,365,72,414,{col:'slope'});                   /* left wall and left inlane slope */
-seg(260,140,260,465);seg(242,465,260,465,{hide:1});seg(242,187,242,465);         /* outer right wall, plunger lane floor (not drawn: the plunger's tip is the floor you see), lane divider */
+seg(260,140,260,478);seg(242,444,260,444,{hide:1});seg(242,187,242,478);         /* outer right wall, plunger lane floor (not drawn: the plunger's tip is the floor you see), lane divider */
 seg(242,92,242,187,{col:'post',e:0.3,oneway:1});                        /* one-way gate: out of the lane yes, back in no */
 seg(242,365,180,414,{col:'slope'});                                     /* right inlane slope */
 const SLINGS=[{a:[33,315],b:[33,355],c:[65,377],id:'slL'},{a:[209,315],b:[209,355],c:[177,377],id:'slR'}];
@@ -48,12 +48,12 @@ const SOFA_PER=4.5,SOFA_OUT=6,stunFor=c=>c>1?Math.max(1.4,2.4-0.25*c):2.4,comboW
 /* each pivot sits 6 px below the end of its inlane slope, so the slope runs straight onto the top of the flipper with no step to get caught in.
    Flatter than a real machine on purpose: 22 degrees down at rest, 17 up when pressed */
 const FLIP=[{px:68.3,py:418.7,len:52,rest:0.38,up:-0.3,a:0.38,w:0,on:false},{px:183.7,py:418.7,len:52,rest:Math.PI-0.38,up:Math.PI+0.3,a:Math.PI-0.38,w:0,on:false}];
-const PLX=251,PLY=465-BR;
+const PLX=251,PLY=444-BR,TRAVEL=18;   /* the plunger's tip rests at y 444 and travels 18 px down when fully pulled */
 const DX=6,DY=2,DC=121,DR=16;   /* dot-matrix display: 121x16 dots, 2 px apart, across the top of the table */
 
 /* ---------------- game state ---------------- */
 const G={state:'title',score:0,balls:3,lit:[0,0,0,0],liveUntil:0,jam:false,encoreLit:false,now:0,stateT:0,charge:0,charging:false,
-  hold:null,holdT:0,holeCool:0,saveUntil:0,sofaHit:-9,sofaX:126,sofaPh:0,sofaSpd:1,stunUntil:0,combo:0,comboUntil:0,comboWinLen:1,sofaOut:-99,sofaOutX:126,lvGot:[0,0,0],readyT:0,launchT:-9,flash:{},pops:[],bandJam:0,continued:false,follower:false,msg:null,msgT:0,msgP:0};
+  hold:null,holdT:0,holeCool:0,saveUntil:0,sofaHit:-9,sofaX:126,sofaPh:0,sofaSpd:1,stunUntil:0,combo:0,comboUntil:0,comboWinLen:1,sofaOut:-99,sofaOutX:126,lvGot:[0,0,0],readyT:0,launchT:-9,flash:{},pops:[],bandJam:0,continued:false,follower:false,msg:null,msgT:0,msgP:0,dance:0};
 let BALLS=[],B=null;
 const ball=(x,y,vx,vy)=>({x,y,vx,vy,still:0});
 const live=()=>G.now<G.liveUntil,mult=()=>(live()?2:1)*(G.jam?2:1);
@@ -154,11 +154,11 @@ function update(dt){G.now+=dt;
       if(G.jam&&BALLS.length===1){BALLS.push(ball(PLX,PLY,0,-(740+520*0.6)));sfx('launch',0.6);}}
     for(const b of BALLS){
       /* back in the plunger lane, resting: the only ball goes back on the plunger, an extra one is fired again */
-      if(b.x>242&&b.y>450&&Math.hypot(b.vx,b.vy)<25){if(BALLS.length===1){G.state='ready';G.readyT=G.now;G.charge=0;G.charging=false;}else{b.vy=-1000;}}
+      if(b.x>242&&b.y>PLY-8&&Math.hypot(b.vx,b.vy)<25){if(BALLS.length===1){G.state='ready';G.readyT=G.now;G.charge=0;G.charging=false;}else{b.vy=-1000;}}
       if(b!==G.hold&&Math.hypot(b.vx,b.vy)<15){b.still+=dt;if(b.still>2.5){b.vy=-260;b.vx=(Math.random()*2-1)*100;b.still=0;}}else b.still=0;}}
   if(G.state==='drain'&&G.now-G.stateT>1.3){G.balls--;if(G.balls>0)serve();else{G.state='over';G.stateT=G.now;releaseAll();sfx('over');showIG(true);}}
   G.pops=G.pops.filter(p=>G.now-p.t<p.d);
-  holdCheck();applyLayers();const sb=document.getElementById('songBtn'),sv=songBtnVisible();if(sb.hidden===sv)sb.hidden=!sv;}
+  G.dance+=((live()||G.jam?1:0)-G.dance)*Math.min(1,dt*3);holdCheck();applyLayers();const sb=document.getElementById('songBtn'),sv=songBtnVisible();if(sb.hidden===sv)sb.hidden=!sv;}
 
 /* ---------------- drawing: the table in smooth shapes at full screen resolution, characters and lettering in pixel art ---------------- */
 let K=1;const STATIC=document.createElement('canvas'),TAU=Math.PI*2;
@@ -294,21 +294,41 @@ function drawSofaTarget(){const y=SOFAT.y,tg=G.now-G.sofaOut;
     if(Math.floor(G.now*4)%2)ctext('X'+(G.combo+1),x,y-25,1,C.yel);}}
 function drawSlings(){SLINGS.forEach(sl=>{if(G.now-(G.flash[sl.id]||-9)<0.1){ctx.save();ctx.shadowColor='#ffffff';ctx.shadowBlur=8*K;ctx.strokeStyle='#ffffff';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(...sl.a);ctx.lineTo(...sl.c);ctx.stroke();ctx.restore();}});}
 function drawLiveSign(){const on=live(),bl=on&&Math.floor(G.now*5)%2===0;if(on)soft(126,276,34,C.red,0.4);dt('LIVE',Math.round(126-tw('LIVE')*1.5),266,3,on?(bl?C.white:C.red):'#3e2440');}
-function drawBand(){const jam=live()||G.jam||G.now-G.bandJam<0.6,f=jam?[1,0,2,0][Math.floor(G.now*8)%4]:0,bo=jam&&f?-1:0;
-  ctx.drawImage(SPR.kat[f],14,418+bo);ctx.drawImage(SPR.lor[f],202,414+bo);
+/* the duo: in LIVE (and JAM) they dance on the spot in time with the song: knees bend on every beat, a little hop between beats,
+   the upper body sways over two beats (Katia and Lorenzo mirrored, so they lean in and out together), strumming on the beat,
+   a coloured light behind each. The dance fades in and out (G.dance) instead of starting with a jump */
+function drawBand(){const d=G.dance,lv=live()||G.jam,jam=lv||G.now-G.bandJam<0.6,beat=(SONG&&SONG.beat)||0.4,ph=G.now/beat;
+  const f=lv?[1,0,2,0][Math.floor(ph*2)%4]:jam?[1,0,2,0][Math.floor(G.now*8)%4]:0,bounce=(1-Math.cos(ph*TAU))/2,sway=Math.sin(ph*Math.PI);
+  [[SPR.kat[f],14,418,1,C.pink],[SPR.lor[f],202,414,-1,C.cyan]].forEach(([sp,x,y,side,col])=>{const w=sp.width,h=sp.height,fx=x+w/2,fy=y+h;
+    if(d>0.02){soft(fx,fy-h*0.55,h*0.8,col,0.22*d*(0.6+0.4*(1-bounce)));}
+    const sq=1-0.08*d*(1-bounce),hop=-1.6*d*bounce,sh=0.11*d*sway*side;
+    ctx.fillStyle='rgba(0,0,0,'+(0.32-0.1*d*bounce)+')';ctx.beginPath();ctx.ellipse(fx,fy-1,w*0.32*(1-0.12*d*bounce),2,0,0,TAU);ctx.fill();
+    if(d<0.02&&!jam){ctx.drawImage(sp,x,y);return;}
+    ctx.save();ctx.translate(fx,fy+hop);ctx.transform(1,0,-sh,sq,0,0);ctx.drawImage(sp,-w/2,-h-(jam&&!lv&&f?1:0));ctx.restore();});
   if(live()||G.jam)for(let k=0;k<3;k++){const u=(G.now*0.8+k/3)%1;ctx.drawImage(NOTES[k],Math.round(24+k*4+Math.sin(u*6)*3),Math.round(414-u*44));ctx.drawImage(NOTES[k+1],Math.round(216-k*4+Math.sin(u*6+1)*3),Math.round(410-u*44));}
   dt('KATIA',10,471,1,'#f3d8e6');dt('LORENZO',190,471,1,'#d8ecf3');}
 function drawDrain(){const eat=G.state==='drain'&&G.now-G.stateT<0.5,y=458-(eat?Math.round(Math.sin((G.now-G.stateT)/0.5*Math.PI*3)*3):0);
   ctx.fillStyle='rgba(0,0,0,0.4)';ctx.beginPath();ctx.ellipse(127,481,19,3,0,0,TAU);ctx.fill();ctx.drawImage(SOFA_ICON,106,y);
   if(G.state==='play'&&G.now<G.saveUntil&&Math.floor(G.now*4)%2===0)ctext('SALVA',126,440,1,C.cyan,{outline:null});}
-function drawPlunger(){const p=G.state==='ready'?G.charge:0,y=465+p*10;rrect(245,y,12,3.5,1.5);ctx.fillStyle='#c8c8d8';ctx.fill();
-  ctx.strokeStyle='#7a7a92';ctx.lineWidth=0.8;ctx.beginPath();for(let k=0;k<=6;k++)ctx.lineTo(k%2?247:255,y+3.5+k*(16-p*10)/6);ctx.stroke();
+/* the plunger: a dark housing between the lane walls, a steel rod, a coil spring drawn as a helix (the back of each turn
+   darker and behind the rod, the front lit and in front of it, so it reads as round) and a rubber tip the ball sits on */
+function drawPlunger(){const p=G.state==='ready'?G.charge:0,tip=444+p*TRAVEL,cx=251,r=5.4,bot=479,n=8,top=tip+4.5,pitch=(bot-top)/n,e=1.5;
+  const hg=ctx.createLinearGradient(243,0,259,0);hg.addColorStop(0,'#04030a');hg.addColorStop(0.5,'#17142e');hg.addColorStop(1,'#04030a');ctx.fillStyle=hg;ctx.fillRect(243,444,16,37);
+  const coil=(i,front,style,w,dx=0,dy=0)=>{ctx.strokeStyle=style;ctx.lineWidth=w;ctx.lineCap='round';ctx.beginPath();
+    for(let k=0;k<=10;k++){const t=i*TAU+(front?0:Math.PI)+Math.PI*k/10,x=cx+r*Math.cos(t)+dx,y=top+pitch*t/TAU+e*Math.sin(t)+dy;k?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();};
+  for(let i=0;i<n;i++)coil(i,false,'#4a4a62',1.3);
+  const rg=ctx.createLinearGradient(cx-1.5,0,cx+1.5,0);rg.addColorStop(0,'#5c5c74');rg.addColorStop(0.45,'#f4f4ff');rg.addColorStop(1,'#4c4c64');ctx.fillStyle=rg;ctx.fillRect(cx-1.4,tip+3,2.8,bot-tip);
+  const fg=ctx.createLinearGradient(cx-r,0,cx+r,0);fg.addColorStop(0,'#70708a');fg.addColorStop(0.32,'#ffffff');fg.addColorStop(0.62,'#c4c4da');fg.addColorStop(1,'#62627c');
+  for(let i=0;i<n;i++)coil(i,true,fg,1.7);for(let i=0;i<n;i++)coil(i,true,'rgba(255,255,255,0.55)',0.5,-1.2,-0.6);
+  const cg=ctx.createLinearGradient(0,tip,0,tip+5);cg.addColorStop(0,'#e0606e');cg.addColorStop(0.5,'#8a1e30');cg.addColorStop(1,'#3a0a14');rrect(cx-6.6,tip,13.2,5,2.2);ctx.fillStyle=cg;ctx.fill();
+  ctx.strokeStyle='rgba(255,220,225,0.6)';ctx.lineWidth=0.7;ctx.beginPath();ctx.moveTo(cx-5,tip+0.8);ctx.lineTo(cx+5,tip+0.8);ctx.stroke();
+  const mg=ctx.createLinearGradient(243,0,259,0);mg.addColorStop(0,'#55556c');mg.addColorStop(0.4,'#e8e8f6');mg.addColorStop(1,'#4a4a60');rrect(243.5,477,15,3.5,1.2);ctx.fillStyle=mg;ctx.fill();
   if(G.state==='ready')drawSpringHint();}
 /* the plunger lane shows the gesture: TIRA GIU written down the lane, three arrows, a fingertip sliding down onto the spring.
    While pulling, a power bar beside the lane fills from yellow to red */
 /* while pulling, a magnifier above the thumb shows the spring and the ball 2.4x larger, framed by a ring that fills with the
    power (yellow to red). It copies that corner of the frame already drawn, so it shows exactly what is under the thumb */
-function drawLoupe(){if(!G.pulling||!DRAG)return;const R=30,Z=2.4,sx=251,sy=465,half=R/Z;
+function drawLoupe(){if(!G.pulling||!DRAG)return;const R=32,Z=2.1,sx=251,sy=453,half=R/Z;
   const cx=clamp(Math.min(DRAG.x-34,206),R+8,TW-R-8),cy=Math.max(R+44,Math.min(DRAG.y-88,sy-half-R-6));
   ctx.save();ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=10*K;ctx.shadowOffsetY=3*K;circle(cx,cy,R+5,'#120d24');ctx.restore();
   ctx.save();ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.clip();ctx.fillStyle='#16132e';ctx.fillRect(cx-R,cy-R,2*R,2*R);ctx.imageSmoothingEnabled=false;
@@ -318,8 +338,8 @@ function drawLoupe(){if(!G.pulling||!DRAG)return;const R=30,Z=2.4,sx=251,sy=465,
   if(G.charge>0.005){const a0=-Math.PI/2,a1=a0+G.charge*TAU,c=G.charge<0.5?C.yel:G.charge<0.85?'#ffa040':C.red;ctx.strokeStyle=c;ctx.beginPath();ctx.arc(cx,cy,R+2.5,a0,a1);ctx.stroke();}
   ctext(Math.round(G.charge*100)+'%',cx,cy+R+9,1,G.charge>=1?C.red:C.white);}
 function drawSpringHint(){
-  if(G.pulling){const h=62*G.charge,g=ctx.createLinearGradient(0,465,0,403);g.addColorStop(0,C.yel);g.addColorStop(1,C.red);rrect(235.5,403,4.5,62,2);ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fill();
-    if(h>0.5){rrect(235.5,465-h,4.5,h,2);ctx.fillStyle=g;ctx.fill();}return;}
+  if(G.pulling){const h=62*G.charge,g=ctx.createLinearGradient(0,444,0,382);g.addColorStop(0,C.yel);g.addColorStop(1,C.red);rrect(235.5,382,4.5,62,2);ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fill();
+    if(h>0.5){rrect(235.5,444-h,4.5,h,2);ctx.fillStyle=g;ctx.fill();}return;}
   const fl=G.now-(G.hintFlash||-9)<1.2,on=!fl||Math.floor(G.now*8)%2===0;
   if(on){ctx.save();ctx.translate(255.5,286);ctx.rotate(Math.PI/2);dt('TIRA GIU',0,0,1,fl?C.white:C.yel,{outline:'#2a1a00'});ctx.restore();}
   for(let k=0;k<3;k++){const y=345+k*11,a=0.25+0.75*Math.max(0,Math.sin((G.now*3-k*0.7)*Math.PI)) ;ctx.strokeStyle=rgba(C.yel,a*(fl?1:0.85));ctx.lineWidth=1.6;ctx.lineCap='round';ctx.lineJoin='round';
@@ -362,7 +382,7 @@ function overlay(){if(G.state!=='title'&&G.state!=='over')return;ctx.fillStyle='
 function draw(){ctx=OUTX;ctx.setTransform(1,0,0,1,0,0);ctx.imageSmoothingEnabled=false;ctx.drawImage(STATIC,0,0);ctx.setTransform(K,0,0,K,0,0);ctx.imageSmoothingEnabled=false;
   drawLanes();drawDrops();drawLvt();drawSlings();drawLiveSign();drawHole();for(let k=0;k<3;k++)drawBumper(k);drawSofaTarget();
   drawBand();drawDrain();drawPlunger();FLIP.forEach(drawFlipper);
-  if(G.state==='play'||G.state==='ready')for(const b of BALLS)sphere(b.x,b.y+(G.state==='ready'?G.charge*10:0),BR);
+  if(G.state==='play'||G.state==='ready')for(const b of BALLS)sphere(b.x,b.y+(G.state==='ready'?G.charge*TRAVEL:0),BR);
   drawTourCard();drawPops();overlay();drawDMD();drawLoupe();}
 
 /* ---------------- sound: live effects on the shared synth, the music pre-rendered as an 8-bar loop ---------------- */

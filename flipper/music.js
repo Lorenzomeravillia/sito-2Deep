@@ -13,7 +13,7 @@ function defaultSong(){const ev=gameSong(),E=0.2,BAR=1.6,PROG=['C','G','Am','F',
   PROG.forEach((c,b)=>{const t0=b*BAR;for(let i=0;i<8;i++)ev.push({t:t0+i*E,d:0.12,m:NN(ARP[c][i%4]),v:90,i:'p125'});HAR[c].forEach(n=>ev.push({t:t0,d:1.5,m:NN(n),v:80,i:'sq'}));});
   const by={drums:0,bass:1,skank:2,lead:3,p125:4,sq:4},steps=LAYERDEF.map(()=>({events:[],label:''}));
   ev.forEach(e=>steps[by[e.i]].events.push(e));['BATTERIA','BASSO','CHITARRA','MELODIA','ARPEGGI'].forEach((l,k)=>steps[k].label=l);
-  return{name:'',len:LOOP,steps,midi:false};}
+  return{name:'',len:LOOP,steps,midi:false,beat:0.4};}
 
 /* a MIDI song from the panel's settings: the loop is `bars` bars from `offset`, each track in the layer it was given */
 const trackKey=g=>g.ti+':'+g.ch;
@@ -22,7 +22,7 @@ function midiSong(cfg,info){const sp=cfg.speed||1,span=cfg.bars*240/(info.tempo|
     g.notes.forEach(nt=>{if(nt.t0<cfg.offset||nt.t0>=cfg.offset+span)return;const t=(nt.t0-cfg.offset)/sp;
       st.events.push({t,d:Math.max(0.03,Math.min((nt.t1-nt.t0)/sp,len-t+1.2)),m:c.inst==='drums'?nt.n:nt.n+12*(c.oct||0)+(cfg.transp||0),v:nt.v,i:c.inst});});});
   steps.forEach(s=>s.label=s.names.join(' + '));
-  return{name:cfg.name||'',len,steps,midi:true};}
+  return{name:cfg.name||'',len,steps,midi:true,beat:60/((info.tempo||120)*sp)};}
 
 /* render all layers at once: one Engine per layer, its music bus into its own channel; the tail past the loop end is folded
    back onto the start (no seam), then one gain for every layer so the full band peaks at 0.8 */
