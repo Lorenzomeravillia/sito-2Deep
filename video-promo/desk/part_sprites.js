@@ -59,3 +59,9 @@ const KFACE=(()=>{const c=mk(22,20),g=c.getContext('2d');g.drawImage(SPR.kat[0],
 const BULB=sprite(["...####...","..#YYYY#..",".#YYWYYY#.","#YYWYYYYY#","#YYYYYYYY#","#YYYYYYYY#",".#YYYYYY#.","..#YYYY#..","...#YY#...","...GGGG...","...gggg...","...GGGG...","....gg...."],{'#':'#000000',Y:'#ffe03a',W:'#ffffff',G:'#b0b0b0',g:'#6a6a6a'});
 const TRASHF=(()=>{const P=new PG(16,20);P.r(1,5,14,2,'#d8d8d8');P.r(2,7,12,13,'#ececec');for(let x=4;x<13;x+=3)P.r(x,9,1,9,'#8a8a8a');P.r(13,7,1,13,'#9a9a9a');
   P.r(3,1,5,4,'#e8384a');P.r(4,2,3,1,'#ff6a74');P.r(8,0,5,5,'#c02a3a');P.r(9,1,3,2,'#e8384a');P.r(2,3,2,2,'#ffe03a');return P.canvas('#000000');})();
+/* recycle bin in two pieces, so the lid can flip open; a text file; an envelope for the share dialog */
+const BINBODY=(()=>{const P=new PG(14,14);P.r(0,0,14,14,'#ececec');for(let x=3;x<12;x+=3)P.r(x,2,1,10,'#8a8a8a');P.r(12,0,2,14,'#a8a8a8');P.r(0,0,14,1,'#ffffff');return P.canvas('#000000');})();
+const BINLID=(()=>{const P=new PG(16,4);P.r(0,2,16,2,'#d8d8d8');P.r(0,2,16,1,'#ffffff');P.r(5,0,6,2,'#d8d8d8');return P.canvas('#000000');})();
+const BINLIDO=(()=>{const P=new PG(4,16);P.r(0,0,2,16,'#d8d8d8');P.r(1,0,1,16,'#ffffff');P.r(2,5,2,6,'#d8d8d8');return P.canvas('#000000');})();
+const PAPER=(()=>{const P=new PG(11,14);P.r(0,0,8,14,'#ffffff');P.r(8,3,3,11,'#ffffff');P.r(8,0,1,3,'#c8c8c8');P.r(9,2,2,1,'#c8c8c8');for(let y=4;y<12;y+=2)P.r(2,y,7,1,'#5a5a8a');return P.canvas('#000000');})();
+const MAIL=(()=>{const P=new PG(18,13);P.r(0,0,18,13,'#fff6c8');for(let k=0;k<9;k++){P.p(k,k*0.7|0,'#8a6a2a');P.p(17-k,k*0.7|0,'#8a6a2a');}P.r(7,7,4,3,'#e8384a');return P.canvas('#000000');})();

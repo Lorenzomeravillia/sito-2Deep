@@ -93,10 +93,18 @@ Ogni scena dichiara `VIDEO_NAME`, `COVER_T` (il momento usato per la copertina P
 
 ## Promo SABATO_SERA.EXE (`desk/`)
 
-Terza scena, per la stessa serata del 14 novembre: un desktop anni 90. Si apre con il suggerimento "TROVA LA PAROLA SEGRETA" sul suono del modem, poi la scimmia assistente chiede "VUOI USCIRE SABATO?" [SI] [SI], parte il download di 2DEEP_LIVE.EXE dal Monkey's, il divano lo blocca e la scimmia lo spinge nel cestino. Una schermata blu di 0,6 s nasconde la parola segreta, il download finisce e l'applicazione apre il palco del video "Prossimi livelli", con data e luogo.
+Terza scena, per la stessa serata del 14 novembre: un desktop anni 90, 24 secondi.
+
+1. Dal primo fotogramma, sul suono del modem: "TROVA LA PAROLA SEGRETA!".
+2. La scimmia assistente chiede "VUOI USCIRE SABATO?" [SI] [SI] e il clic fa partire il download di 2DEEP_LIVE.EXE dal Monkey's.
+3. Il divano blocca il download.
+4. La scimmia lo spinge nel cestino: il coperchio salta, un vortice lo risucchia colonna per colonna e la corona va giù per ultima.
+5. Il cestino sputa SEGRETO.TXT, che si apre a tutto schermo nel Blocco note per 0,8 s: è la schermata con la parola segreta.
+6. Il download finisce e l'applicazione apre, in una finestra, il palco del video "Prossimi livelli". Accanto compare la finestra con data e luogo.
+7. Chiude la finestra "MANDALO A CHI STA SUL DIVANO" [SI] [SI].
 
 - Regola di questo montaggio: una cosa alla volta sullo schermo, tre o quattro parole per finestra, ogni testo in vista almeno 2 secondi.
-- La parola segreta è `SECRET` in `desk/part_scene.js`; la schermata blu è `EV.bsod`.
-- Il finale non è riscritto: `build.py` (`stage_src`) prende da `part_side.js` e `part_core.js` il locale, il salto sul palco, il pubblico, i coriandoli e l'HUD KATIA / LORENZO, togliendo solo le scritte a comparsa.
-- `MUSIC_GAPS` (facoltativo, per scena) ferma la musica negli intervalli indicati, anche con un MIDI caricato: qui serve per il silenzio della schermata blu.
+- La parola segreta è `SECRET` in `desk/part_scene.js`; il Blocco note è `EV.secret`.
+- Il finale non è riscritto: `build.py` (`stage_src`) prende da `part_side.js` e `part_core.js` il locale, il salto sul palco, il pubblico, i coriandoli e l'HUD KATIA / LORENZO, togliendo solo le scritte a comparsa. `stageIn` lo disegna dentro la finestra dell'applicazione, usando come viewport l'area interna.
+- `MUSIC_GAPS` (facoltativo, per scena) ferma la musica negli intervalli indicati, anche con un MIDI caricato. Questa scena non lo usa più.
 - `python3 build.py` produce anche `build/desk_artifact.html`, `desk_page.html` e `desk_test.html`.

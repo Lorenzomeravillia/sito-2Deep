@@ -113,17 +113,17 @@ mlocal = msrc.replace(MB, '/mb/node_modules/mediabunny/dist/bundles/mediabunny.m
 print('monkey', len(msrc))
 
 # ---- second one-night promo: SABATO_SERA.EXE, a 90s desktop (same player, MIDI music and MP4 render, its own scene) ----
-DPRE = """let W=216,H=384;const DUR=27.2;
+DPRE = """let W=216,H=384;const DUR=24.0;
 const EXPORT=new URLSearchParams(location.search).has('export');
 const cv=document.getElementById('c');const OUTX=cv.getContext('2d');
 const LG=document.createElement('canvas');LG.width=216;LG.height=384;
 const NSC=document.createElement('canvas');NSC.width=216;NSC.height=384;
 let ctx=LG.getContext('2d');const MAINCTX=ctx;ctx.imageSmoothingEnabled=false;"""
 D = lambda n: (SRC / 'desk' / n).read_text()
-dhead = strip(head_raw, 'DATES').replace('{DURS}', '27,2').replace('{DUR}', '27.2').replace('{RENDER_NOTE}', ', dal suggerimento iniziale al palco')
+dhead = strip(head_raw, 'DATES').replace('{DURS}', '24').replace('{DUR}', '24.0').replace('{RENDER_NOTE}', ', dal suggerimento iniziale al palco')
 dhead = dhead.replace('<title>2Deep Prossimi Livelli</title>', '<title>2Deep Sabato Sera.exe</title>').replace('<!--HEAD_EXTRA-->', '').replace('<!--BAR_EXTRA-->', '').replace('<!--GATE-->', '')
 dhead = dhead.replace('<canvas id="c" width="216" height="384"', '<canvas id="c" width="1080" height="1920"')
-dhead = _re.sub(r'aria-label="Animazione[^"]*"', 'aria-label="Video in stile computer anni 90: la scimmia del Monkey\'s spinge il divano nel cestino, il download della serata arriva al 100% e i 2Deep salgono sul palco. Sabato 14 novembre dalle 18 al Monkey\'s Bar di Cugnan, Ponte nelle Alpi"', dhead, count=1)
+dhead = _re.sub(r'aria-label="Animazione[^"]*"', 'aria-label="Video in stile computer anni 90: trova la parola segreta. La scimmia del Monkey\'s risucchia il divano nel cestino, il download della serata arriva al 100% e i 2Deep salgono sul palco. Sabato 14 novembre dalle 18 al Monkey\'s Bar di Cugnan, Ponte nelle Alpi"', dhead, count=1)
 def stage_src():
     """The stage finale of the levels video (part_side.js), taken as it is: the venue, the duo hopping on stage, the crowd,
     confetti, hearts and the KATIA / LORENZO HUD. Helpers the monkey kit already defines identically are dropped,
