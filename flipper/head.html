@@ -84,6 +84,7 @@ body{background:var(--bg);color:var(--ink);margin:0;overflow:hidden;padding-left
 #song #sPlay{border-color:var(--neon)}
 #song #sSave{border-color:var(--cyan2);color:var(--cyan2)}
 #song #sStatus{min-height:1.4em;color:var(--cyan2);font-size:13px}
+#song .shint{grid-column:1/-1;font-size:12px;color:var(--dim);margin:-2px 0 0}
 #song #sStatus.warn{color:#ff9a9a}
 </style>
 <div id="stage" aria-label="Flipper 2Deep: tocca a sinistra e a destra per muovere i flipper, tieni premuto per lanciare la pallina">
@@ -115,6 +116,9 @@ body{background:var(--bg);color:var(--ink);margin:0;overflow:hidden;padding-left
           <label class="sl"><b>Giro <span id="sBarsV"></span></b><input id="sBars" type="range" min="2" max="32" step="1" value="16"></label>
           <label class="sl"><b>Velocità <span id="sSpeedV"></span></b><input id="sSpeed" type="range" min="70" max="130" step="1" value="100"></label>
           <label class="sl"><b>Trasporto (semitoni)</b><select id="sTransp"></select></label>
+          <label class="sl"><b>Eco: intensità <span id="sEchoMixV"></span></b><input id="sEchoMix" type="range" min="0" max="60" step="1" value="28"></label>
+          <label class="sl"><b>Eco: <span id="sEchoRepV"></span></b><input id="sEchoRep" type="range" min="0" max="6" step="1" value="1"></label>
+          <p class="shint">L’eco si sente sulle tracce con il suono «Lead»: una ripetizione ogni 0,3 secondi, ognuna più piano della precedente.</p>
         </div>
         <h2 style="margin-top:16px">QUANDO ENTRA OGNI STRUMENTO</h2>
         <div id="sTracks" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"></div>

@@ -507,5 +507,5 @@ function frame(ts){const t=ts/1000;if(!last)last=t;acc+=Math.min(0.1,t-last);las
 function start(data){if(data&&data.state&&data.state!=='title'&&data.state!=='over'){G.score=data.score||0;G.balls=data.balls||1;G.lit=data.lit||[0,0,0,0];serve();}
   fit();if(!STATIC.width||STATIC.width!==TW*K)buildStatic();requestAnimationFrame(frame);}
 window.claude?.hot?.snapshot?.(()=>({score:G.score,balls:G.balls,lit:G.lit,state:G.state}));
-window.__G=G;window.__song=()=>({SONG,SONGBUF,LAYERS,MLG:MLG.length});window.__LVT=LVT;window.__say=say;window.__balls=()=>BALLS;window.__setBalls=b=>{BALLS=b;};window.__FLIP=FLIP;window.__update=update;window.__draw=draw;window.__serve=serve;
+window.__G=G;window.__renderSong=renderSong;window.__song=()=>({SONG,SONGBUF,LAYERS,MLG:MLG.length});window.__LVT=LVT;window.__say=say;window.__balls=()=>BALLS;window.__setBalls=b=>{BALLS=b;};window.__FLIP=FLIP;window.__update=update;window.__draw=draw;window.__serve=serve;
 window.claude?.hot?.ready?window.claude.hot.ready(start):start(window.claude?.hot?.data??{});

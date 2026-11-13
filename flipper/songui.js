@@ -8,7 +8,7 @@ const fmtS=s=>{const m=Math.floor(s/60),r=s-m*60;return m+':'+(r<10?'0':'')+r.to
 function songFromCfg(cfg){if(!cfg||!cfg.midi)return null;try{const info=analyzeMidi(parseMidi(b64d(cfg.midi)));return{song:midiSong(cfg,info),info};}catch(e){return null;}}
 let CANEDIT=false,SCFG=null;
 const $s=id=>document.getElementById(id);
-const SPN=$s('song'),SBTN=$s('songBtn'),S={file:$s('sFile'),info:$s('sInfo'),name:$s('sName'),offset:$s('sOffset'),offsetV:$s('sOffsetV'),bars:$s('sBars'),barsV:$s('sBarsV'),
+const SPN=$s('song'),SBTN=$s('songBtn'),S={echoMix:$s('sEchoMix'),echoMixV:$s('sEchoMixV'),echoRep:$s('sEchoRep'),echoRepV:$s('sEchoRepV'),file:$s('sFile'),info:$s('sInfo'),name:$s('sName'),offset:$s('sOffset'),offsetV:$s('sOffsetV'),bars:$s('sBars'),barsV:$s('sBarsV'),
   speed:$s('sSpeed'),speedV:$s('sSpeedV'),transp:$s('sTransp'),tracks:$s('sTracks'),order:$s('sOrder'),play:$s('sPlay'),save:$s('sSave'),def:$s('sDef'),close:$s('sClose'),status:$s('sStatus'),body:$s('sBody')};
 for(let k=-12;k<=12;k++){const o=document.createElement('option');o.value=k;o.textContent=(k>0?'+':'')+k;S.transp.appendChild(o);}
 const setS=(t,warn)=>{S.status.textContent=t;S.status.classList.toggle('warn',!!warn);};
@@ -46,7 +46,7 @@ function autoCfg(info,name){const tracks={},L=info.list,mel=L.filter(g=>!g.drum&
   const seen={};L.forEach(g=>{let lb=niceLabel(g);seen[lb]=(seen[lb]||0)+1;if(seen[lb]>1)lb=(lb.slice(0,12)+' '+seen[lb]);
     tracks[trackKey(g)]={label:lb,inst:g===lead?'lead':g.inst,oct:0,step:stepOf(g)};});
   const bars=Math.min(16,maxBars(info));
-  return{v:1,name:up(name).replace(/\.MIDI?$/,'').replace(/_+/g,' ').replace(/\s+/g,' ').trim().slice(0,24),offset:bestOffset(info,tracks,bars),bars,speed:1,transp:0,tracks};}
+  return{v:1,echoMix:ECHO_DEF.mix,echoRep:ECHO_DEF.rep,name:up(name).replace(/\.MIDI?$/,'').replace(/_+/g,' ').replace(/\s+/g,' ').trim().slice(0,24),offset:bestOffset(info,tracks,bars),bars,speed:1,transp:0,tracks};}
 /* the loop starts on a beat of the song's grid. First guess: the stretch where every moment (start, three letters, LIVE) has
    something that plays, then the one with the most tracks playing */
 const beatLen=info=>60/(info.tempo||120);
@@ -59,6 +59,7 @@ function bestOffset(info,tracks,bars){const bl=beatLen(info)*4,span=bars*bl;let 
   return Math.round(best*1000)/1000;}
 function renderPanel(){const has=!!PINFO;S.body.hidden=!has;S.save.disabled=!has;S.play.disabled=!has;if(!has){S.info.textContent=SCFG?'':'Nessun brano caricato: suona la musica 2Deep.';return;}
   const bt=beatLen(PINFO);S.name.value=PCFG.name||'';S.offset.min=(PINFO.first%bt).toFixed(3);S.offset.step=bt.toFixed(4);S.offset.max=Math.max(0,PINFO.end-1).toFixed(3);S.offset.value=PCFG.offset;offText();
+  S.echoMix.value=Math.round((PCFG.echoMix??ECHO_DEF.mix)*100);S.echoRep.value=PCFG.echoRep??ECHO_DEF.rep;echoText();
   S.bars.max=maxBars(PINFO);S.bars.value=PCFG.bars;S.speed.value=Math.round(PCFG.speed*100);S.speedV.textContent=S.speed.value+'%';S.transp.value=PCFG.transp;barsText();
   S.tracks.textContent='';
   PINFO.list.forEach((g,i)=>{const c=PCFG.tracks[trackKey(g)]||(PCFG.tracks[trackKey(g)]={label:up(g.label).slice(0,14),inst:g.inst,oct:0,step:-1});
@@ -87,6 +88,7 @@ function offText(){const b=Math.max(0,Math.round(PCFG.offset/beatLen(PINFO)));S.
 /* which tracks have notes inside the chosen loop: a track that is silent there brings nothing in when its moment comes */
 function silentIn(g){const span=PCFG.bars*240/(PINFO.tempo||120);return notesIn(g,PCFG.offset,span)===0;}
 function markSilent(){S.tracks.querySelectorAll('.strk').forEach((row,i)=>{const g=PINFO.list[i],w=row.querySelector('.swarn');const sil=silentIn(g)&&PCFG.tracks[trackKey(g)].step>=0;w.hidden=!sil;});}
+function echoText(){const m=PCFG.echoMix??ECHO_DEF.mix,r=PCFG.echoRep??ECHO_DEF.rep,off=!r||m<=0;S.echoMixV.textContent=off?'spenta':Math.round(m*100)+'%';S.echoRepV.textContent=r?(r===1?'1 ripetizione':r+' ripetizioni'):'nessuna';}
 function barsText(){const sec=PCFG.bars*240/(PINFO.tempo||120)/PCFG.speed;S.barsV.textContent=PCFG.bars+' battute · '+fmtS(sec);}
 
 /* ---- listening inside the panel: same render as the game, layers switched on up to the chosen moment ---- */
@@ -132,6 +134,8 @@ S.offset.addEventListener('input',()=>{PCFG.offset=+S.offset.value;offText();ren
 S.bars.addEventListener('input',()=>{PCFG.bars=+S.bars.value;barsText();renderOrder();markSilent();changed();});
 S.speed.addEventListener('input',()=>{PCFG.speed=(+S.speed.value)/100;S.speedV.textContent=S.speed.value+'%';barsText();changed();});
 S.transp.addEventListener('change',()=>{PCFG.transp=+S.transp.value;changed();});
+S.echoMix.addEventListener('input',()=>{PCFG.echoMix=(+S.echoMix.value)/100;echoText();changed();});
+S.echoRep.addEventListener('input',()=>{PCFG.echoRep=+S.echoRep.value;echoText();changed();});
 S.save.addEventListener('click',async()=>{if(!PINFO)return;stopPreview();const cfg={...PCFG,v:1,midi:PMIDI,savedAt:new Date().toISOString()};delete cfg.midiUrl;
   if(!midiSong(cfg,PINFO).steps.some(s=>s.events.length)){setS('Nel giro scelto non ci sono note: sposta “Parti da” prima di salvare.',true);return;}
   S.save.disabled=true;setS('Salvo…');
