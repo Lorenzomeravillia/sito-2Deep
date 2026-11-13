@@ -13,7 +13,7 @@ function defaultSong(){const ev=gameSong(),E=0.2,BAR=1.6,PROG=['C','G','Am','F',
   PROG.forEach((c,b)=>{const t0=b*BAR;for(let i=0;i<8;i++)ev.push({t:t0+i*E,d:0.12,m:NN(ARP[c][i%4]),v:90,i:'p125'});HAR[c].forEach(n=>ev.push({t:t0,d:1.5,m:NN(n),v:80,i:'sq'}));});
   const by={drums:0,bass:1,skank:2,lead:3,p125:4,sq:4},steps=LAYERDEF.map(()=>({events:[],label:''}));
   ev.forEach(e=>steps[by[e.i]].events.push(e));['BATTERIA','BASSO','CHITARRA','MELODIA','ARPEGGI'].forEach((l,k)=>steps[k].label=l);
-  return{name:'',len:LOOP,steps,midi:false,beat:0.4};}
+  return{name:'',len:LOOP,steps,midi:false,beat:0.4,echo:ECHO_DEF};}
 
 /* a MIDI song from the panel's settings: the loop is `bars` bars from `offset`, each track in the layer it was given */
 const trackKey=g=>g.ti+':'+g.ch;
@@ -22,13 +22,18 @@ function midiSong(cfg,info){const sp=cfg.speed||1,span=cfg.bars*240/(info.tempo|
     g.notes.forEach(nt=>{if(nt.t0<cfg.offset||nt.t0>=cfg.offset+span)return;const t=(nt.t0-cfg.offset)/sp;
       st.events.push({t,d:Math.max(0.03,Math.min((nt.t1-nt.t0)/sp,len-t+1.2)),m:c.inst==='drums'?nt.n:nt.n+12*(c.oct||0)+(cfg.transp||0),v:nt.v,i:c.inst});});});
   steps.forEach(s=>s.label=s.names.join(' + '));
-  return{name:cfg.name||'',len,steps,midi:true,beat:60/((info.tempo||120)*sp)};}
+  return{name:cfg.name||'',len,steps,midi:true,beat:60/((info.tempo||120)*sp),echo:{mix:cfg.echoMix??ECHO_DEF.mix,rep:cfg.echoRep??ECHO_DEF.rep,time:ECHO_DEF.time}};}
+/* the echo on the tracks played with the Lead sound. The synth engine has a fixed one (one repeat, 0.3 s later, at 28%);
+   here it is rebuilt from the song's settings: rep repeats 0.3 s apart, the first at mix, each next one at 60% of the one before */
+const ECHO_DEF={mix:0.28,rep:1,time:0.3};
+function setEcho(ac,E,o){o=o||ECHO_DEF;E.leadBus.disconnect();E.leadBus.connect(E.musicBus);const n=Math.max(0,Math.min(6,Math.round(o.rep||0)));if(!n||!(o.mix>0))return;
+  for(let k=1;k<=n;k++){const d=ac.createDelay(k*o.time+0.1);d.delayTime.value=k*o.time;const g=ac.createGain();g.gain.value=o.mix*Math.pow(0.6,k-1);E.leadBus.connect(d);d.connect(g);g.connect(E.musicBus);}}
 
 /* render all layers at once: one Engine per layer, its music bus into its own channel; the tail past the loop end is folded
    back onto the start (no seam), then one gain for every layer so the full band peaks at 0.8 */
-async function renderSong(song){const n=LAYERDEF.length,L=Math.max(1,Math.round(MSR*song.len)),TL=Math.round(MSR*1.5),oac=new OAC(n,L+TL,MSR);
+async function renderSong(song){const n=LAYERDEF.length,L=Math.max(1,Math.round(MSR*song.len)),ec=song.echo||ECHO_DEF,TL=Math.round(MSR*Math.max(1.5,(ec.rep||0)*ec.time+1)),oac=new OAC(n,L+TL,MSR);
   const mg=oac.createChannelMerger(n),lp=oac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=9000;mg.connect(lp);lp.connect(oac.destination);
-  song.steps.forEach((s,k)=>{if(!s.events.length)return;const E=new Engine(oac);E.musicBus.disconnect();E.musicBus.connect(mg,0,k);E.musicBus.gain.value=0.8;s.events.forEach(e=>E.note(e));});
+  song.steps.forEach((s,k)=>{if(!s.events.length)return;const E=new Engine(oac);E.musicBus.disconnect();E.musicBus.connect(mg,0,k);E.musicBus.gain.value=0.8;setEcho(oac,E,ec);s.events.forEach(e=>E.note(e));});
   const raw=await new Promise((res,rej)=>{let done=false;const ok=b=>{if(!done){done=true;res(b);}};oac.oncomplete=e=>ok(e.renderedBuffer);const p=oac.startRendering();if(p&&p.then)p.then(ok,rej);});
   const out=oac.createBuffer(n,L,MSR),ch=[];
   for(let k=0;k<n;k++){const a=raw.getChannelData(k),o=out.getChannelData(k);o.set(a.subarray(0,L));for(let i=0;i<TL&&i<L;i++)o[i]+=a[L+i];ch.push(o);}
