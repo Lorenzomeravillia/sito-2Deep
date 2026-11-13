@@ -116,7 +116,9 @@ function ballsCollide(){for(let i=0;i<BALLS.length;i++)for(let j=i+1;j<BALLS.len
 /* ---------------- one physics substep ---------------- */
 function substep(dt){
   FLIP.forEach(f=>moveFlipper(f,dt));
-  if(G.state==='ready'){const b=BALLS[0];b.x=PLX;b.y=PLY+G.charge*10;b.vx=b.vy=0;return;}
+  /* the ball stays on the lane floor while the spring is pulled (it is only drawn lower): below the floor, a full-power
+     shot would hit the floor from underneath and drop into the drain */
+  if(G.state==='ready'){const b=BALLS[0];b.x=PLX;b.y=PLY;b.vx=b.vy=0;return;}
   if(G.state!=='play')return;
   for(const b of BALLS){B=b;if(b===G.hold){b.x=HOLE.x;b.y=HOLE.y;b.vx=b.vy=0;continue;}
     b.vy+=GRAV*dt;const damp=1-0.12*dt;b.vx*=damp;b.vy*=damp;
@@ -264,7 +266,7 @@ function dmdText(){const sv=ctx;ctx=DMDG;DMDG.clearRect(0,0,DC,DR);const m=curMs
     else if(G.state==='over'){dline('PUNTI '+fmtN(G.score),0,0,1);}
     else{dt(fmtN(G.score),1,0,1,'#ffffff');const lv=live(),st=lv&&G.jam?'X4 '+Math.ceil(G.liveUntil-G.now):lv?'LIVE X2 '+Math.ceil(G.liveUntil-G.now):G.combo&&G.now<G.comboUntil?'COMBO X'+G.combo:G.jam?'JAM X2':'PALLE '+G.balls;
       if(!(lv&&Math.floor(G.now*4)%2))dt(st,DC-1-tw(st),0,1,'#ffffff');}
-    const pg=Math.floor(G.now/2.4)%PAGES.length;dline(PAGES[pg],9,G.now%2.4,2.4);}
+    if(G.state==='ready'&&!G.pulling)dline(Math.floor(G.now*1.5)%2?'TIRA GIU LA MOLLA':'',9,0,1);else{const pg=Math.floor(G.now/2.4)%PAGES.length;dline(PAGES[pg],9,G.now%2.4,2.4);}}
   ctx=sv;}
 function drawDMD(){dmdText();const d=DMDG.getImageData(0,0,DC,DR).data;ctx.beginPath();
   for(let j=0;j<DR;j++)for(let i=0;i<DC;i++)if(d[(j*DC+i)*4+3]>100){const x=DX+i*2+1,y=DY+j*2+1;ctx.moveTo(x+0.85,y);ctx.arc(x,y,0.85,0,TAU);}
@@ -300,11 +302,23 @@ function drawDrain(){const eat=G.state==='drain'&&G.now-G.stateT<0.5,y=458-(eat?
   if(G.state==='play'&&G.now<G.saveUntil&&Math.floor(G.now*4)%2===0)ctext('SALVA',126,440,1,C.cyan,{outline:null});}
 function drawPlunger(){const p=G.state==='ready'?G.charge:0,y=465+p*10;rrect(245,y,12,3.5,1.5);ctx.fillStyle='#c8c8d8';ctx.fill();
   ctx.strokeStyle='#7a7a92';ctx.lineWidth=0.8;ctx.beginPath();for(let k=0;k<=6;k++)ctx.lineTo(k%2?247:255,y+3.5+k*(16-p*10)/6);ctx.stroke();
-  if(G.state==='ready'){const a=0.5+0.5*Math.sin(G.now*6);ctx.fillStyle=rgba(C.yel,a);ctx.beginPath();ctx.moveTo(244,428);ctx.lineTo(258,428);ctx.lineTo(251,436);ctx.closePath();ctx.fill();}}
+  if(G.state==='ready')drawSpringHint();}
+/* the plunger lane shows the gesture: TIRA GIU written down the lane, three arrows, a fingertip sliding down onto the spring.
+   While pulling, a power bar beside the lane fills from yellow to red */
+function drawSpringHint(){
+  if(G.pulling){const h=62*G.charge,g=ctx.createLinearGradient(0,465,0,403);g.addColorStop(0,C.yel);g.addColorStop(1,C.red);rrect(235.5,403,4.5,62,2);ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fill();
+    if(h>0.5){rrect(235.5,465-h,4.5,h,2);ctx.fillStyle=g;ctx.fill();}return;}
+  const fl=G.now-(G.hintFlash||-9)<1.2,on=!fl||Math.floor(G.now*8)%2===0;
+  if(on){ctx.save();ctx.translate(255.5,322);ctx.rotate(Math.PI/2);dt('TIRA GIU',0,0,1,fl?C.white:C.yel,{outline:'#2a1a00'});ctx.restore();}
+  for(let k=0;k<3;k++){const y=385+k*11,a=0.25+0.75*Math.max(0,Math.sin((G.now*3-k*0.7)*Math.PI)) ;ctx.strokeStyle=rgba(C.yel,a*(fl?1:0.85));ctx.lineWidth=1.6;ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.beginPath();ctx.moveTo(246.5,y);ctx.lineTo(251,y+4);ctx.lineTo(255.5,y);ctx.stroke();}
+  const u=(G.now%1.5)/1.5;if(u<0.8){const v=u/0.8,y=392+v*58,a=v<0.12?v/0.12:v>0.8?(1-v)/0.2:1;
+    ctx.strokeStyle='rgba(255,255,255,'+(0.28*a)+')';ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(251,392);ctx.lineTo(251,y);ctx.stroke();
+    circle(251,y,4.6,'rgba(255,255,255,'+(0.9*a)+')');ctx.strokeStyle=rgba(C.yel,a);ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(251,y,6.2,0,TAU);ctx.stroke();}}
 /* while the ball waits on the plunger: the three dates in big letters, ticked once their target has been hit in this game */
 function drawTourCard(){if(!LVL.length)return;let a=0;
   if(G.state==='ready')a=clamp((G.now-G.readyT-0.15)/0.3);else if(G.state==='play')a=1-clamp((G.now-G.launchT)/0.35);if(a<=0)return;
-  const x=22,w=206,n=Math.min(3,LVL.length),y=150,h=24+n*31;ctx.save();ctx.globalAlpha=a;
+  const x=22,w=206,n=Math.min(3,LVL.length),y=150,h=38+n*31;ctx.save();ctx.globalAlpha=a;
   ctx.save();ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=12*K;ctx.shadowOffsetY=4*K;rrect(x,y,w,h,6);ctx.fillStyle='rgba(14,10,32,0.93)';ctx.fill();ctx.restore();
   rrect(x,y,w,h,6);ctx.strokeStyle=rgba(C.cyan,0.6);ctx.lineWidth=1;ctx.stroke();
   dt('PROSSIME DATE',x+8,y+7,1,C.cyan);const hint=G.lvGot.slice(0,n).every(Boolean)?'TOUR COMPLETO!':'BERSAGLI A DESTRA';dt(hint,x+w-8-tw(hint),y+7,1,G.lvGot.slice(0,n).every(Boolean)?C.yel:'#7d73a8');
@@ -313,6 +327,8 @@ function drawTourCard(){if(!LVL.length)return;let a=0;
     dt(l.date,x+27,ry,2,got?C.yel:C.white);const pl=up(l.place);dt(pl,x+w-(got?22:9)-tw(pl),ry+4,1,'#9a90c0');
     if(got){ctx.strokeStyle=C.cyan;ctx.lineWidth=1.8;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(x+w-16,ry+7);ctx.lineTo(x+w-13,ry+10);ctx.lineTo(x+w-8,ry+3);ctx.stroke();}
     dt([up(l.venue),l.time].filter(Boolean).join(' · '),x+27,ry+17,1,got?C.cyan:'#b8b0d8');});
+  const fy=y+h-12,pull='TIRA GIU LA MOLLA PER LANCIARE';ctx.strokeStyle='rgba(255,255,255,0.08)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+8,fy-5);ctx.lineTo(x+w-8,fy-5);ctx.stroke();
+  dt(pull,x+8,fy,1,C.yel);const ax=x+w-14+Math.sin(G.now*5)*1.5;ctx.strokeStyle=C.yel;ctx.lineWidth=1.4;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(ax-5,fy+3.5);ctx.lineTo(ax+4,fy+3.5);ctx.moveTo(ax+1,fy+0.5);ctx.lineTo(ax+4,fy+3.5);ctx.lineTo(ax+1,fy+6.5);ctx.stroke();
   ctx.restore();}
 function drawPops(){G.pops.forEach(p=>{const a=(G.now-p.t)/p.d;ctext(p.txt,Math.round(p.x),Math.round(p.y-a*(p.d>1.2?8:16)),p.sc,p.col);});}
 function overlay(){if(G.state!=='title'&&G.state!=='over')return;ctx.fillStyle='rgba(10,8,24,0.88)';ctx.fillRect(0,37,TW,TH-37);const bl=Math.floor(G.now*2.5)%2===0;
@@ -322,7 +338,7 @@ function overlay(){if(G.state!=='title'&&G.state!=='over')return;ctx.fillStyle='
       ctext('PROSSIMO LIVELLO '+NEXT.n,135,257,1,'#9a90c0',{outline:null});ftext(up(NEXT.venue),135,268,240,2,C.yel);
       ctext([dayWord(NEXT),NEXT.time,NEXT.place].filter(Boolean).map(up).join(' · '),135,286,1,C.white,{outline:null});}
     else{ctx.drawImage(SPR.kat[1],98,152);ctx.drawImage(SPR.lor[2],142,149);}
-    [['TOCCA A SINISTRA E A DESTRA PER I FLIPPER',C.white],['TIENI PREMUTO PER LANCIARE','#9a90c0'],['D-E-E-P: OGNI LETTERA UNO STRUMENTO',C.yel],['TUTTE E QUATTRO: LIVE CON TUTTA LA BAND',C.yel],
+    [['TOCCA A SINISTRA E A DESTRA PER I FLIPPER',C.white],['TIRA GIU LA MOLLA PER LANCIARE','#9a90c0'],['D-E-E-P: OGNI LETTERA UNO STRUMENTO',C.yel],['TUTTE E QUATTRO: LIVE CON TUTTA LA BAND',C.yel],
      ['B-I-S A SINISTRA: ACCENDI ENCORE',C.pink],['ENCORE ACCESO: JAM SESSION',C.cyan],['LE TRE DATE A DESTRA: TOUR COMPLETO',C.cyan],['COLPISCI IL DIVANO DI FILA: COMBO',C.red]].forEach(([t,c],i)=>ctext(t,135,302+i*11,1,c,{outline:null}));
     if(bl)ctext('TOCCA PER GIOCARE',135,396,2,C.white);
     ctext(G.follower?'BONUS FOLLOWER ATTIVO: 4 PALLINE':'SEGUI @2DEEPLIVEMUSIC: +1 PALLINA',135,424,1,C.pink,{outline:null});ctext('TASTIERA: Z E M (O I DUE SHIFT), SPAZIO',135,440,1,'#6a5f96',{outline:null});}
@@ -334,7 +350,7 @@ function overlay(){if(G.state!=='title'&&G.state!=='over')return;ctx.fillStyle='
 function draw(){ctx=OUTX;ctx.setTransform(1,0,0,1,0,0);ctx.imageSmoothingEnabled=false;ctx.drawImage(STATIC,0,0);ctx.setTransform(K,0,0,K,0,0);ctx.imageSmoothingEnabled=false;
   drawLanes();drawDrops();drawLvt();drawSlings();drawLiveSign();drawHole();for(let k=0;k<3;k++)drawBumper(k);drawSofaTarget();
   drawBand();drawDrain();drawPlunger();FLIP.forEach(drawFlipper);
-  if(G.state==='play'||G.state==='ready')for(const b of BALLS)sphere(b.x,b.y,BR);
+  if(G.state==='play'||G.state==='ready')for(const b of BALLS)sphere(b.x,b.y+(G.state==='ready'?G.charge*10:0),BR);
   drawTourCard();drawPops();overlay();drawDMD();}
 
 /* ---------------- sound: live effects on the shared synth, the music pre-rendered as an 8-bar loop ---------------- */
@@ -408,23 +424,32 @@ function keysNow(){KEYS.L=KL.some(c=>HELD.has(c));KEYS.R=KR.some(c=>HELD.has(c))
 function press(side){if(!FLIP[side==='L'?0:1].on)sfx('flip');}
 function startOrResume(){initAudio();if(G.state==='title'||(G.state==='over'&&IGF.hidden&&G.now-G.stateT>0.8)){newGame();sfx('start');return true;}return G.state==='over';}
 function shiftCheck(e){if(!e.shiftKey&&(HELD.has('ShiftLeft')||HELD.has('ShiftRight'))){HELD.delete('ShiftLeft');HELD.delete('ShiftRight');keysNow();}}
+/* the plunger: start in the plunger lane, pull the spring down and let go (finger or mouse); the further you pull, the
+   stronger the shot. Holding anywhere else on the table still charges it, as before. */
+let DRAG=null;const PULL=70;
+const toTable=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*TW,(e.clientY-r.top)/r.height*TH];};
+const inSpring=(x,y)=>x>=224&&y>=300;
+function springRelease(){const p=G.charge;DRAG=null;G.pulling=false;if(G.state!=='ready')return;if(p>=0.08)launch();else{G.charge=0;G.hintFlash=G.now;}}
 stage.addEventListener('pointerdown',e=>{if(e.target.closest('#mute,#ig,#song,#songBtn'))return;e.preventDefault();if(e.pointerType==='mouse'&&e.button!==0)return;if(startOrResume())return;
+  const tt=toTable(e);if(G.state==='ready'&&!DRAG&&inSpring(tt[0],tt[1])){DRAG={id:e.pointerId,y0:tt[1],type:e.pointerType,t:nowMs()};G.charge=0;G.charging=false;G.pulling=true;try{stage.setPointerCapture(e.pointerId);}catch(_){}return;}
   const r=cv.getBoundingClientRect(),side=e.clientX<r.left+r.width/2?'L':'R';press(side);PTR.set(e.pointerId,{side,type:e.pointerType,t:nowMs()});setFlips();
   if(G.state==='ready'&&chargePtr===null){chargePtr=e.pointerId;G.charging=true;}
   try{stage.setPointerCapture(e.pointerId);}catch(_){}});
-const release=e=>{if(!PTR.has(e.pointerId))return;PTR.delete(e.pointerId);setFlips();if(e.pointerId===chargePtr){chargePtr=null;if(G.state==='ready'&&G.charging)launch();}};
+const release=e=>{if(DRAG&&e.pointerId===DRAG.id){springRelease();return;}if(!PTR.has(e.pointerId))return;PTR.delete(e.pointerId);setFlips();if(e.pointerId===chargePtr){chargePtr=null;if(G.state==='ready'&&G.charging)launch();}};
 stage.addEventListener('contextmenu',e=>e.preventDefault());
 ['pointerup','pointercancel'].forEach(t=>addEventListener(t,release,true));stage.addEventListener('lostpointercapture',release);
-addEventListener('pointermove',e=>{shiftCheck(e);const p=PTR.get(e.pointerId);if(!p)return;if(e.pointerType==='mouse'&&e.buttons===0)release(e);else p.t=nowMs();},true);
+addEventListener('pointermove',e=>{shiftCheck(e);
+  if(DRAG&&e.pointerId===DRAG.id){if(e.pointerType==='mouse'&&e.buttons===0)return springRelease();DRAG.t=nowMs();if(G.state==='ready')G.charge=clamp((toTable(e)[1]-DRAG.y0)/PULL);return;}
+  const p=PTR.get(e.pointerId);if(!p)return;if(e.pointerType==='mouse'&&e.buttons===0)release(e);else p.t=nowMs();},true);
 /* the browser's own list of fingers on the glass: a finger that is not in it any more is not holding anything */
-function touchCheck(e){const live=e.touches.length;for(const[id,p]of PTR)if(p.type==='touch'&&live===0)release({pointerId:id});if(live)for(const p of PTR.values())if(p.type==='touch')p.t=nowMs();}
+function touchCheck(e){const live=e.touches.length;if(DRAG&&DRAG.type==='touch'){if(live===0&&e.type!=='touchstart')springRelease();else DRAG.t=nowMs();}for(const[id,p]of PTR)if(p.type==='touch'&&live===0)release({pointerId:id});if(live)for(const p of PTR.values())if(p.type==='touch')p.t=nowMs();}
 ['touchstart','touchmove','touchend','touchcancel'].forEach(t=>addEventListener(t,touchCheck,{capture:true,passive:true}));
-function releaseAll(){PTR.clear();HELD.clear();chargePtr=null;KEYS.L=KEYS.R=false;setFlips();}
+function releaseAll(){PTR.clear();HELD.clear();chargePtr=null;KEYS.L=KEYS.R=false;if(DRAG){DRAG=null;G.pulling=false;if(G.state==='ready')G.charge=0;}setFlips();}
 addEventListener('blur',releaseAll);addEventListener('pagehide',releaseAll);document.addEventListener('visibilitychange',()=>{if(document.hidden)releaseAll();});
 /* called every frame: a key that stopped repeating, or a hold with no sign of life for 8 s, is let go */
 function holdCheck(){const t=nowMs();let ch=false;
   for(const[c,k]of HELD)if((!isShift(c)&&t-k>1600)||t-k>8000){HELD.delete(c);ch=true;}if(ch)keysNow();
-  for(const[id,p]of PTR)if(t-p.t>8000)release({pointerId:id});}
+  for(const[id,p]of PTR)if(t-p.t>8000)release({pointerId:id});if(DRAG&&t-DRAG.t>8000){DRAG=null;G.pulling=false;G.charge=0;}}
 const KL=['ArrowLeft','KeyZ','ShiftLeft','KeyA'],KR=['ArrowRight','KeyM','ShiftRight','KeyL','Slash'],KP=['Space','ArrowDown','Enter'];
 addEventListener('keydown',e=>{if(!document.getElementById('song').hidden)return;if(!isShift(e.code))shiftCheck(e);
   const fl=KL.includes(e.code)||KR.includes(e.code);if(!fl&&!KP.includes(e.code))return;e.preventDefault();
