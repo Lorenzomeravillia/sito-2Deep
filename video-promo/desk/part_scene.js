@@ -8,27 +8,29 @@ function setFormat(f){FMT=f==='landscape'?'landscape':'portrait';const l=isL();L
 
 /* ---------------- the night ---------------- */
 const SECRET='BANANA';
-/* ---------------- timeline: 150 BPM, beat 0.4 s, bar 1.6 s, 14 bars = 22.4 s ---------------- */
-const EV={dial:[0.1,0.75],hand:[0.8,1.5],conn:1.35,desk:1.6,
-  asst:{in:1.8,cur:[3.4,4.1],click:4.4,out:4.6},
-  dl:{open:4.8,freeze:7.2,resume:14.2,done:14.8},
-  sofa:{rise:7.2,up:7.5,happy:14.2},
-  pop1:7.6,casc:{t0:8.8,n:24,gap:0.04},
-  chat:9.6,trillo:10.0,shake:[10.0,11.2],fall:10.4,
-  bsod:[11.2,11.8],
-  err:{in:11.8,cur:[13.2,13.8],click:14.0,out:14.2},
-  cards:{t0:14.4,n:8,gap:0.18},
-  player:{open:16.0,max:[17.2,17.6]},
-  card:18.0,off:22.0};
+/* ---------------- timeline: 150 BPM, beat 0.4 s, bar 1.6 s, 18 bars = 28.8 s ----------------
+   One idea per beat, every line on screen for 1.6 s or more:
+   hook (modem) > joke (assistant) > goal (download) > obstacle (sofa) > ally (Katia's nudge) > crash (hidden frame)
+   > K.O. > wow (solitaire cards) > payoff (the band at the bar) > card */
+const EV={dial:[0.15,0.95],hand:[1.0,1.85],conn:1.9,desk:2.4,
+  asst:{in:2.6,cur:[4.8,5.4],click:5.6,out:5.9},
+  dl:{open:6.4,freeze:9.6,resume:17.6,done:19.2},
+  sofa:{rise:9.6,up:9.9,happy:17.6},
+  pop1:10.0,casc:{t0:12.0,n:12,gap:0.07},
+  chat:12.8,trillo:14.4,shake:[14.4,16.0],fall:14.8,
+  bsod:[16.0,16.6],ko:16.8,
+  cards:{t0:19.2,n:8,gap:0.22},
+  player:{open:21.6,max:[22.1,22.5]},
+  card:24.4,off:28.4};
 const MUSIC_GAPS=[EV.bsod];
 const CASC_TXT=['RESTA QUI','FUORI FA FREDDO','ANCORA UN EPISODIO?','PANTOFOLE CALDE',"C'E' LA PARTITA",'SEI STANCO','COPERTINA?','DOMANI ESCI'];
 
 /* ---------------- layout ---------------- */
 function LY(){
   if(isL())return{tb:200,ic:{x:34,y:8,dy:47},dial:[96,44,192,112],ball:[60,8,236,144],monk:[304,116],dl:[92,24,200,150],sofa:[140,136],
-    pop1:[102,50,180,96],casc:{x:56,y:6,dx:7,dy:6,w:124,h:42},chat:[94,16,196,116],trY:150,err:[90,26,204,152],player:[198,22,180,178]};
+    pop1:[102,50,180,96],casc:{x:56,y:6,dx:7,dy:6,w:124,h:42},chat:[94,16,196,116],trY:150,koY:176,err:[90,26,204,152],player:[198,22,180,178]};
   return{tb:368,ic:{x:34,y:50,dy:52},dial:[14,118,188,112],ball:[8,78,200,144],monk:[112,226],dl:[8,92,200,150],sofa:[56,246],
-    pop1:[18,148,180,96],casc:{x:4,y:50,dx:5,dy:7,w:124,h:42},chat:[10,64,196,116],trY:204,err:[6,100,204,152],player:[8,174,200,162]};}
+    pop1:[18,148,180,96],casc:{x:4,y:50,dx:5,dy:7,w:124,h:42},chat:[10,64,196,116],trY:204,koY:56,err:[6,100,204,152],player:[8,174,200,162]};}
 function NL(){return isL()?{F:196,barX:272,trioX:240,trioFrom:110,card:[6,6,232,204]}:{F:326,barX:40,trioX:8,trioFrom:-90,card:[4,40,208,238]};}
 
 const ss=u=>{u=clamp(u);return u*u*(3-2*u);};
@@ -111,14 +113,7 @@ function popups(t){const L=LY();
 function chatWin(t){const L=LY(),a=t-EV.trillo,sh=a>=0?Math.round(Math.sin(t*80)*Math.min(4,1+a*6)):0,r=L.chat.slice();r[0]+=sh;r[1]+=a>=0?Math.round(Math.cos(t*67)*2):0;
   const[x,y,w]=win(r,'CHAT CON KATIA');field(x,y,w,64);rr(x+4,y+4,24,22,'#ffd6ea');bevel(x+4,y+4,24,22,true);ctx.drawImage(KFACE,x+5,y+5);
   dt('KATIA:',x+32,y+4,1,C95.navy);dt('SABATO',x+32,y+14,2,C95.txt);dt('CI SEI?',x+32,y+32,2,C95.txt);
-  if(a>=0){dt('KATIA TI HA INVIATO',x+2,y+68,1,C95.red);dt('UN TRILLO!',x+2+tw('KATIA TI HA INVIATO ')+0,y+68,1,C95.red);}
   field(x,y+80,w-58,14);btn(x+w-54,y+80,54,14,'TRILLO',{pressed:a>=0&&a<0.12});}
-
-/* error dialog after the crash */
-function errWin(t){const E=EV.err,L=LY(),r=L.err,[x,y,w,h]=r;const c=win(r,'DIVANO.EXE');
-  ctx.drawImage(ERRX,c[0]+6,c[1]+6);lines(['DIVANO.EXE HA','ESEGUITO UN\'','OPERAZIONE','NON VALIDA E','SARA\'','TERMINATO.'],c[0]+30,c[1]+6,2,C95.txt,17);
-  const pr=t>=E.click&&t<E.click+0.15;btn(x+w/2-70,y+h-24,64,18,'CHIUDI',{pressed:pr,def:true});btn(x+w/2+4,y+h-24,72,18,'DETTAGLI >>');}
-const errBtn=()=>{const[x,y,w,h]=LY().err;return[x+w/2-38,y+h-15];};
 
 /* solitaire win: cards bounce down leaving a trail (sampled at 30 fps so every render shows the same trail) */
 const CARDP={};
@@ -132,7 +127,7 @@ function cardsTrail(t){if(t<EV.cards.t0)return;cardPaths().forEach(c=>{for(const
 /* the cursor */
 function cursorAt(t){const st=[W-26,H-70];
   const go=(a,b,to,clk)=>{if(t<a[0]||t>clk+0.35)return null;const u=ss((t-a[0])/(a[1]-a[0])),p=st.map((s,i)=>s+(to[i]-s)*u);return[p[0],p[1],t>=clk&&t<clk+0.15];};
-  return go(EV.asst.cur,0,asstBtn(),EV.asst.click)||go(EV.err.cur,0,errBtn(),EV.err.click);}
+  return go(EV.asst.cur,0,asstBtn(),EV.asst.click);}
 function drawCursor(t){const c=cursorAt(t);if(c)ctx.drawImage(CURSOR,Math.round(c[0])+(c[2]?1:0),Math.round(c[1])+(c[2]?1:0));}
 
 function deskScene(t){
@@ -144,15 +139,15 @@ function deskScene(t){
   drawSofa(t);
   if(t<EV.bsod[0])popups(t);
   if(t>=EV.chat&&t<EV.bsod[0])chatWin(t);
-  if(t>=EV.err.in&&t<EV.err.out)errWin(t);
   cardsTrail(t);
   if(t>=EV.dl.done)dlWin(t);
   if(t>=EV.asst.in&&t<EV.asst.out+0.3)assistant(t);
   ctx.restore();
-  if(t>=EV.trillo&&t<EV.bsod[0]){const L=LY(),a=t-EV.trillo,y=L.trY-slam(t,EV.trillo);panelT(y);ctext('TRILLO!',W/2,y,3,['#ffe03a','#ff7ad8','#5fe0ff'][Math.floor(t*8)%3],{shadow:'#ff4a5a',sd:2});}
+  if(t>=EV.ko&&t<EV.ko+1.6){const L=LY(),y=L.koY-slam(t,EV.ko),s='DIVANO K.O.!';panelT(y,tw(s)*3+20);ctext(s,W/2,y,3,'#ffe03a',{shadow:'#ff4a5a',sd:2});}
+  if(t>=EV.trillo&&t<EV.bsod[0]){const L=LY(),a=t-EV.trillo,y=L.trY-slam(t,EV.trillo);panelT(y,140);ctext('TRILLO!',W/2,y,3,['#ffe03a','#ff7ad8','#5fe0ff'][Math.floor(t*8)%3],{shadow:'#ff4a5a',sd:2});}
   drawCursor(t);
 }
-function panelT(y){rr(W/2-70,y-6,140,33,'#000000');rr(W/2-72,y-8,140,33,'#0c0a2a');}
+function panelT(y,w){w=Math.min(W-4,w);rr(W/2-w/2+2,y-6,w,33,'#000000');rr(W/2-w/2,y-8,w,33,'#0c0a2a');}
 
 /* ---------------- blue screen: the hidden frame with the password ---------------- */
 function bsodScene(t){rr(0,0,W,H,C95.bsod);const l=isL(),wht='#ffffff';
@@ -185,7 +180,7 @@ function nightScene(t){const N=NL(),F=N.F,P=EV.player;ctx.drawImage(nightBG(),0,
   if(on)glow(bx+82,byT+14,44,'#ff5fd8',0.22);
   ctx.drawImage(on?NEON.mOn:NEON.mOff,bx+16,byT+5);ctx.drawImage(on?BAR_NEON.on:BAR_NEON.off,bx+44,byT+9);ctx.drawImage(on?NEON.bOn:NEON.bOff,bx+102,byT+9);
   for(let k=0,x=bx+6;x<bx+158;x+=8,k++)rr(x,byT+58,2,2,on?['#ff4a5a','#ffe03a','#5ae06a','#5fe0ff','#ff7ad8'][(k+Math.floor(t*5))%5]:'#3a3a4a');
-  const a=clamp((t-P.open-0.1)/1.6),x=Math.round(N.trioFrom+(N.trioX-N.trioFrom)*a),walk=a<1;trio(t,x,F,{walk,play:!walk});
+  const a=clamp((t-P.open-0.1)/1.7),x=Math.round(N.trioFrom+(N.trioX-N.trioFrom)*a),walk=a<1;trio(t,x,F,{walk,play:!walk});
   if(!walk){const door=bx+82;for(let k=0;k<2;k++){const u=((t-P.max[1])*0.8+k*0.5)%1;sparks(door,F-36,u,6,16);}}}
 
 function finaleScene(t){const P=EV.player,L=LY();
@@ -229,5 +224,5 @@ function render(t){
   crt(t);
 }
 /* what the shared player/renderer needs to know about this scene */
-const VIDEO_NAME='2Deep_SabatoSera_exe',COVER_T=20.0,AUDIO_KEY=()=>FMT;   /* card bounces differ a little between the two formats */
+const VIDEO_NAME='2Deep_SabatoSera_exe',COVER_T=26.5,AUDIO_KEY=()=>FMT;   /* card bounces differ a little between the two formats */
 window.__render=render;window.__DUR=DUR;window.__setFormat=setFormat;

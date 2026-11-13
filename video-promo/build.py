@@ -113,14 +113,14 @@ mlocal = msrc.replace(MB, '/mb/node_modules/mediabunny/dist/bundles/mediabunny.m
 print('monkey', len(msrc))
 
 # ---- second one-night promo: SABATO_SERA.EXE, a 90s desktop (same player, MIDI music and MP4 render, its own scene) ----
-DPRE = """let W=216,H=384;const DUR=22.4;
+DPRE = """let W=216,H=384;const DUR=28.8;
 const EXPORT=new URLSearchParams(location.search).has('export');
 const cv=document.getElementById('c');const OUTX=cv.getContext('2d');
 const LG=document.createElement('canvas');LG.width=216;LG.height=384;
 const NSC=document.createElement('canvas');NSC.width=216;NSC.height=384;
 let ctx=LG.getContext('2d');const MAINCTX=ctx;ctx.imageSmoothingEnabled=false;"""
 D = lambda n: (SRC / 'desk' / n).read_text()
-dhead = strip(head_raw, 'DATES').replace('{DURS}', '22,4').replace('{DUR}', '22.4').replace('{RENDER_NOTE}', ', dal modem alla scheda con la data')
+dhead = strip(head_raw, 'DATES').replace('{DURS}', '28,8').replace('{DUR}', '28.8').replace('{RENDER_NOTE}', ', dal modem alla scheda con la data')
 dhead = dhead.replace('<title>2Deep Prossimi Livelli</title>', '<title>2Deep Sabato Sera.exe</title>').replace('<!--HEAD_EXTRA-->', '').replace('<!--BAR_EXTRA-->', '').replace('<!--GATE-->', '')
 dhead = dhead.replace('<canvas id="c" width="216" height="384"', '<canvas id="c" width="1080" height="1920"')
 dhead = _re.sub(r'aria-label="Animazione[^"]*"', 'aria-label="Video in stile computer anni 90: il download del sabato sera, il divano che prova a bloccarlo, il trillo di Katia e i 2Deep che arrivano al Monkey\'s Bar. Sabato 14 novembre dalle 18 al Monkey\'s Bar di Cugnan, Ponte nelle Alpi"', dhead, count=1)
