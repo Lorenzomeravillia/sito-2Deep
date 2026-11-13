@@ -23,7 +23,8 @@ async function loadSong(){const pre=STORE.preload();let cfg=pre;
   if(cfg===undefined){try{cfg=JSON.parse(localStorage.getItem(SONG_KEY)||'null');}catch(e){cfg=null;}}
   await applySong(cfg);
   try{await STORE.init();CANEDIT=STORE.edit;if(pre===undefined){const d=await STORE.load();if(d!==undefined)await applySong(d);}}catch(e){}}
-function songBtnVisible(){return(CANEDIT||location.hash==='#brano')&&(G.state==='title'||G.state==='over')&&SPN.hidden;}
+/* the editor's button: on the start screen only (the end of the game belongs to the players), and only for admins */
+function songBtnVisible(){return(CANEDIT||location.hash==='#brano')&&G.state==='title'&&SPN.hidden;}
 
 /* ---- panel state: the MIDI being edited and its settings ---- */
 let PINFO=null,PMIDI=null,PCFG=null;
