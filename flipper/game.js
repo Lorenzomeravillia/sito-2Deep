@@ -297,14 +297,18 @@ function drawLiveSign(){const on=live(),bl=on&&Math.floor(G.now*5)%2===0;if(on)s
 /* the duo: in LIVE (and JAM) they dance on the spot in time with the song: knees bend on every beat, a little hop between beats,
    the upper body sways over two beats (Katia and Lorenzo mirrored, so they lean in and out together), strumming on the beat,
    a coloured light behind each. The dance fades in and out (G.dance) instead of starting with a jump */
+/* Lorenzo in three layers so his harp guitar can have pixels a third of the size: body behind, guitar at 3x, arms and head in front */
+const LORHI={back:[0,1,2].map(f=>buildLor(f,'back')),front:[0,1,2].map(f=>buildLor(f,'front')),gtr:buildHarpHi()};
+function drawLor(f,x,y,w,h){ctx.drawImage(LORHI.back[f],x,y);ctx.imageSmoothingEnabled=false;ctx.drawImage(LORHI.gtr,x,y,w,h);ctx.drawImage(LORHI.front[f],x,y);}
 function drawBand(){const d=G.dance,lv=live()||G.jam,jam=lv||G.now-G.bandJam<0.6,beat=(SONG&&SONG.beat)||0.4,ph=G.now/beat;
   const f=lv?[1,0,2,0][Math.floor(ph*2)%4]:jam?[1,0,2,0][Math.floor(G.now*8)%4]:0,bounce=(1-Math.cos(ph*TAU))/2,sway=Math.sin(ph*Math.PI);
-  [[SPR.kat[f],14,418,1,C.pink],[SPR.lor[f],202,414,-1,C.cyan]].forEach(([sp,x,y,side,col])=>{const w=sp.width,h=sp.height,fx=x+w/2,fy=y+h;
+  [[SPR.kat[f],14,418,1,C.pink,false],[SPR.lor[f],202,414,-1,C.cyan,true]].forEach(([sp,x,y,side,col,lor])=>{const w=sp.width,h=sp.height,fx=x+w/2,fy=y+h;
+    const put=(px,py)=>{if(lor)drawLor(f,px,py,w,h);else ctx.drawImage(sp,px,py);};
     if(d>0.02){soft(fx,fy-h*0.55,h*0.8,col,0.22*d*(0.6+0.4*(1-bounce)));}
     const sq=1-0.08*d*(1-bounce),hop=-1.6*d*bounce,sh=0.11*d*sway*side;
     ctx.fillStyle='rgba(0,0,0,'+(0.32-0.1*d*bounce)+')';ctx.beginPath();ctx.ellipse(fx,fy-1,w*0.32*(1-0.12*d*bounce),2,0,0,TAU);ctx.fill();
-    if(d<0.02&&!jam){ctx.drawImage(sp,x,y);return;}
-    ctx.save();ctx.translate(fx,fy+hop);ctx.transform(1,0,-sh,sq,0,0);ctx.drawImage(sp,-w/2,-h-(jam&&!lv&&f?1:0));ctx.restore();});
+    if(d<0.02&&!jam){put(x,y);return;}
+    ctx.save();ctx.translate(fx,fy+hop);ctx.transform(1,0,-sh,sq,0,0);put(-w/2,-h-(jam&&!lv&&f?1:0));ctx.restore();});
   if(live()||G.jam)for(let k=0;k<3;k++){const u=(G.now*0.8+k/3)%1;ctx.drawImage(NOTES[k],Math.round(24+k*4+Math.sin(u*6)*3),Math.round(414-u*44));ctx.drawImage(NOTES[k+1],Math.round(216-k*4+Math.sin(u*6+1)*3),Math.round(410-u*44));}
   dt('KATIA',10,471,1,'#f3d8e6');dt('LORENZO',190,471,1,'#d8ecf3');}
 function drawDrain(){const eat=G.state==='drain'&&G.now-G.stateT<0.5,y=458-(eat?Math.round(Math.sin((G.now-G.stateT)/0.5*Math.PI*3)*3):0);
