@@ -1946,7 +1946,7 @@ const stepLabel=k=>SONG&&SONG.steps[k]?up(SONG.steps[k].label):'';
    Logical table 270x480 (MSX-like: finer pixels, flat colours, thin lines) drawn 1:1 on LG and shown as large as the screen allows.
    Physics: 120 updates a second, 5 substeps each (600 Hz), so the ball never jumps through a wall.
    Rules: three balls (four for Instagram followers). Bumpers 100, slingshots 10, a lit lane 250, drop targets 250,
-   the moving sofa 500 a hit (x2, x3, x4 if you hit it again before its timer runs out; the fifth in a row: SFRATTO, +5000), the ENCORE hole 500. D-E-E-P in the top lanes: +2000 and 20 s of LIVE, everything x2.
+   the moving sofa 500 a hit (x2, x3, x4 if you hit it again before its timer runs out; the fifth in a row: HAI BATTUTO IL DIVANO, +5000), the ENCORE hole 500. D-E-E-P in the top lanes: +2000 and 20 s of LIVE, everything x2.
    The three B-I-S targets light the ENCORE hole: the next ball in it starts JAM SESSION, a two-ball multiball, x2 too.
    For the first 5 s of every ball the sofa gives it back (RIPROVA).
    The table is the next gig: the site's dates (bridge.js, window.__LVE) give the playfield lettering, the three level targets
@@ -2045,10 +2045,11 @@ function hitSofa(){if(sofaGone())return;const x=G.sofaX,ax=x-SOFAT.half,bx=x+SOF
     /* the first K.O. of a game introduces him by name, once */
     const intro=c===1&&!G.sofaMet&&!(G.msg&&curMsg()&&G.msgP>1);if(intro)G.sofaMet=true;
     pop(intro?'RE DIVANO K.O.!':c===1?'DIVANO K.O.!':'COMBO X'+c+'!',intro?clamp(x,100,150):x,y-40,c>1?C.yel:C.red,2);sfx('sofa',c);
-    say([intro?{l1:'RE DIVANO K.O.',l2:'FORZA, ALZATI!',d:1.8}:{big:c===1?'K.O.!':'COMBO X'+c,d:1.0},{l1:c===4?'ANCORA UNO: SFRATTO!':'COLPISCILO ANCORA',l2:'X'+(c+1)+' SE LO PRENDI',d:1.6}],c>1?2:1);}}
+    say([intro?{l1:'RE DIVANO K.O.',l2:'FORZA, ALZATI!',d:1.8}:{big:c===1?'K.O.!':'COMBO X'+c,d:1.0},{l1:c===4?'UN ALTRO E LO BATTI':'COLPISCILO ANCORA',l2:'X'+(c+1)+' SE LO PRENDI',d:1.6}],c>1?2:1);}}
 /* five hits in a row: the sofa is evicted, flies off the table and comes back a few seconds later */
 function sofaEvict(){const v=5000*mult();G.score+=v;G.sofaOut=G.now;G.sofaOutX=G.sofaX;G.combo=0;G.stunUntil=0;G.comboUntil=0;G.bandJam=G.now;G.evicts++;
-  pop('SFRATTATO!',126,292,C.yel,3);pop('+'+v,126,322,C.white,2);sfx('evict');say([{big:'SFRATTATO!',d:1.3,blink:1},{l1:'SEI LIBERO DI USCIRE',l2:'+'+v,d:1.8}],2);}
+  pop('HAI BATTUTO',126,278,C.yel,2);pop('IL DIVANO!',126,295,C.yel,3);pop('+'+v,126,326,C.white,2);sfx('evict');
+  say([{l1:'HAI BATTUTO',l2:'IL DIVANO!',d:1.6,blink:1},{l1:'VIENI AD ASCOLTARCI',l2:'DAL VIVO!',d:1.9},{l1:'SALVA LE DATE',l2:'IN AGENDA',d:1.7}],2);}
 function hitFlipper(f){const ex=f.px+Math.cos(f.a)*f.len,ey=f.py+Math.sin(f.a)*f.len,dx=ex-f.px,dy=ey-f.py,l2=dx*dx+dy*dy;
   let t=((B.x-f.px)*dx+(B.y-f.py)*dy)/l2;t=t<0?0:t>1?1:t;const cx=f.px+dx*t,cy=f.py+dy*t,rad=6-3*t;
   let nx=B.x-cx,ny=B.y-cy;const d=Math.hypot(nx,ny),R=BR+rad;if(d>=R||d<1e-6)return;nx/=d;ny/=d;B.x=cx+nx*R;B.y=cy+ny*R;
@@ -2083,7 +2084,7 @@ function holeIn(b){G.hold=b;G.holdT=G.now;add(500,HOLE.x,HOLE.y-17);
 function lostBall(){if(G.now<G.saveUntil){pop('RIPROVA!',126,380,C.cyan,2);sfx('save');serve();say([{big:'RIPROVA',d:1.3}],3);return;}
   /* RE DIVANO eats it: snap, three chews, a burp, then a satisfied grin until the next launch (drawDrain) */
   G.state='drain';G.stateT=G.now;G.jam=false;G.burpT=G.now+0.82;G.smug=true;sfx('gnam');pop('GNAM!',126,436,C.red,2);
-  const seq=[{big:'GNAM!',d:0.9},G.balls>1?{l1:'PALLINA PERSA',l2:G.balls>2?'NE RESTANO '+(G.balls-1):'ULTIMA PALLINA',d:1.4}:{l1:'PARTITA FINITA',l2:'HA VINTO IL DIVANO',d:1.8}];
+  const seq=[{big:'GNAM!',d:0.9},G.balls>1?{l1:'PALLINA PERSA',l2:G.balls>2?'NE RESTANO '+(G.balls-1):'ULTIMA PALLINA',d:1.4}:{l1:'PER QUESTA VOLTA',l2:'HA VINTO IL DIVANO',d:2.0}];
   /* every other lost ball (never the last), the sofa has a word for you while the next one waits on the spring */
   if(G.balls>2&&G.quipK++%2===0){const q=QUIPS[(G.quipK>>1)%QUIPS.length];seq.push({sofa:1,l1:q[0],l2:q[1],d:2.4});}
   say(seq,3);}
@@ -2353,12 +2354,12 @@ function overlay(){if(G.state!=='title'&&G.state!=='over')return;ctx.fillStyle='
     if(bl)ctext('TOCCA PER GIOCARE',135,396,2,C.white);
     ctext(G.follower?'BONUS FOLLOWER ATTIVO: 4 PALLINE':'SEGUI @2DEEPLIVEMUSIC: +1 PALLINA',135,424,1,C.pink,{outline:null});ctext('TASTIERA: Z E M (O I DUE SHIFT), SPAZIO',135,440,1,'#6a5f96',{outline:null});}
   else{/* at home the sofa always wins (a pinball game always ends with a lost ball): the rematch is at the next gig */
-    soft(135,90,110,C.red,0.12);ctext('STAVOLTA',135,41,1,'#c9c0ea',{outline:null});ctext('HA VINTO IL DIVANO',135,51,2,C.red,{shadow:'#5a1018',sd:2});
+    soft(135,90,110,C.red,0.12);ctext('PER QUESTA VOLTA',135,41,1,'#c9c0ea',{outline:null});ctext('HA VINTO IL DIVANO',135,51,2,C.red,{shadow:'#5a1018',sd:2});
     const sc=fmtN(G.score),sw=tw(sc)*3,rx=Math.round(135-(40+8+sw)/2);drawSofaJaw(SOFA_OK,rx,76,0,true);
     ctx.fillStyle='#26263a';ctx.fillRect(rx+33,80,3,7);ctx.fillStyle='#e8384a';ctx.fillRect(rx+34,81,1,1);ctx.fillStyle='#86cfdc';ctx.fillRect(rx+34,83,1,1);   /* the remote */
     dt(sc,rx+48,79,3,C.yel,{shadow:'#b0485a',sd:2});
-    const ev=G.evicts;if(ev)ctext("L'HAI SFRATTATO "+ev+(ev===1?' VOLTA':' VOLTE'),135,103,1,C.yel,{outline:null});
-    const dare=ev?'ORA FALLO DAL VIVO':'LA RIVINCITA SI GIOCA DAL VIVO';
+    const ev=G.evicts;if(ev)ctext("MA TU L'HAI BATTUTO "+(ev===1?'UNA VOLTA!':ev+' VOLTE!'),135,103,1,C.yel,{outline:null});
+    const dare=ev?'VIENI AD ASCOLTARCI DAL VIVO!':'LA RIVINCITA SI GIOCA DAL VIVO';
     /* the levels map with the next dates, looping the first 17 seconds of the video */
     if(LVE&&NEXT){frameBox(31,130,208,117,dare);ctx.imageSmoothingEnabled=false;ctx.drawImage(lvFrame(0.3+(G.now-G.stateT)%16.4),0,0,384,216,31,130,208,117);}
     else{ctext(dare,135,150,1,C.cyan,{outline:null});ctext('NUOVE DATE IN ARRIVO',135,166,1,'#9a90c0',{outline:null});}
