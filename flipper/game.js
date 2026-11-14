@@ -289,6 +289,9 @@ function drawDMD(){dmdText();const d=DMDG.getImageData(0,0,DC,DR).data;ctx.begin
   ctx.strokeStyle=c;ctx.lineWidth=0.9;ctx.lineCap='round';ctx.beginPath();if(MUTED){ctx.moveTo(258,28);ctx.lineTo(265,8);}else{ctx.arc(263,18,3,-0.9,0.9);ctx.moveTo(263+5.2*Math.cos(-0.9),18+5.2*Math.sin(-0.9));ctx.arc(263,18,5.2,-0.9,0.9);}ctx.stroke();}
 /* the "Prossimi livelli" video drawn into the game: re-rendered at most 30 times a second */
 let lvF=-1;function lvFrame(t){const f=Math.floor(t*30);if(f!==lvF){LVE.render(t);lvF=f;}return LVE.cv;}
+/* text stretched to width W: the spare units are shared out between the letters, whole units only so pixels stay sharp */
+function jtext(s,cx,y,sc,col,W,o={}){const ch=[...s],n=ch.length-1,ex=Math.max(0,Math.round(W-tw(s)*sc));let x=Math.round(cx-W/2);
+  ch.forEach((c,i)=>{dt(c,x,y,sc,col,o);x+=(gl(c)[0].length+1)*sc+(n>0?Math.floor(ex*(i+1)/n)-Math.floor(ex*i/n):0);});}
 function frameBox(x,y,w,h,title){ctx.save();ctx.shadowColor=rgba(C.cyan,0.35);ctx.shadowBlur=10*K;rrect(x-3,y-(title?14:3),w+6,h+(title?17:6),4);ctx.fillStyle='#1b1636';ctx.fill();ctx.restore();
   rrect(x-3,y-(title?14:3),w+6,h+(title?17:6),4);ctx.strokeStyle=rgba(C.cyan,0.7);ctx.lineWidth=1;ctx.stroke();
   if(title){dt(title,x+1,y-11,1,C.cyan);for(let k=0;k<3;k++)circle(x+w-3-k*7,y-7.5,2,[C.red,C.yel,C.pink][k]);}}
@@ -410,15 +413,16 @@ function overlay(){if(G.state!=='title'&&G.state!=='over')return;ctx.fillStyle='
     if(bl)ctext('TOCCA PER GIOCARE',135,396,2,C.white);
     ctext(G.follower?'BONUS FOLLOWER ATTIVO: 4 PALLINE':'SEGUI @2DEEPLIVEMUSIC: +1 PALLINA',135,424,1,C.pink,{outline:null});ctext('TASTIERA: Z E M (O I DUE SHIFT), SPAZIO',135,440,1,'#6a5f96',{outline:null});}
   else{/* at home the sofa always wins (a pinball game always ends with a lost ball): the rematch is at the next gig */
-    soft(135,90,110,C.red,0.12);ctext('PER QUESTA VOLTA',135,41,1,'#c9c0ea',{outline:null});ctext('HA VINTO IL DIVANO',135,51,2,C.red,{shadow:'#5a1018',sd:2});
-    const sc=fmtN(G.score),sw=tw(sc)*3,rx=Math.round(135-(40+8+sw)/2);drawSofaJaw(SOFA_OK,rx,76,0,true);
-    ctx.fillStyle='#26263a';ctx.fillRect(rx+33,80,3,7);ctx.fillStyle='#e8384a';ctx.fillRect(rx+34,81,1,1);ctx.fillStyle='#86cfdc';ctx.fillRect(rx+34,83,1,1);   /* the remote */
-    dt(sc,rx+48,79,3,C.yel,{shadow:'#b0485a',sd:2});
-    const ev=G.evicts;if(ev)ctext("MA TU L'HAI BATTUTO "+(ev===1?'UNA VOLTA!':ev+' VOLTE!'),135,103,1,C.yel,{outline:null});
-    const dare=ev?'VIENI AD ASCOLTARCI DAL VIVO!':'LA RIVINCITA SI GIOCA DAL VIVO';
+    /* every text row has the same width (letter spacing stretched in whole units), rows 4 units apart */
+    const R1='PER QUESTA VOLTA',R2='HA VINTO IL DIVANO',R4='VIENI AD ASCOLTARCI,',R5='SCONFIGGILO DAL VIVO!',BW=Math.max(...[R1,R2,R4,R5].map(r=>tw(r)*2));
+    soft(135,90,110,C.red,0.12);jtext(R1,135,39,2,'#c9c0ea',BW);jtext(R2,135,57,2,C.red,BW,{shadow:'#5a1018',sd:2});
+    const sc=fmtN(G.score),sw=tw(sc)*3,rx=Math.round(135-(40+8+sw)/2);drawSofaJaw(SOFA_OK,rx,84,0,true);
+    ctx.fillStyle='#26263a';ctx.fillRect(rx+33,88,3,7);ctx.fillStyle='#e8384a';ctx.fillRect(rx+34,89,1,1);ctx.fillStyle='#86cfdc';ctx.fillRect(rx+34,91,1,1);   /* the remote */
+    dt(sc,rx+48,86,3,C.yel,{shadow:'#b0485a',sd:2});
+    jtext(R4,135,112,2,C.cyan,BW);jtext(R5,135,130,2,C.cyan,BW);
     /* the levels map with the next dates, looping the first 17 seconds of the video */
-    if(LVE&&NEXT){frameBox(31,130,208,117,dare);ctx.imageSmoothingEnabled=false;ctx.drawImage(lvFrame(0.3+(G.now-G.stateT)%16.4),0,0,384,216,31,130,208,117);}
-    else{ctext(dare,135,150,1,C.cyan,{outline:null});ctext('NUOVE DATE IN ARRIVO',135,166,1,'#9a90c0',{outline:null});}
+    if(LVE&&NEXT){frameBox(47,151,176,99,'');ctx.imageSmoothingEnabled=false;ctx.drawImage(lvFrame(0.3+(G.now-G.stateT)%16.4),0,0,384,216,47,151,176,99);}
+    else ctext('NUOVE DATE IN ARRIVO',135,190,1,'#9a90c0',{outline:null});
     if(IGF.hidden&&bl&&G.now-G.stateT>0.8)ctext('O TOCCA IL TAVOLO',135,TH-14,1,'#6a5f96',{outline:null});}}
 function draw(){ctx=OUTX;ctx.setTransform(1,0,0,1,0,0);ctx.imageSmoothingEnabled=false;ctx.drawImage(STATIC,0,0);ctx.setTransform(K,0,0,K,0,0);ctx.imageSmoothingEnabled=false;
   drawLanes();drawDrops();drawLvt();drawSlings();drawLiveSign();drawHole();for(let k=0;k<3;k++)drawBumper(k);drawSofaTarget();
