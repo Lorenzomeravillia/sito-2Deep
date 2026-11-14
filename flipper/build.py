@@ -67,8 +67,15 @@ else:
 <meta property="og:url" content="https://www.2deep.it/gioca">
 <meta property="og:title" content="2Deep Pinball">
 <meta property="og:description" content="Gioca al flipper dei 2Deep e scopri dove suoniamo le prossime serate.">
-<meta property="og:image" content="https://jvcvxzampxopvihahwbh.supabase.co/storage/v1/object/public/td-site/hero/img_3378.jpeg">
+<meta property="og:image" content="https://www.2deep.it/assets/flipper/og-gioca.jpg">
+<meta property="og:image:secure_url" content="https://www.2deep.it/assets/flipper/og-gioca.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="2Deep Pinball: il flipper dei 2Deep, con Katia, Lorenzo e Re Divano">
 <meta property="og:locale" content="it_IT">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.2deep.it/assets/flipper/og-gioca.jpg">
 <meta name="theme-color" content="#07050f">
 """
     HEAD_SITE = HEAD.replace('<title>2Deep Pinball</title>', '<title>2Deep Pinball · gioca e scopri le prossime serate</title>').replace('<meta name="claude:viewport-fit-sides" content="cover">\n', '')
