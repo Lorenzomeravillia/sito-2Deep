@@ -1479,17 +1479,23 @@ function buildHarpHi(){const S=3,P=new PG(32*S,48*S),c=LC,X=v=>(v+1)*S,blk='#080
   for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(solid(x,y)&&(!solid(x,y-1)||!solid(x-1,y)||!solid(x+1,y)||!solid(x,y+1)))rimPts.push([x,y,!solid(x,y-1)||!solid(x-1,y)]);
   rimPts.forEach(([x,y,tl])=>P.p(x,y,tl?rim:dk));
   /* soundhole */
-  P.el(X(8.6),X(28),2.3*S,2.3*S,c.gold);P.el(X(8.6),X(28),1.6*S,1.6*S,'#000000');
-  /* neck strings: four, parallel to the neck's edges */
-  for(let k=-1.5;k<=1.5;k++){const o=k*0.42;L(13.6+o*0.47,27+o*0.88-0.1,25.6+o*0.47,20.6+o*0.88-0.1,'#8c8cae',1);}
+  P.el(X(10.6),X(28.4),1.9*S,1.9*S,c.gold);P.el(X(10.6),X(28.4),1.3*S,1.3*S,'#000000');   /* on the neck's line, between the bridge and the neck */
+  /* one bridge for both sets of strings, slanted across the lower bout (partly under the strumming hand): the harp strings
+     leave from its upper end, the neck strings from its lower end, so the two groups open apart and never cross */
+  const B0=[4.9,27.3],B1=[7.7,31.4],onB=t=>[B0[0]+(B1[0]-B0[0])*t,B0[1]+(B1[1]-B0[1])*t];
+  L(B0[0],B0[1],B1[0],B1[1],c.bridge,4);
+  /* neck strings: four, parallel to the neck, from where each meets the bridge up to the nut */
+  const N0=[13.2,27],N1=[25.6,20.5],nd=[N1[0]-N0[0],N1[1]-N0[1]],nl=Math.hypot(nd[0],nd[1]),nu=[nd[0]/nl,nd[1]/nl],np=[-nu[1],nu[0]];
+  for(let k=-1.5;k<=1.5;k++){const o=k*0.42,P0=[N0[0]+np[0]*o,N0[1]+np[1]*o],bd=[B1[0]-B0[0],B1[1]-B0[1]];
+    const den=nu[0]*bd[1]-nu[1]*bd[0],tt=((B0[0]-P0[0])*bd[1]-(B0[1]-P0[1])*bd[0])/den,A=[P0[0]+nu[0]*tt,P0[1]+nu[1]*tt];
+    L(A[0],A[1],N1[0]+np[0]*o,N1[1]+np[1]*o,'#8c8cae',1);}
   /* pegs: neck headstock and the harp hook */
   [[26,16.7],[27.4,16],[28.8,15.4],[26.4,22.2],[27.8,21.5],[29.1,20.8]].forEach(([x,y])=>P.r(X(x),X(y),2,2,c.peg));
   [[20.6,5.3],[22,4.4],[23.4,3.7],[24.8,3.1],[26.2,2.8],[27.4,3.4]].forEach(([x,y])=>P.r(X(x),X(y),2,2,c.peg));
   /* harp strings: six, a fan from the bridge on the lower bout to the tuners along the hook */
   const top=[[19.8,9.4],[21.2,7.9],[22.6,7],[24,6.3],[25.4,5.7],[26.8,5.3]];
-  top.forEach(([x,y],k)=>L(8.4+k*0.75,33+k*0.12,x,y,'#b4b4d0',1));
-  /* bridges */
-  L(5.6,33.2,10.8,33.9,c.bridge,3);P.r(X(5.4),X(33),2,2,c.gold);
+  top.forEach(([x,y],k)=>{const a=onB(0.04+k*0.1);L(a[0],a[1],x,y,'#b4b4d0',1);});
+  [0.04,0.54,0.98].forEach(t=>{const a=onB(t);P.r(X(a[0])-1,X(a[1])-1,2,2,c.gold);});
   return P.canvas();}
 const KC={D:'#2b4fc0',Dl:'#5a7ee8',Dd:'#1b2f7c',pk:'#14204e',pb:'#a87444',pc:'#e0c08c',pl:'#9cc0ff',belt:'#6e3e1e',ring:'#d8b058',S:'#f2b48c',s:'#c47e58',t1:'#e8609a',t2:'#3ec89a',t3:'#2e6fa8',t4:'#f0c040',O:'#c87e3a',Ol:'#eca45a',Od:'#8a4a1a',hole:'#3a1a08',nk:'#6a3a14',nst:'#e8dcc0',hs:'#4a2810',peg:'#e0e0f0',st1:'#d8303a',st2:'#f0ece0',st3:'#141414',sand:'#7a4a24',y:'#f0c040'};
 const KHEAD=[
