@@ -1,7 +1,7 @@
 """2Deep Pinball, built from the promo engine's font, sprites and synth (../video-promo), the levels engine of the
    "Prossimi livelli" video (../assets/2deep-engine.js) and the files in this folder.
 
-   python3 flipper/build.py                  -> ../gioca.html, the page at 2deep.it/gioca: dates, song and admin rights
+   python3 flipper/build.py                  -> ../flipper.html, the page at 2deep.it/flipper (and 2deep.it/gioca, see vercel.json): dates, song and admin rights
                                                  come from Supabase when the page opens (site_data.json if it does not answer)
    python3 flipper/build.py --artifact DIR   -> DIR/pinball.html for claude.ai (dates frozen from site_data.json, song in the
                                                  page's own database) and DIR/pinball_page.html, a wrapper for local tests
@@ -64,7 +64,8 @@ else:
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Il flipper dei 2Deep: gioca, scopri le prossime serate dal vivo e segnale in calendario.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://www.2deep.it/gioca">
+<meta property="og:url" content="https://www.2deep.it/flipper">
+<link rel="canonical" href="https://www.2deep.it/flipper">
 <meta property="og:title" content="2Deep Pinball">
 <meta property="og:description" content="Gioca al flipper dei 2Deep e scopri dove suoniamo le prossime serate.">
 <meta property="og:image" content="https://www.2deep.it/assets/flipper/og-gioca.jpg">
@@ -84,5 +85,5 @@ else:
     page = (meta + HEAD_SITE + '</head>\n<body>\n' + BODY_SITE +
             '\n<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>\n<script src="/config.js"></script>\n<script>\nfunction GAME(){\n' +
             game_js('store_site.js') + '\n}\n' + boot + '\n</script>\n</body>\n</html>\n')
-    (ROOT / 'gioca.html').write_text(page)
-    print('gioca.html', len(page))
+    (ROOT / 'flipper.html').write_text(page)
+    print('flipper.html', len(page))

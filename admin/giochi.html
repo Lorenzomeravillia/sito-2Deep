@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>2 Deep Admin · Giochi</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f0eb;--text:#0a0a0a;--primary:#c8922a;--primary-dark:#a07020;--border:#ddd;--white:#fff;--danger:#dc3545;--success:#28a745;--muted:#6b6b6b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:1rem}
+.container{max-width:820px;margin:0 auto;background:var(--white);padding:2rem;border-radius:8px;box-shadow:0 4px 15px rgba(0,0,0,.05)}
+@media(max-width:540px){body{padding:.5rem}.container{padding:1.1rem}}
+h2{margin-bottom:.4rem}h3{margin:1.6rem 0 .6rem}h4{margin:1.1rem 0 .5rem;font-size:1rem}
+p.note{font-size:.88rem;color:var(--muted);line-height:1.45;margin-bottom:.8rem}
+.top-bar{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1.2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.links{display:flex;gap:.5rem;flex-wrap:wrap}
+.links a{display:inline-flex;align-items:center;padding:.5rem .8rem;border-radius:4px;background:#0a0716;color:#ffe03a;text-decoration:none;font-weight:500;font-size:.9rem}
+.links a.plain{background:#eee;color:var(--text)}
+input,textarea,select{width:100%;padding:.7rem;border:1px solid var(--border);border-radius:4px;font-family:inherit;font-size:1rem;background:#fff;color:var(--text)}
+textarea{resize:vertical;min-height:4.5rem}
+input[type=color]{padding:.15rem;height:2.6rem;width:4rem}
+button{padding:.7rem 1.2rem;border:none;background:var(--text);color:var(--white);cursor:pointer;border-radius:4px;font-weight:500;font-family:inherit;font-size:.95rem}
+button:hover{background:var(--primary-dark)}button:disabled{opacity:.55;cursor:not-allowed}
+button.light{background:#eee;color:var(--text)}button.danger{background:var(--danger)}button.primary{background:var(--primary)}
+label{display:block;font-weight:500;margin-bottom:.35rem;font-size:.9rem}
+.fg{margin-bottom:1rem}
+.cnt{font-weight:400;font-size:.75rem;color:#888;margin-left:.3rem}.cnt.full{color:var(--danger)}
+.hint{font-size:.78rem;color:var(--muted);margin-top:.25rem}
+.row{display:flex;gap:.8rem;flex-wrap:wrap}.row>.fg{flex:1;min-width:140px}
+.item{border:1px solid var(--border);border-radius:6px;padding:.9rem 1rem;margin-bottom:.6rem;display:flex;gap:.8rem;align-items:center;flex-wrap:wrap}
+.item .grow{flex:1;min-width:180px}
+.item .sub{font-size:.82rem;color:var(--muted)}
+.item select{width:auto;min-width:200px;flex:1}
+.item a{color:var(--primary-dark);font-size:.9rem}
+.box{background:#fafafa;border:1px solid var(--border);border-radius:6px;padding:1rem;margin-bottom:1rem}
+.box h4{margin-top:0;display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.power{font-weight:400;font-size:.8rem;color:#7a4b00;background:#fff3d6;border-radius:99px;padding:.15rem .6rem}
+.photo{display:flex;gap:.8rem;align-items:center;flex-wrap:wrap}
+.photo img{width:72px;height:90px;object-fit:cover;border-radius:4px;border:1px solid var(--border);background:#eee}
+.photo .ph-empty{width:72px;height:90px;border-radius:4px;border:1px dashed #bbb;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#999;text-align:center}
+.preview{font-family:ui-monospace,Menlo,monospace;font-size:.85rem;background:#0a0716;color:#ffe03a;border-radius:4px;padding:.55rem .7rem;margin-top:.4rem;line-height:1.5;word-break:break-word}
+.actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem;position:sticky;bottom:0;background:#fff;padding:.8rem 0;border-top:1px solid var(--border)}
+#gate{max-width:320px;margin:4rem auto;text-align:center;display:flex;flex-direction:column;gap:.8rem}
+#toast{position:fixed;bottom:20px;right:20px;left:20px;display:flex;flex-direction:column;align-items:flex-end;gap:8px;z-index:99;pointer-events:none}
+.t{padding:.8rem 1.1rem;border-radius:4px;color:#fff;font-size:.9rem;box-shadow:0 4px 12px rgba(0,0,0,.15);max-width:420px}.t.ok{background:var(--success)}.t.err{background:var(--danger)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div class="container">
+  <div id="gate">
+    <h2>2 Deep — Giochi</h2>
+    <p class="note">Accedi con le credenziali dell'admin.</p>
+    <input type="email" id="gEmail" placeholder="Email" autocomplete="username">
+    <input type="password" id="gPass" placeholder="Password" autocomplete="current-password">
+    <button id="gLogin">Accedi</button>
+  </div>
+
+  <div id="main" hidden>
+    <div class="top-bar">
+      <h2>Giochi</h2>
+      <div class="links"><a class="plain" href="/admin">← Admin</a><a href="/flipper" target="_blank" rel="noopener">🕹️ Flipper</a><a href="/locandina" target="_blank" rel="noopener">🧩 Locandina</a></div>
+    </div>
+    <p class="note">I giochi leggono le date e queste schede ogni volta che qualcuno li apre: i link salvati restano validi e mostrano sempre la prossima serata. Se una data non ha una scheda, la Locandina usa la versione neutra (locandina dei 2Deep e brani del repertorio come segreti).</p>
+
+    <div id="listView">
+      <h3>Prossime date</h3>
+      <p class="note">Scegli quale scheda usa ogni data. La Locandina mostra la prima data in programma; con "Anteprima" vedi il gioco di una data qualsiasi.</p>
+      <div id="events"></div>
+
+      <h3>Schede dei locali</h3>
+      <p class="note">Una scheda per locale: si può riusare per più date nello stesso posto. Usate solo informazioni confermate dal locale e foto che avete il permesso di pubblicare.</p>
+      <div id="venues"></div>
+      <button id="newVenue" class="primary">+ Nuova scheda</button>
+    </div>
+
+    <form id="editView" hidden autocomplete="off">
+      <h3 id="edTitle">Nuova scheda</h3>
+      <div class="fg"><label for="fName">Nome della scheda <span class="cnt" data-for="fName"></span></label><input id="fName" maxlength="40" required placeholder="Al Cantonet (Feltre)"><div class="hint">Solo per voi, per riconoscerla nell'elenco.</div></div>
+      <div class="fg"><label for="fShort">Nome del locale nel gioco, con l'articolo <span class="cnt" data-for="fShort"></span></label><input id="fShort" maxlength="14" required placeholder="IL CANTONET">
+        <div class="preview" id="pvShort"></div></div>
+      <div class="fg"><label for="fTag">Riga sotto il bancone <span class="cnt" data-for="fTag"></span></label><input id="fTag" maxlength="26" placeholder="MUSICA DAL VIVO"><div class="hint">Lasciala vuota per "MUSICA DAL VIVO".</div></div>
+      <div class="row">
+        <div class="fg"><label for="cNeon">Insegna</label><input type="color" id="cNeon" value="#ff4a5a"></div>
+        <div class="fg"><label for="cCounter">Bancone</label><input type="color" id="cCounter" value="#9a5a35"></div>
+        <div class="fg"><label for="cDate">Data</label><input type="color" id="cDate" value="#c9ad62"></div>
+      </div>
+
+      <h3>Prodotti</h3>
+      <p class="note">Fino a tre. Compaiono come polaroid nella locandina, come premi da catturare in mare (ognuno con il suo potere) e come schede con la foto a fine partita.</p>
+      <div id="prods"></div>
+
+      <h3>Il mistero <span class="hint">(facoltativo)</span></h3>
+      <p class="note">Una curiosità da farsi raccontare alla serata, come la leggenda del Daù: finisce sulla lavagnetta del bancone, nel pacco sorpresa e nell'ultima scheda.</p>
+      <div class="box" id="mys"></div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="save">Salva scheda</button>
+        <button type="button" class="light" id="cancel">Torna all'elenco</button>
+        <a id="pvLink" href="#" target="_blank" rel="noopener" hidden style="align-self:center;color:var(--primary-dark)">Anteprima del gioco</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+<script src="/config.js"></script>
+<script>
+/* Admin of the game profiles: td.game_venues (one per venue) and td.site_events.game_venue_id (which profile a date uses).
+   Photos are shrunk in the browser (960 px, JPEG) and stored in the td-site bucket under giochi/<profile id>/. */
+(function(){
+"use strict";
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp2Y3Z4emFtcHhvcHZpaGFod2JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzMDMyNDMsImV4cCI6MjA4Nzg3OTI0M30.x2seoq8KYJdWLles7H8n0uD2Qm77MCbWEGNDnN6DWrc';/* same public key admin/admin.js logs in with */
+const $=id=>document.getElementById(id),BUCKET='td-site';
+const ICONS=[['cocktail','🍸 Cocktail'],['birra','🍺 Birra'],['vino','🍷 Vino'],['caffe','☕ Caffè'],['brioche','🥐 Brioche'],['crescia','🫓 Crescia / piadina'],['pizza','🍕 Pizza']];
+const POWERS=['congela i nemici per 4 secondi','dà una vita in più','rallenta i nemici per 8 secondi'];
+let sb=null,events=[],venues=[],cur=null,busy=false;
+const toast=(m,err)=>{const d=document.createElement('div');d.className='t '+(err?'err':'ok');d.textContent=m;$('toast').appendChild(d);setTimeout(()=>d.remove(),err?6000:3000);};
+const el=(tag,props,...kids)=>{const e=document.createElement(tag);if(props)for(const k in props){if(k==='class')e.className=props[k];else if(k.startsWith('on'))e.addEventListener(k.slice(2),props[k]);else if(k in e)e[k]=props[k];else e.setAttribute(k,props[k]);}kids.flat().forEach(c=>c!=null&&e.append(c));return e;};
+const pubUrl=path=>sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+const ownPath=url=>{const m=/\/storage\/v1\/object\/public\/td-site\/(giochi\/.+)$/.exec(url||'');return m?decodeURIComponent(m[1]):null;};
+const MO=['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'],WD=['dom','lun','mar','mer','gio','ven','sab'];
+const fmtDate=iso=>{const[y,m,d]=iso.split('-').map(Number);return WD[new Date(y,m-1,d).getDay()]+' '+d+' '+MO[m-1]+' '+y;};
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+
+/* ---- login (the session is shared with the main admin page) ---- */
+async function start(){
+  try{sb=window.supabase.createClient(window.SUPABASE_URL,KEY,{db:{schema:'td'}});}catch(e){toast('Supabase non caricato: '+e.message,true);return;}
+  const{data}=await sb.auth.getSession();if(data&&data.session)enter();
+  $('gLogin').addEventListener('click',login);[$('gEmail'),$('gPass')].forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')login();}));}
+async function login(){const email=$('gEmail').value.trim(),password=$('gPass').value;if(!email||!password)return toast('Inserisci email e password',true);
+  $('gLogin').disabled=true;const{error}=await sb.auth.signInWithPassword({email,password});$('gLogin').disabled=false;
+  if(error)return toast('Accesso non riuscito: '+error.message,true);enter();}
+async function enter(){$('gate').hidden=true;$('main').hidden=false;await load();}
+
+/* ---- data ---- */
+async function load(){
+  const[a,b]=await Promise.all([sb.from('site_events').select('id,event_date,event_time,venue,city,is_published,game_venue_id').gte('event_date',today()).order('event_date'),
+                                sb.from('game_venues').select('*').order('name')]);
+  if(a.error||b.error){toast('Errore nel caricare i dati: '+((a.error||b.error).message),true);return;}
+  events=a.data||[];venues=b.data||[];renderList();}
+function renderList(){
+  const E=$('events');E.replaceChildren();
+  if(!events.length)E.append(el('p',{class:'note'},'Nessuna data in programma.'));
+  events.forEach((e,i)=>{const sel=el('select',{'aria-label':'Scheda per '+e.venue,onchange:ev=>linkEvent(e,ev.target.value,sel)},
+      el('option',{value:''},'Nessuna: versione neutra'),...venues.map(v=>el('option',{value:v.id,selected:v.id===e.game_venue_id},v.name)));
+    E.append(el('div',{class:'item'},el('div',{class:'grow'},el('div',null,el('strong',null,fmtDate(e.event_date)),' · ',e.venue||''),
+        el('div',{class:'sub'},(e.city||'').trim()+(e.event_time?' · ore '+String(e.event_time).slice(0,5):'')+(e.is_published===false?' · non pubblicata':'')+(i===0?' · è quella che la Locandina mostra adesso':''))),
+      sel,el('a',{href:'/locandina?evento='+encodeURIComponent(e.id),target:'_blank',rel:'noopener'},'Anteprima')));});
+  const V=$('venues');V.replaceChildren();
+  if(!venues.length)V.append(el('p',{class:'note'},'Nessuna scheda: tutte le date usano la versione neutra.'));
+  venues.forEach(v=>{const used=events.filter(e=>e.game_venue_id===v.id).length;
+    V.append(el('div',{class:'item'},el('div',{class:'grow'},el('strong',null,v.name),el('div',{class:'sub'},(v.items||[]).length+' prodotti'+(v.mystery&&v.mystery.title?' · mistero':'')+' · '+(used?'usata da '+used+(used===1?' data':' date'):'non collegata a date future'))),
+      el('button',{type:'button',class:'light',onclick:()=>edit(v)},'Modifica'),
+      el('a',{href:'/locandina?scheda='+encodeURIComponent(v.id),target:'_blank',rel:'noopener'},'Anteprima'),
+      el('button',{type:'button',class:'danger',onclick:()=>removeVenue(v)},'Elimina')));});}
+async function linkEvent(e,id,sel){sel.disabled=true;const{error}=await sb.from('site_events').update({game_venue_id:id||null}).eq('id',e.id);sel.disabled=false;
+  if(error){toast('Non salvato: '+error.message,true);sel.value=e.game_venue_id||'';return;}e.game_venue_id=id||null;toast(id?'Data collegata alla scheda':'La data usa la versione neutra');renderList();}
+async function removeVenue(v){if(!confirm('Eliminare la scheda "'+v.name+'"? Le date collegate torneranno alla versione neutra.'))return;
+  const{error}=await sb.from('game_venues').delete().eq('id',v.id);if(error)return toast('Non eliminata: '+error.message,true);
+  const ls=await sb.storage.from(BUCKET).list('giochi/'+v.id);if(ls.data&&ls.data.length)await sb.storage.from(BUCKET).remove(ls.data.map(f=>'giochi/'+v.id+'/'+f.name));
+  toast('Scheda eliminata');load();}
+
+/* ---- editor ---- */
+const blankItem=()=>({icon:'cocktail',name:'',title:'',text:'',photo:''});
+function edit(v){
+  cur=v?JSON.parse(JSON.stringify(v)):{id:crypto.randomUUID(),isNew:true,name:'',short_name:'',tagline:'',colors:{},items:[],mystery:{}};
+  while(cur.items.length<3)cur.items.push(blankItem());
+  cur.mystery=Object.assign({name:'',title:'',invite:'',text:'',photo:''},cur.mystery||{});
+  $('edTitle').textContent=v?'Modifica: '+v.name:'Nuova scheda';
+  $('fName').value=cur.name;$('fShort').value=cur.short_name;$('fTag').value=cur.tagline||'';
+  $('cNeon').value=cur.colors.neon||'#ff4a5a';$('cCounter').value=cur.colors.counter||'#9a5a35';$('cDate').value=cur.colors.date||'#c9ad62';
+  const P=$('prods');P.replaceChildren();cur.items.forEach((it,i)=>P.append(itemBox(it,i)));
+  $('mys').replaceChildren(...mysteryFields(cur.mystery));
+  $('pvLink').hidden=!!cur.isNew;$('pvLink').href='/locandina?scheda='+encodeURIComponent(cur.id);
+  $('listView').hidden=true;$('editView').hidden=false;counters();preview();window.scrollTo(0,0);}
+function field(label,obj,key,max,opts={}){const id='f'+Math.random().toString(36).slice(2,8),inp=opts.area?el('textarea',{id,maxLength:max,rows:3,placeholder:opts.ph||''}):el('input',{id,maxLength:max,placeholder:opts.ph||''});
+  inp.value=obj[key]||'';inp.addEventListener('input',()=>{obj[key]=inp.value;counters();});
+  return el('div',{class:'fg'},el('label',{for:id},label,' ',el('span',{class:'cnt','data-for':id})),inp,opts.hint?el('div',{class:'hint'},opts.hint):null);}
+function photoField(obj,slot){const wrap=el('div',{class:'fg'}),inp=el('input',{type:'file',accept:'image/*'});
+  const draw=()=>{wrap.replaceChildren(el('label',null,'Foto'),el('div',{class:'photo'},obj.photo?el('img',{src:obj.photo,alt:''}):el('div',{class:'ph-empty'},'nessuna foto'),
+      el('div',null,inp,obj.photo?el('button',{type:'button',class:'light',style:'margin-top:.4rem',onclick:()=>{obj.photo='';draw();}},'Togli la foto'):null,
+        el('div',{class:'hint'},'Meglio verticale. Viene rimpicciolita prima di caricarla.'))));};
+  inp.addEventListener('change',async()=>{const f=inp.files&&inp.files[0];if(!f)return;inp.disabled=true;
+    try{const blob=await shrink(f),path='giochi/'+cur.id+'/'+slot+'-'+Date.now()+'.jpg';
+      const{error}=await sb.storage.from(BUCKET).upload(path,blob,{contentType:'image/jpeg',upsert:false});if(error)throw error;
+      obj.photo=pubUrl(path);draw();toast('Foto caricata: ricordati di salvare la scheda');}
+    catch(e){toast('Foto non caricata: '+(e.message||e),true);}finally{inp.disabled=false;inp.value='';}});
+  draw();return wrap;}
+function itemBox(it,i){const icon=el('select',{onchange:e=>{it.icon=e.target.value;}},...ICONS.map(([k,l])=>el('option',{value:k,selected:it.icon===k},l)));
+  return el('div',{class:'box'},el('h4',null,'Prodotto '+(i+1),el('span',{class:'power'},'Potere: '+POWERS[i])),
+    el('div',{class:'row'},el('div',{class:'fg'},el('label',null,'Icona nel gioco'),icon),field('Nome breve',it,'name',8,{ph:['COCKTAIL','CRESCIA','BRIOCHE'][i],hint:'Sotto la polaroid.'})),
+    field('Titolo',it,'title',30,{ph:['I cocktail di Elisa','La crescia di Urbino','Le brioches'][i]}),
+    field('Testo della scheda finale',it,'text',240,{area:true,ph:'Due o tre frasi, solo cose confermate dal locale.'}),photoField(it,'p'+(i+1)));}
+function mysteryFields(m){return[field('Nome breve',m,'name',8,{ph:'DAÙ',hint:'Sotto la polaroid col punto di domanda e sul pacco sorpresa.'}),
+  field('Titolo',m,'title',29,{ph:'La leggenda del Daù',hint:'Prima riga della lavagnetta.'}),
+  field('Invito',m,'invite',29,{ph:'Fattela raccontare al bancone',hint:'Seconda riga della lavagnetta.'}),
+  field('Testo della scheda finale',m,'text',240,{area:true,ph:'La curiosità senza svelarla.'}),photoField(m,'mistero')];}
+/* the photo, at most 960 px wide, as JPEG */
+function shrink(file){return new Promise((ok,ko)=>{const img=new Image(),u=URL.createObjectURL(file);
+  img.onload=()=>{const k=Math.min(1,960/img.naturalWidth),w=Math.round(img.naturalWidth*k),h=Math.round(img.naturalHeight*k),c=document.createElement('canvas');c.width=w;c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(u);c.toBlob(b=>b?ok(b):ko(new Error('conversione non riuscita')),'image/jpeg',0.82);};
+  img.onerror=()=>{URL.revokeObjectURL(u);ko(new Error('immagine non leggibile'));};img.src=u;});}
+function counters(){document.querySelectorAll('.cnt[data-for]').forEach(s=>{const i=$(s.dataset.for);if(!i)return;const n=i.value.length,mx=i.maxLength;s.textContent=n+'/'+mx;s.classList.toggle('full',n>=mx);});}
+/* "IL CANTONET" -> "LIBERA IL CANTONET" and "I SEGRETI DEL CANTONET", as the game writes them */
+function preview(){const s=$('fShort').value.trim().toUpperCase(),m=/^(IL|LO|LA|I|GLI|LE)\s+(.+)$/.exec(s),a=/^L'\s*(.+)$/.exec(s);
+  const of=m?({IL:'DEL',LO:'DELLO',LA:'DELLA',I:'DEI',GLI:'DEGLI',LE:'DELLE'})[m[1]]+' '+m[2]:a?"DELL'"+a[1]:s?'DI '+s:'';
+  $('pvShort').textContent=s?'LIBERA '+s+'  ·  I SEGRETI '+of+'  ·  HAI LIBERATO '+s+'!':'Esempio: IL CANTONET → LIBERA IL CANTONET · I SEGRETI DEL CANTONET';}
+$('fShort').addEventListener('input',()=>{preview();counters();});['fName','fTag'].forEach(i=>$(i).addEventListener('input',counters));
+$('newVenue').addEventListener('click',()=>edit(null));
+$('cancel').addEventListener('click',()=>{$('editView').hidden=true;$('listView').hidden=false;load();});
+$('editView').addEventListener('submit',async e=>{e.preventDefault();if(busy)return;
+  const items=cur.items.map(it=>({icon:it.icon||'cocktail',name:(it.name||'').trim(),title:(it.title||'').trim(),text:(it.text||'').trim(),photo:it.photo||''})).filter(it=>it.name||it.title);
+  const m=cur.mystery,mystery=(m.name||m.title)?{name:m.name.trim(),title:m.title.trim(),invite:m.invite.trim(),text:m.text.trim(),photo:m.photo||''}:{};
+  const row={id:cur.id,name:$('fName').value.trim(),short_name:$('fShort').value.trim().toUpperCase(),tagline:$('fTag').value.trim().toUpperCase()||null,
+    colors:{neon:$('cNeon').value,counter:$('cCounter').value,date:$('cDate').value},items,mystery,updated_at:new Date().toISOString()};
+  if(!row.name||!row.short_name)return toast('Servono il nome della scheda e il nome del locale nel gioco',true);
+  busy=true;$('save').disabled=true;
+  const{error}=await sb.from('game_venues').upsert(row);busy=false;$('save').disabled=false;
+  if(error)return toast('Non salvata: '+error.message,true);
+  /* photos replaced or removed in this edit leave the bucket */
+  const keep=new Set([...items.map(i=>i.photo),mystery.photo].filter(Boolean)),old=[];
+  const ls=await sb.storage.from(BUCKET).list('giochi/'+cur.id);(ls.data||[]).forEach(f=>{const p='giochi/'+cur.id+'/'+f.name;if(![...keep].some(u=>ownPath(u)===p))old.push(p);});
+  if(old.length)await sb.storage.from(BUCKET).remove(old);
+  cur.isNew=false;$('pvLink').hidden=false;toast('Scheda salvata');
+  const r=await sb.from('game_venues').select('*').order('name');if(!r.error)venues=r.data||[];$('edTitle').textContent='Modifica: '+row.name;});
+start();
+})();
+</script>
+</body>
+</html>

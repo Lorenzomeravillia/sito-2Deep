@@ -1,4 +1,4 @@
-"""Rebuild the link preview of 2deep.it/gioca (assets/flipper/og-gioca.jpg, 1200x630).
+"""Rebuild the link preview of 2deep.it/flipper (also 2deep.it/gioca) (assets/flipper/og-gioca.jpg, 1200x630).
    1. python3 flipper/build.py --artifact /tmp/og      (a local copy of the game, no network needed)
    2. node flipper/og/shots.cjs /tmp/og                (a frame of the table, without dates, then the composed image)
    This script is step 2's helper: it joins the shared sprite sources and compose.js into og.html next to table.png."""

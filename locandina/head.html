@@ -1,0 +1,57 @@
+<title>Libera la locandina · 2Deep</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{--bg:#07050f;--ink:#f4ecff;--neon:#ff7ad8;--cyan:#65dbef;--edge:#2a2148;color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);margin:0;overflow:hidden;padding:0 max(16px,env(safe-area-inset-left,0px));font:14px system-ui,sans-serif}
+#stage{position:relative;height:calc(100% - max(36px, env(safe-area-inset-bottom,0px) + 28px));display:flex;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+#c{display:block;image-rendering:pixelated;box-shadow:0 0 0 1px var(--edge),0 0 40px rgba(255,122,216,.12)}
+#panel{position:absolute;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1.25fr 1fr 0.9fr;gap:6px}#panel #spec,#panel #again{grid-column:1/-1}
+#panel[hidden],#panel [hidden]{display:none!important}
+#panel a,#panel button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:0;padding:4px 8px;border-radius:9px;text-align:center;font:600 11.5px/1.2 system-ui,sans-serif;letter-spacing:.04em;text-decoration:none;color:var(--ink);cursor:pointer;
+  border:1px solid rgba(255,122,216,.6);background:linear-gradient(180deg,#3a1d52,#1e1035);box-shadow:0 4px 0 #0b0618}
+#panel #cal{border-color:rgba(101,219,239,.65);background:linear-gradient(180deg,#14394d,#0e1f34)}
+#panel #spec{position:relative;overflow:hidden;gap:10px;border:1.5px solid #ffd860;color:#2a1404;background:linear-gradient(180deg,#ffe48a,#e8a83a 55%,#c9802a);box-shadow:0 4px 0 #6a3a10,0 0 18px rgba(255,200,80,.45);animation:glow 1.6s ease-in-out infinite}
+#panel #spec .gift{font-size:24px;line-height:1;animation:wig 2.4s ease-in-out infinite}
+#panel #spec .st{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left}
+#panel #spec b{font:800 14px/1.1 system-ui,sans-serif;letter-spacing:.05em}
+#panel #spec small{font:600 9.5px/1.15 system-ui,sans-serif;letter-spacing:.04em;opacity:.85}
+#panel #spec::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.65),transparent);animation:shine 2.6s ease-in-out infinite}
+@keyframes shine{0%,55%{left:-60%}100%{left:120%}}
+@keyframes glow{0%,100%{box-shadow:0 4px 0 #6a3a10,0 0 10px rgba(255,200,80,.3)}50%{box-shadow:0 4px 0 #6a3a10,0 0 24px rgba(255,200,80,.7)}}
+@keyframes wig{0%,80%,100%{transform:rotate(0)}85%{transform:rotate(-14deg) scale(1.1)}90%{transform:rotate(12deg) scale(1.1)}95%{transform:rotate(-6deg)}}
+@media (prefers-reduced-motion:reduce){#panel #spec,#panel #spec .gift,#panel #spec::after{animation:none}}
+#panel #again{border-color:var(--edge);background:linear-gradient(180deg,#221a3a,#150f27)}
+#panel a:active,#panel button:active{transform:translateY(3px);box-shadow:0 1px 0 #0b0618}
+#panel a:focus-visible,#panel button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+#gal{position:absolute;z-index:5;display:flex;flex-direction:column;background:#120e0c;border:1px solid #8a3540;box-sizing:border-box;overflow:hidden;font-family:system-ui,sans-serif;touch-action:pan-y}
+#gal[hidden]{display:none}
+#gal .gh{padding:14px 44px 8px 14px;font:700 11px/1.2 system-ui,sans-serif;letter-spacing:.14em;color:#c9ad62}
+#gal .gf{position:relative;flex:1 1 auto;min-height:0}#gal img{display:block;width:100%;height:100%;object-fit:cover;background:#1a1214}
+#gal #gq{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 88px/1 Georgia,serif;color:#c9ad62;text-shadow:0 0 18px rgba(201,173,98,.5)}#gal #gq[hidden],#gal #gnote[hidden],#gal img[hidden]{display:none}
+#gal #gnote{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 96px/1 Georgia,serif;color:#ff7ad8;text-shadow:0 0 22px rgba(255,122,216,.55);background:radial-gradient(circle at 50% 45%,#2a1f3a,#0c0a10 70%)}
+#gal .gc{padding:12px 14px 6px}
+#gal h2{margin:0 0 6px;font:700 19px/1.15 Georgia,serif;color:#f4ecff}
+#gal p{margin:0;font:14px/1.42 system-ui,sans-serif;color:#d9cfc6}
+#gal .gn{display:flex;align-items:center;justify-content:space-between;padding:8px 10px 12px}
+#gal .gn span{font:600 12px system-ui,sans-serif;color:#9a8a7a;letter-spacing:.08em}
+#gal button{min-width:44px;min-height:44px;border-radius:9px;border:1px solid #8a3540;background:#2a1618;color:#f4ecff;font:600 13px system-ui,sans-serif;cursor:pointer;padding:0 14px}
+#gal #gclose{position:absolute;top:4px;right:4px;border:0;background:transparent;font-size:20px;padding:0}
+#gal button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+</style>
+<div id="stage" aria-label="Gioco: muovi la nota con lo scorrimento del dito, chiudi le aree per scoprire la locandina">
+  <canvas id="c" width="270" height="480" role="img" aria-label="Campo di gioco"></canvas>
+  <div id="panel" hidden>
+    <button id="spec" type="button"><span class="gift" aria-hidden="true">🎁</span><span class="st"><b id="spec1">APRI IL TUO PREMIO</b><small id="spec2">I 4 SEGRETI DEL CANTONET</small></span></button>
+    <a id="cal" href="#" target="_blank" rel="noopener">AGGIUNGI AL<br>CALENDARIO</a>
+    <a href="https://www.instagram.com/2deeplivemusic/" target="_blank" rel="noopener">SEGUI<br>@2DEEPLIVEMUSIC</a>
+    <button id="again" type="button">GIOCA ANCORA</button>
+  </div>
+  <div id="gal" role="dialog" aria-modal="true" aria-label="I segreti della serata" hidden>
+    <div class="gh"><span id="gtitle">I SEGRETI</span> · <span id="gn">SEGRETO N. 1</span></div>
+    <button id="gclose" type="button" aria-label="Chiudi">✕</button>
+    <div class="gf"><img id="gimg" alt=""><div id="gq" aria-hidden="true" hidden>?</div><div id="gnote" aria-hidden="true" hidden>♪</div></div>
+    <div class="gc"><h2 id="gt"></h2><p id="gp"></p></div>
+    <div class="gn"><button id="gprev" type="button" aria-label="Precedente">‹ PRIMA</button><span id="gdots"></span><button id="gnext" type="button" aria-label="Successiva">DOPO ›</button></div>
+  </div>
+</div>
