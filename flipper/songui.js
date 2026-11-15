@@ -24,7 +24,7 @@ async function loadSong(){const pre=STORE.preload();let cfg=pre;
   await applySong(cfg);
   try{await STORE.init();CANEDIT=STORE.edit;if(pre===undefined){const d=await STORE.load();if(d!==undefined)await applySong(d);}}catch(e){}}
 /* the editor's button: on the start screen only (the end of the game belongs to the players), and only for admins */
-function songBtnVisible(){return(CANEDIT||location.hash==='#brano')&&G.state==='title'&&SPN.hidden;}
+function songBtnVisible(){return(CANEDIT||location.hash==='#brano')&&(typeof songBtnScreen==='function'?songBtnScreen():G.state==='title')&&SPN.hidden;}
 
 /* ---- panel state: the MIDI being edited and its settings ---- */
 let PINFO=null,PMIDI=null,PCFG=null;
@@ -139,7 +139,7 @@ S.echoRep.addEventListener('input',()=>{PCFG.echoRep=+S.echoRep.value;echoText()
 S.save.addEventListener('click',async()=>{if(!PINFO)return;stopPreview();const cfg={...PCFG,v:1,midi:PMIDI,savedAt:new Date().toISOString()};delete cfg.midiUrl;
   if(!midiSong(cfg,PINFO).steps.some(s=>s.events.length)){setS('Nel giro scelto non ci sono note: sposta “Parti da” prima di salvare.',true);return;}
   S.save.disabled=true;setS('Salvo…');
-  if(STORE.shared()){try{await STORE.save(cfg);try{localStorage.removeItem(SONG_KEY);}catch(e){}setS('Salvato: chi apre il flipper ora sente «'+(cfg.name||'questo brano')+'».');}
+  if(STORE.shared()){try{await STORE.save(cfg);try{localStorage.removeItem(SONG_KEY);}catch(e){}setS('Salvato: chi apre il flipper o Libera ora sente «'+(cfg.name||'questo brano')+'».');}
     catch(e){S.save.disabled=false;setS('Non sono riuscito a salvarlo per tutti ('+(e.code||e.message)+').',true);return;}}
   else{try{localStorage.setItem(SONG_KEY,JSON.stringify(cfg));setS(STORE.localNote);}catch(e){S.save.disabled=false;setS('Non riesco a salvarlo neanche su questo browser.',true);return;}}
   S.save.disabled=false;SCFG=cfg;useSong(midiSong(cfg,PINFO));});

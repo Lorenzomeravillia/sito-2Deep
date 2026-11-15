@@ -38,6 +38,48 @@ body{background:var(--bg);color:var(--ink);margin:0;overflow:hidden;padding:0 ma
 #gal button{min-width:44px;min-height:44px;border-radius:9px;border:1px solid #8a3540;background:#2a1618;color:#f4ecff;font:600 13px system-ui,sans-serif;cursor:pointer;padding:0 14px}
 #gal #gclose{position:absolute;top:4px;right:4px;border:0;background:transparent;font-size:20px;padding:0}
 #gal button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+/* variables the panel uses */
+:root{--pix:'Silkscreen',ui-monospace,monospace;--cyan2:#65dbef;--dim:#b8aed4;--yel:#f2d27a}
+/* BRANO: the band's panel (only for people who can edit the page) */
+#songBtn{position:absolute;font:11px/1 var(--pix);letter-spacing:.06em;color:var(--cyan2);background:#120d24;border:1px solid var(--edge);padding:6px 8px;cursor:pointer}
+#songBtn:focus-visible,#song button:focus-visible,#song select:focus-visible,#song input:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+#song[hidden],#songBtn[hidden],#song [hidden]{display:none}
+#song{position:absolute;inset:0;z-index:5;overflow:auto;background:rgba(7,5,15,.96);touch-action:pan-y;-webkit-user-select:text;user-select:text;font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink)}
+#song *{box-sizing:border-box}
+#song .sbox{max-width:620px;margin:0 auto;padding:18px 4px 40px;display:flex;flex-direction:column;gap:14px}
+#song h2{font:16px/1.2 var(--pix);letter-spacing:.05em;color:var(--neon);margin:0}
+#song p{margin:0;color:var(--dim)}
+#song .shead{display:flex;justify-content:space-between;align-items:center;gap:12px}
+#song button,#song .sfile span{font:12px/1 var(--pix);letter-spacing:.05em;padding:10px 12px;border:1px solid var(--edge);background:#1a0f2e;color:var(--ink);cursor:pointer;min-height:40px}
+#song button:disabled{opacity:.45;cursor:default}
+#song .sfile{position:relative;display:inline-block;align-self:flex-start}
+#song .sfile input{position:absolute;inset:0;opacity:0;cursor:pointer}
+#song .sfile span{display:inline-flex;align-items:center;border-color:var(--cyan2);color:var(--cyan2)}
+#song .sfile:focus-within span{outline:2px solid var(--cyan);outline-offset:2px}
+#song .sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px 18px}
+#song label.sl{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--dim)}
+#song label.sl b{font-weight:600;color:var(--ink)}
+#song input[type=range]{width:100%;accent-color:var(--neon)}
+#song input[type=text],#song .strk input,#song select{font:14px system-ui,sans-serif;background:#120d24;color:var(--ink);border:1px solid var(--edge);padding:7px 8px;min-height:36px;border-radius:2px}
+#song .strk{display:grid;grid-template-columns:minmax(110px,150px) 1fr;gap:6px 10px;align-items:center;padding:10px;border:1px solid var(--edge);background:#0f0b1f}
+#song .strk.off{opacity:.55}
+#song .strk .smeta{font-size:12px;color:var(--dim);overflow-wrap:anywhere}
+#song .strk .swarn{display:block;margin-top:3px;color:#ffb27a}
+#song .strk .ssel{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+#song .strk .sstep{border-color:var(--neon);flex:1 1 220px}
+#song .strk .ssolo{min-height:36px;padding:7px 10px;font:11px var(--pix);border-color:var(--cyan2);color:var(--cyan2)}
+#song .strk .ssolo.on{background:#0f2a3a}
+#song .sorder{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px}
+#song .schip{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;min-height:64px}
+#song .schip b{font:12px var(--pix);color:var(--yel,#f2d27a)}
+#song .schip span{font:12px/1.3 system-ui,sans-serif;color:var(--dim);overflow-wrap:anywhere}
+#song .schip.on{border-color:var(--neon);background:#2a0f34}
+#song .sbtns{display:flex;flex-wrap:wrap;gap:8px}
+#song #sPlay{border-color:var(--neon)}
+#song #sSave{border-color:var(--cyan2);color:var(--cyan2)}
+#song #sStatus{min-height:1.4em;color:var(--cyan2);font-size:13px}
+#song .shint{grid-column:1/-1;font-size:12px;color:var(--dim);margin:-2px 0 0}
+#song #sStatus.warn{color:#ff9a9a}
 </style>
 <div id="stage" aria-label="Gioco: muovi la nota con lo scorrimento del dito, chiudi le aree per scoprire la locandina">
   <canvas id="c" width="270" height="480" role="img" aria-label="Campo di gioco"></canvas>
@@ -53,5 +95,33 @@ body{background:var(--bg);color:var(--ink);margin:0;overflow:hidden;padding:0 ma
     <div class="gf"><img id="gimg" alt=""><div id="gq" aria-hidden="true" hidden>?</div><div id="gnote" aria-hidden="true" hidden>♪</div></div>
     <div class="gc"><h2 id="gt"></h2><p id="gp"></p></div>
     <div class="gn"><button id="gprev" type="button" aria-label="Precedente">‹ PRIMA</button><span id="gdots"></span><button id="gnext" type="button" aria-label="Successiva">DOPO ›</button></div>
+  </div>
+  <button id="songBtn" type="button" hidden>BRANO · ADMIN</button>
+  <div id="song" hidden role="dialog" aria-modal="true" aria-labelledby="songT">
+    <div class="sbox">
+      <div class="shead"><h2 id="songT">BRANO DEI GIOCHI</h2><button id="sClose" type="button">CHIUDI</button></div>
+      <p>È lo stesso brano del flipper: se lo cambi qui, cambia anche lì. In Libera all’inizio suona il primo gruppo di strumenti e ne entra un altro al 15%, al 30% e al 50% di locandina scoperta; l’ultimo gruppo suona alla vittoria e a fine partita. Nel flipper gli stessi gruppi entrano con le lettere D-E-E-P e il LIVE.</p>
+      <label class="sfile"><input id="sFile" type="file" accept=".mid,.midi,audio/midi,audio/x-midi"><span>SCEGLI FILE .MID</span></label>
+      <div id="sInfo" class="smeta"></div>
+      <div id="sBody" hidden>
+        <div class="sgrid">
+          <label class="sl"><b>Titolo sul display</b><input id="sName" type="text" maxlength="24"></label>
+          <label class="sl"><b>Parti da <span id="sOffsetV"></span></b><input id="sOffset" type="range" min="0" max="10" step="0.1" value="0"></label>
+          <label class="sl"><b>Giro <span id="sBarsV"></span></b><input id="sBars" type="range" min="2" max="32" step="1" value="16"></label>
+          <label class="sl"><b>Velocità <span id="sSpeedV"></span></b><input id="sSpeed" type="range" min="70" max="130" step="1" value="100"></label>
+          <label class="sl"><b>Trasporto (semitoni)</b><select id="sTransp"></select></label>
+          <label class="sl"><b>Eco: intensità <span id="sEchoMixV"></span></b><input id="sEchoMix" type="range" min="0" max="60" step="1" value="28"></label>
+          <label class="sl"><b>Eco: <span id="sEchoRepV"></span></b><input id="sEchoRep" type="range" min="0" max="6" step="1" value="1"></label>
+          <p class="shint">L’eco si sente sulle tracce con il suono «Lead»: una ripetizione ogni 0,3 secondi, ognuna più piano della precedente.</p>
+        </div>
+        <h2 style="margin-top:16px">QUANDO ENTRA OGNI STRUMENTO</h2>
+        <div id="sTracks" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"></div>
+        <h2 style="margin-top:16px">LA SCALETTA</h2>
+        <p style="margin:4px 0 8px">Tocca un momento per sentire il brano fino a lì.</p>
+        <div id="sOrder" class="sorder"></div>
+      </div>
+      <div class="sbtns"><button id="sPlay" type="button">▶ Ascolta come cresce</button><button id="sSave" type="button">SALVA</button><button id="sDef" type="button">MUSICA 2DEEP</button></div>
+      <div id="sStatus" role="status" aria-live="polite"></div>
+    </div>
   </div>
 </div>
