@@ -189,7 +189,7 @@ function buildStatic(){STATIC.width=TW*K;STATIC.height=TH*K;const g=STATIC.getCo
   /* playfield art: the next gig in big faded lettering (the 2Deep logo when no date is planned) */
   const art=(s,y,maxW,scs,col)=>{s=up(s);const sc=scs.find(c=>tw(s)*c<=maxW)||scs[scs.length-1];dt(s,Math.round(121-tw(s)*sc/2),y,sc,col);};   /* 121: halfway between the slingshots */
   g.globalAlpha=0.85;
-  if(NEXT){art(NEXT.date,318,170,[2,1],'#4a3ea4');art(NEXT.venue,336,146,[2,1],'#6c3f92');art([NEXT.place,NEXT.time].filter(Boolean).join(' · '),354,140,[1],'#4a3ea4');}
+  if(NEXT){art(NEXT.date,318,150,[2,1],'#4a3ea4');art(NEXT.venue,336,132,[2,1],'#6c3f92');const pt=up([NEXT.place,NEXT.time].filter(Boolean).join(' · '));art(tw(pt)<=118?pt:fitTxt(up(NEXT.place||''),118,1).s,354,118,[1],'#4a3ea4');}
   else{dt('2DEEP',Math.round(126-tw('2DEEP')*2.5),318,5,'#2c2462');dt('LIVE MUSIC',Math.round(126-tw('LIVE MUSIC')),358,2,'#2c2462');}
   g.globalAlpha=1;dt('LV',Math.round(236-tw('LV')/2),188,1,'#3e6a8c');
   /* dot-matrix display: dark glass, a thin warm frame, every dot faintly visible when off */
@@ -394,9 +394,10 @@ function drawTourCard(){if(!LVL.length)return;let a=0;
   dt('PROSSIME DATE',x+8,y+7,1,C.cyan);const hint=G.lvGot.slice(0,n).every(Boolean)?'TOUR COMPLETO!':'BERSAGLI A DESTRA';dt(hint,x+w-8-tw(hint),y+7,1,G.lvGot.slice(0,n).every(Boolean)?C.yel:'#7d73a8');
   LVL.slice(0,3).forEach((l,k)=>{const ry=y+22+k*31,got=G.lvGot[k];
     circle(x+14,ry+7,7,got?C.cyan:'#2c2552');ctext(String(l.n),x+14,ry+4,1,got?'#0b2a3c':'#b8b0d8',{outline:null});
-    dt(l.date,x+27,ry,2,got?C.yel:C.white);const pl=up(l.place);dt(pl,x+w-(got?22:9)-tw(pl),ry+4,1,'#9a90c0');
+    /* the town goes on the right of the date when it fits there, otherwise it joins the second line (shortened only if even that is full) */
+    dt(l.date,x+27,ry,2,got?C.yel:C.white);const pl=up(l.place),room=x+w-(got?22:9)-(x+27+tw(l.date)*2+6),plIn=tw(pl)<=room;if(plIn)dt(pl,x+w-(got?22:9)-tw(pl),ry+4,1,'#9a90c0');
     if(got){ctx.strokeStyle=C.cyan;ctx.lineWidth=1.8;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(x+w-16,ry+7);ctx.lineTo(x+w-13,ry+10);ctx.lineTo(x+w-8,ry+3);ctx.stroke();}
-    dt([up(l.venue),l.time].filter(Boolean).join(' · '),x+27,ry+17,1,got?C.cyan:'#b8b0d8');});
+    dt(fitTxt([up(l.venue),plIn?'':pl,l.time].filter(Boolean).join(' · '),w-35,1).s,x+27,ry+17,1,got?C.cyan:'#b8b0d8');});
   const fy=y+h-12,pull='TIRA GIU LA MOLLA PER LANCIARE';ctx.strokeStyle='rgba(255,255,255,0.08)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+8,fy-5);ctx.lineTo(x+w-8,fy-5);ctx.stroke();
   dt(pull,x+8,fy,1,C.yel);const ax=x+w-14+Math.sin(G.now*5)*1.5;ctx.strokeStyle=C.yel;ctx.lineWidth=1.4;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(ax-5,fy+3.5);ctx.lineTo(ax+4,fy+3.5);ctx.moveTo(ax+1,fy+0.5);ctx.lineTo(ax+4,fy+3.5);ctx.lineTo(ax+1,fy+6.5);ctx.stroke();
   ctx.restore();}

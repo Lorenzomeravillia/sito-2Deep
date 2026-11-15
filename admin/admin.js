@@ -227,15 +227,66 @@ async function addEvent(e) {
     const { error } = await tdAdmin.from('site_events').insert([{
         event_date:   document.getElementById('ev-date').value,
         event_time:   document.getElementById('ev-time').value || null,
-        venue:        document.getElementById('ev-venue').value,
-        city:         document.getElementById('ev-city').value,
+        venue:        document.getElementById('ev-venue').value.trim(),
+        city:         document.getElementById('ev-city').value.trim(),
         description:  document.getElementById('ev-desc').value || null,
         is_published: document.getElementById('ev-pub').checked,
         updated_at:   new Date().toISOString(),
         created_at:   new Date().toISOString()
     }]);
     if (error) showToast('Errore: ' + error.message, 'error');
-    else { showToast('Data aggiunta ✓'); e.target.reset(); loadAdminData(); }
+    else { showToast('Data aggiunta ✓'); e.target.reset(); ['ev-venue', 'ev-city'].forEach(i => document.getElementById(i).dispatchEvent(new Event('input'))); loadAdminData(); }
+}
+
+/* Venue and city are drawn in pixel letters in the promo video and in the flipper: 18 characters always fit there,
+   even with the widest letters (M, W). On the osteria sign of the video a single word longer than 11 characters gets shortened. */
+const EV_MAX = 18, EV_WORD = 11;
+function evLenNote(v) {
+    v = (v || '').trim();
+    if (v.length > EV_MAX) return `Troppo lungo: ${v.length} caratteri su ${EV_MAX}. Nel video e nel flipper verrebbe tagliato.`;
+    const long = v.split(/\s+/).find(w => w.length > EV_WORD);
+    return long ? `"${long}" è una parola lunga: sull'insegna dell'osteria del video potrebbe essere accorciata.` : '';
+}
+function evLenWatch(input) {
+    const upd = () => {
+        const c = document.querySelector(`.len-count[data-for="${input.id}"]`), h = document.querySelector(`.len-hint[data-for="${input.id}"]`), n = input.value.length;
+        if (c) { c.textContent = `${n}/${EV_MAX}`; c.classList.toggle('full', n >= EV_MAX); }
+        if (h) h.textContent = input.id.includes('venue') ? evLenNote(input.value) : (n > EV_MAX ? evLenNote(input.value) : '');
+    };
+    input.addEventListener('input', upd); upd();
+}
+document.addEventListener('DOMContentLoaded', () => ['ev-venue', 'ev-city'].forEach(id => { const el = document.getElementById(id); if (el) evLenWatch(el); }));
+
+function editEvent(id) {
+    const ev = eventsData.find(e => String(e.id) === String(id)), li = document.getElementById('ev-' + id);
+    if (!ev || !li) return;
+    const esc = v => String(v ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    li.innerHTML = `
+        <form class="ev-edit" onsubmit="saveEvent(event, '${id}')">
+            <div class="row">
+                <div><label>Data</label><input type="date" id="ee-date-${id}" value="${esc(ev.event_date)}" required></div>
+                <div><label>Ore</label><input type="time" id="ee-time-${id}" value="${esc((ev.event_time || '').slice(0, 5))}"></div>
+            </div>
+            <div><label>Locale / Venue <span class="len-count" data-for="ee-venue-${id}"></span></label><input type="text" id="ee-venue-${id}" maxlength="${EV_MAX}" value="${esc(ev.venue)}" required><div class="len-hint" data-for="ee-venue-${id}"></div></div>
+            <div><label>Città <span class="len-count" data-for="ee-city-${id}"></span></label><input type="text" id="ee-city-${id}" maxlength="${EV_MAX}" value="${esc(ev.city)}" required><div class="len-hint" data-for="ee-city-${id}"></div></div>
+            <div><label>Note (opzionale)</label><input type="text" id="ee-desc-${id}" value="${esc(ev.description)}"></div>
+            <div class="data-item-actions"><button type="submit">Salva</button><button type="button" onclick="renderEvents()">Annulla</button></div>
+        </form>`;
+    /* maxlength does not cut a value that is already too long: the counter shows it and saving is refused until it is shortened */
+    [`ee-venue-${id}`, `ee-city-${id}`].forEach(k => evLenWatch(document.getElementById(k)));
+    document.getElementById(`ee-venue-${id}`).focus();
+}
+
+async function saveEvent(e, id) {
+    e.preventDefault();
+    const val = k => document.getElementById(`ee-${k}-${id}`).value.trim();
+    if (val('venue').length > EV_MAX || val('city').length > EV_MAX) { showToast(`Locale e città: massimo ${EV_MAX} caratteri`, 'error'); return; }
+    const { error } = await tdAdmin.from('site_events').update({
+        event_date: val('date'), event_time: val('time') || null, venue: val('venue'), city: val('city'),
+        description: val('desc') || null, updated_at: new Date().toISOString()
+    }).eq('id', id);
+    if (error) showToast('Errore: ' + error.message, 'error');
+    else { showToast('Data aggiornata ✓'); loadAdminData(); }
 }
 
 async function toggleEvent(id, cur) {
@@ -596,13 +647,17 @@ function renderEvents() {
     eventsData.forEach(ev => {
         const li = document.createElement('li');
         li.className = 'data-item';
+        li.id = 'ev-' + ev.id;
+        const warn = [ev.venue, ev.city].some(v => (v || '').trim().length > EV_MAX)
+            ? `<br><span class="ev-warn">Nome del locale o della città oltre ${EV_MAX} caratteri: nel video e nel flipper viene tagliato. Tocca Modifica e accorcialo.</span>` : '';
         li.innerHTML = `
             <div>
                 <strong>${ev.venue}</strong> — ${ev.city} — ${ev.event_date}${ev.event_time ? ' · ' + ev.event_time.slice(0,5) : ''}
-                ${ev.description ? `<br><span style="font-size:.8rem;color:#666">${ev.description}</span>` : ''}
+                ${ev.description ? `<br><span style="font-size:.8rem;color:#666">${ev.description}</span>` : ''}${warn}
                 <br><span style="font-size:.8rem;color:${ev.is_published ? 'green' : '#aaa'}">${ev.is_published ? '● Pubblico' : '○ Nascosto'}</span>
             </div>
             <div class="data-item-actions">
+                <button onclick="editEvent('${ev.id}')">Modifica</button>
                 <button onclick="toggleEvent('${ev.id}', ${ev.is_published})">${ev.is_published ? 'Nascondi' : 'Pubblica'}</button>
                 <button class="danger" onclick="deleteEvent('${ev.id}')">Elimina</button>
             </div>`;
