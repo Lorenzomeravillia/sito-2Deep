@@ -7,14 +7,16 @@
    python3 libera/build.py --artifact DIR  -> DIR/libera.html for claude.ai: data frozen from site_data.json, the
                                                  venue photos inline, pinned to the date in --evento (default: the Cantonet)
 
-   content.js turns the data into what the game shows (CFG), game.js the game, music.js the song in layers,
-   gamesong.js the song, head.html styles and markup. Address options: ?evento=<date id> shows that date,
+   content.js turns the data into what the game shows (CFG), game.js the game, song.js how the flipper's song engine and BRANO
+   panel (../flipper/music.js, songui.js, store_site.js) work here: same song as the flipper, layers by uncovered share;
+   gamesong.js the built-in 2Deep loop, head.html styles and markup. Address options: ?evento=<date id> shows that date,
    ?scheda=<profile id> previews a venue profile on the next date (used by the admin)."""
 import base64, io, json, pathlib, sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent
 SRC = ROOT / 'video-promo'
+FL = lambda n: (ROOT / 'flipper' / n).read_text()
 P = lambda n: (SRC / n).read_text()
 H = lambda n: (HERE / n).read_text()
 
@@ -23,7 +25,8 @@ PREFIX = "let W=270,H=480;const cv=document.getElementById('c');let ctx=cv.getCo
 
 def game_js():
     return '\n'.join([PREFIX, P('part_utils.js'), P('part_spritefn.js'), P('sprites.js'), "const OUTC='#0a0716';", P('part_misc.js'),
-                      P('part_audio.js'), P('monkey/part_sprites.js'), H('content.js'), H('gamesong.js'), H('music.js'), H('game.js')])
+                      P('part_audio.js'), P('monkey/part_sprites.js'), H('content.js'), H('gamesong.js'), H('song.js'),
+                      FL('store_site.js'), FL('music.js'), H('game.js'), FL('songui.js')])
 
 
 SNAP = json.loads(H('site_data.json'))
@@ -51,7 +54,8 @@ if '--artifact' in sys.argv:
             v['mystery']['photo'] = inline(v['mystery'].get('photo'))
     data['photos'] = []
     data['evento'] = evento
-    js = '(()=>{\n"use strict";\nwindow.__GAME_DATA=' + json.dumps(data, ensure_ascii=False) + ';\n' + game_js() + '\n})();'
+    # no song in the snapshot: the claude.ai page plays the 2Deep loop (or a song set up on that page, kept in its browser)
+    js = '(()=>{\n"use strict";\nwindow.__GAME_DATA=' + json.dumps(data, ensure_ascii=False) + ';window.__SITE_DATA={};window.__SB=null;\n' + game_js() + '\n})();'
     page = head + '\n<script>\n' + js + '\n</script>\n'
     (out / 'libera.html').write_text(page)
     (out / 'libera_page.html').write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>' + page + '</body></html>')
@@ -60,19 +64,20 @@ else:
     snap = json.dumps(SNAP, ensure_ascii=False)
     # read the dates, the venue profiles, the songs and the band's photos, then start the game (the snapshot after 5 s without an answer)
     boot = """(function(){var SNAP=%s,done=false,q=new URLSearchParams(location.search);
-  function go(d){if(done)return;done=true;d.evento=q.get('evento');d.scheda=q.get('scheda');window.__GAME_DATA=d;GAME();}
+  function go(d,song){if(done)return;done=true;d.evento=q.get('evento');d.scheda=q.get('scheda');window.__GAME_DATA=d;window.__SITE_DATA=song===undefined?{}:{song:song};GAME();}
   var timer=setTimeout(function(){go(SNAP);},5000),fail=function(){clearTimeout(timer);go(SNAP);};
-  try{var sb=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY,{db:{schema:'td'}}),B=window.SUPABASE_URL+'/storage/v1/object/public/td-site/';
+  try{var sb=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY,{db:{schema:'td'}});window.__SB=sb;var B=window.SUPABASE_URL+'/storage/v1/object/public/td-site/';
     Promise.all([sb.from('site_events').select('id,event_date,event_time,venue,city,description,is_published,game_venue_id'),
                  sb.from('game_venues').select('id,short_name,tagline,colors,items,mystery'),
                  sb.from('site_repertoire').select('song_title,artist').eq('is_active',true),
                  sb.from('site_images').select('role,filename').eq('is_active',true).in('role',['hero','katia','lorenzo','sound']),
-                 sb.from('site_content').select('content_value').eq('section','video').eq('content_key','settings')]).then(function(r){
+                 sb.from('site_content').select('content_value').eq('section','video').eq('content_key','settings'),
+                 sb.from('site_content').select('content_value').eq('section','pinball').eq('content_key','song')]).then(function(r){
       if(r[0].error)return fail();
       var ok=function(i,def){return r[i].error||!r[i].data?def:r[i].data;},set=ok(4,[]);
       clearTimeout(timer);
       go({events:r[0].data||[],venues:ok(1,SNAP.venues),songs:ok(2,SNAP.songs),photos:ok(3,[]).map(function(x){return B+x.filename;}),
-          settings:set.length?set[0].content_value:SNAP.settings});},fail);}catch(e){fail();}
+          settings:set.length?set[0].content_value:SNAP.settings},r[5].error?undefined:(r[5].data&&r[5].data.length?r[5].data[0].content_value:null));},fail);}catch(e){fail();}
 })();""" % snap
     meta = """<!doctype html>
 <html lang="it">

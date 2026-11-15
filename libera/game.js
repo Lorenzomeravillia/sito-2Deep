@@ -181,7 +181,7 @@ function moveEnemies(dt){const f=G.t<G.freezeUntil?0:(G.t<G.slowUntil?0.45:1)*(1
   if(md<=NEAR*NEAR&&G.t-(e.near||-9)>1.5&&!G.nearP){e.near=G.t;G.nearP={t:G.t,x:FX+e.x,y:FY+e.y-14,lives:G.lives};}}}
 
 function pop(txt,x,y,col,sc){if(txt)G.pops.push({txt,x,y,col,sc,t:G.t});}
-function update(dt){G.t+=dt;if(G.shake>0)G.shake-=dt;if(G.inv>0)G.inv-=dt;G.pops=G.pops.filter(p=>G.t-p.t<1.1);G.parts=G.parts.filter(p=>G.t-p.t<0.8);if(AC)musicLayers();
+function update(dt){G.t+=dt;if(G.shake>0)G.shake-=dt;if(G.inv>0)G.inv-=dt;G.pops=G.pops.filter(p=>G.t-p.t<1.1);G.parts=G.parts.filter(p=>G.t-p.t<0.8);if(AC)songLayers();{const sb=document.getElementById('songBtn'),sv=songBtnVisible();if(sb.hidden===sv){sb.hidden=!sv;if(sv)placeSongBtn();}}
   /* PER UN PELO! only once the note has survived another half second */
   if(G.nearP&&G.t-G.nearP.t>=0.5){const n=G.nearP;G.nearP=null;if(G.state==='play'&&G.lives===n.lives){G.score+=250;pop('PER UN PELO!',n.x,n.y,C.pink,1);sfx('near');}}
   if(G.infoQ.length&&!G.draw&&G.state==='play'){G.infoQ[0].left-=dt;if(G.infoQ[0].left<=0)G.infoQ.shift();}
@@ -268,7 +268,7 @@ let AC=null;function sfx(k,a){if(!AC)return;const t=AC.currentTime,o=(f,d,type,v
   else if(k==='hit'){o(330,0.35,'sawtooth',0.07,90);}
   else if(k==='win'){[523,659,784,1047,784,1047,1319].forEach((f,i)=>o(f,0.16,'square',0.05,0,i*0.1));}
   else if(k==='over'){[392,330,262,196].forEach((f,i)=>o(f,0.22,'triangle',0.08,0,i*0.16));}}
-function audioOn(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}if(AC)renderMusic().then(b=>{MBUF=b;startMusic();}).catch(()=>{});}if(AC&&AC.state==='suspended')AC.resume();}
+function audioOn(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}if(AC&&SONGBUF)playSong(SONGBUF);}if(AC&&AC.state==='suspended')AC.resume();}
 
 /* ---- input: swipe sets the direction, a tap stops; arrows / WASD and space on a keyboard ---- */
 function setDir(dx,dy){if(G.state!=='play')return;if(G.draw&&dx===-G.dx&&dy===-G.dy&&(dx||dy))return;G.dx=dx;G.dy=dy;}
@@ -283,6 +283,8 @@ addEventListener('keydown',e=>{const k=e.key;audioOn();if(G.state==='intro'&&(k=
 
 /* ---- end panel ---- */
 const PANEL=document.getElementById('panel');
+/* the BRANO button sits under the start card, left */
+function placeSongBtn(){const r=cv.getBoundingClientRect(),s=document.getElementById('stage').getBoundingClientRect(),sc=r.width/TW,b=document.getElementById('songBtn');b.style.left=(r.left-s.left+FX*sc)+'px';b.style.top=(r.top-s.top+(FY+FH-30)*sc)+'px';}
 function placePanel(){if(PANEL.hidden)return;const r=cv.getBoundingClientRect(),s=document.getElementById('stage').getBoundingClientRect(),sc=r.width/TW,top=FY+307,bot=FY+FH-3;
   PANEL.style.left=(r.left-s.left+20*sc)+'px';PANEL.style.width=(r.width-40*sc)+'px';PANEL.style.top=(r.top-s.top+top*sc)+'px';PANEL.style.height=((bot-top)*sc)+'px';}
 {const cal=document.getElementById('cal');if(GIG)cal.href=GIG.cal;else{cal.href='https://www.2deep.it/#events-section';cal.innerHTML='VEDI LE<br>PROSSIME DATE';}}
@@ -302,7 +304,7 @@ addEventListener('resize',()=>{if(!GAL.hidden)galPlace();});
 
 /* ---- loop ---- */
 let last=0;function loop(ts){const dt=Math.min(0.05,(ts-(last||ts))/1000);last=ts;let a=dt;while(a>0){const s=Math.min(a,1/120);update(s);a-=s;}draw();requestAnimationFrame(loop);}
-addEventListener('resize',fit);newGame();fit();requestAnimationFrame(loop);
+addEventListener('resize',()=>{fit();placeSongBtn();});newGame();fit();requestAnimationFrame(loop);
 drawPolaroids();rebuildReveal();
 Promise.all(Object.values(IMG).map(i=>new Promise(r=>{if(i.complete)return r();i.onload=i.onerror=()=>r();}))).then(()=>{drawPolaroids();rebuildReveal();});
-window.__X={G,grid,update,draw,closeArea,setDir,mus:()=>({buf:!!MBUF,layers:MLG.length,on:MLG.map(g=>+g.gain.value.toFixed(2)),lay:MLAY}),best:()=>BEST};
+window.__X={G,grid,update,draw,closeArea,setDir,mus:()=>({buf:!!SONGBUF,midi:!!(SONG&&SONG.midi),name:SONG&&SONG.name,layers:MLG.length,on:MLG.map(g=>+g.gain.value.toFixed(2)),lay:LAYERS}),best:()=>BEST};

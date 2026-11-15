@@ -3,7 +3,9 @@
    layer 4 only in LIVE (the fourth letter), when the whole band plays. After LIVE the letters start again, and so does the song.
    Every layer is rendered offline into its own channel of one buffer, so the layers stay in time and switching one on is a gain.
    The band's panel (BRANO) builds the layers from a MIDI file; without one, the built-in 2Deep loop is split the same way. */
-const LAYERDEF=['Dall’inizio','Con la prima lettera','Con la seconda lettera','Con la terza lettera','Solo in LIVE (tutte e quattro)'],LAYERK=['INIZIO','LETTERA 1','LETTERA 2','LETTERA 3','LIVE'];
+/* another game using the same song (Libera) names the five moments itself in SONG_LAYERS and decides them in gameLayers() */
+const LAYERDEF=typeof SONG_LAYERS!=='undefined'?SONG_LAYERS.names:['Dall’inizio','Con la prima lettera','Con la seconda lettera','Con la terza lettera','Solo in LIVE (tutte e quattro)'],
+  LAYERK=typeof SONG_LAYERS!=='undefined'?SONG_LAYERS.keys:['INIZIO','LETTERA 1','LETTERA 2','LETTERA 3','LIVE'];
 const MSR=22050,SONG_KEY='2deep_pinball_song',MIDI_MAX=150000;
 let SONG=null,SONGBUF=null,SONGJOB=0;
 
@@ -49,7 +51,7 @@ function playSong(buf){if(!AC)return;stopSong();MASTER=AC.createGain();MASTER.ga
   LAYERS=-1;MSRC.start();applyLayers();}
 function stopSong(){if(MSRC){try{MSRC.stop();}catch(e){}MSRC.disconnect();}if(MASTER)MASTER.disconnect();MSRC=null;MASTER=null;MLG=[];}
 /* how many layers play now: all of them in LIVE and on the title and game-over screens, otherwise one more per lit letter */
-function layersNow(){if(G.state==='title'||G.state==='over'||live())return LAYERDEF.length;return 1+Math.min(3,G.lit.filter(Boolean).length);}
+function layersNow(){if(typeof gameLayers==='function')return gameLayers();if(G.state==='title'||G.state==='over'||live())return LAYERDEF.length;return 1+Math.min(3,G.lit.filter(Boolean).length);}
 function applyLayers(){if(!MLG.length)return;const n=layersNow();if(n===LAYERS)return;const t=AC.currentTime;
   MLG.forEach((g,k)=>{const on=k<n;g.gain.cancelScheduledValues(t);g.gain.setTargetAtTime(on?1:0,t,on?0.03:0.25);});LAYERS=n;}
 function setMusicLevel(){if(MASTER)MASTER.gain.setTargetAtTime(MUTED||MPAUSE?0:0.42,AC.currentTime,0.05);}
