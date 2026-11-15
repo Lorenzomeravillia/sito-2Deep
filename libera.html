@@ -3,23 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Libera la locandina dei 2Deep: chiudi le aree, scopri dove suoniamo la prossima serata e segnala in calendario.">
+<meta name="description" content="Libera, il gioco dei 2Deep: chiudi le aree, scopri dove suoniamo la prossima serata e segnala in calendario.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://www.2deep.it/locandina">
-<meta property="og:title" content="Libera la locandina · 2Deep">
+<meta property="og:url" content="https://www.2deep.it/libera">
+<meta property="og:title" content="Libera · il gioco dei 2Deep">
 <meta property="og:description" content="Un gioco tranquillo: sotto il mare c'è la locandina della prossima serata dei 2Deep.">
-<meta property="og:image" content="https://www.2deep.it/assets/giochi/og-locandina.jpg">
-<meta property="og:image:secure_url" content="https://www.2deep.it/assets/giochi/og-locandina.jpg">
+<meta property="og:image" content="https://www.2deep.it/assets/giochi/og-libera.jpg">
+<meta property="og:image:secure_url" content="https://www.2deep.it/assets/giochi/og-libera.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Libera la locandina: il gioco dei 2Deep con Katia, Lorenzo e Re Divano">
+<meta property="og:image:alt" content="Libera: il gioco dei 2Deep con Katia, Lorenzo e Re Divano">
 <meta property="og:locale" content="it_IT">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://www.2deep.it/assets/giochi/og-locandina.jpg">
+<meta name="twitter:image" content="https://www.2deep.it/assets/giochi/og-libera.jpg">
 <meta name="theme-color" content="#07050f">
-<link rel="canonical" href="https://www.2deep.it/locandina">
-<title>Libera la locandina · 2Deep</title>
+<link rel="canonical" href="https://www.2deep.it/libera">
+<title>Libera · il gioco dei 2Deep</title>
 <style>
 :root{--bg:#07050f;--ink:#f4ecff;--neon:#ff7ad8;--cyan:#65dbef;--edge:#2a2148;color-scheme:dark}
 html,body{height:100%}
@@ -656,7 +656,7 @@ const CFG=(function(){
   const delOf=s=>{const m=/^(IL|LO|LA|I|GLI|LE)\s+(.+)$/.exec(s),a=/^L'\s*(.+)$/.exec(s);
     if(m)return({IL:'DEL',LO:'DELLO',LA:'DELLA',I:'DEI',GLI:'DEGLI',LE:'DELLE'})[m[1]]+' '+m[2];if(a)return "DELL'"+a[1];return 'DI '+s;};
   const short=V?px(V.short_name):'';
-  const title=short&&fits('LIBERA '+short,150)?'LIBERA '+short:'LIBERA LA LOCANDINA';
+  const title=short&&fits('LIBERA '+short,150)?'LIBERA '+short:'LIBERA LA SERATA';
   /* ---- the gig ---- */
   let gig=null;
   if(ev){const [y,m,d]=ev.event_date.split('-').map(Number),dt0=new Date(y,m-1,d),wd=dt0.getDay(),lv=(set.ev&&set.ev[ev.id]&&set.ev[ev.id].lv)||{};
@@ -705,7 +705,7 @@ const CFG=(function(){
   /* the chalkboard on the counter */
   const board=M?[fits(px(M.title),180)?px(M.title):mName,fits(px(M.invite),180)?px(M.invite):'']:['2DEEP · MUSICA DAL VIVO','SEGUICI: @2DEEPLIVEMUSIC'];
   const venueSet=!!V,ofH=venueSet?delOf(String(V.short_name||'').toUpperCase().trim()):'DEI 2DEEP',mNameH=M?String(M.name||M.title).toUpperCase().trim():'';
-  return{px,fits,gig,title,win:title==='LIBERA LA LOCANDINA'?'HAI LIBERATO LA LOCANDINA!':'HAI LIBERATO '+short+'!',pal,
+  return{px,fits,gig,title,win:title==='LIBERA LA SERATA'?'HAI LIBERATO LA SERATA!':'HAI LIBERATO '+short+'!',pal,
     tagline:V&&V.tagline?px(V.tagline):'MUSICA DAL VIVO',board,items,mystery,secrets,venueSet,
     galleryTitle:venueSet?'I SEGRETI '+ofH:'I BRANI SEGRETI DEI 2DEEP',
     prizeSub:venueSet?'I '+secrets.length+' SEGRETI '+ofH+(M?', '+mNameH+' COMPRESO':''):secrets.length+' BRANI SEGRETI DEI 2DEEP',
@@ -745,7 +745,7 @@ function musicLayers(){if(!MLG.length)return;const end=G.state==='win'||G.state=
   const t=AC.currentTime;MLG.forEach((g,k)=>{const on=k<n;g.gain.cancelScheduledValues(t);g.gain.setTargetAtTime(on?1:0,t,on?0.05:0.4);});
   if(MLAY>0&&n>MLAY&&!end)pop(['','IL BASSO!','LA CHITARRA!','LA MELODIA!','TUTTA LA BAND!'][n-1]||'',TW/2,FY+FH/2,C.cyan,2);MLAY=n;}
 
-/* ---------------- LIBERA LA LOCANDINA: a calm Xonix ----------------
+/* ---------------- LIBERA: a calm Xonix ----------------
    The field is a grid of 3x3 cells. Land (1) is safe and shows the hidden poster, sea (0) is where Re Divano and his
    friends bounce, trail (2) is the line the note is drawing. Close a loop and every sea cell Re Divano cannot reach turns
    into land (his friends caught there are evicted). 75% of the field and the poster of the next gig is yours. On land nothing can touch you: stop, look, decide. */
@@ -906,8 +906,8 @@ function lose(){G.nearP=null;G.lives--;G.shake=0.35;sfx('hit');for(const [c,r] o
   G.trail=[];G.draw=false;G.dx=G.dy=0;G.inv=1.2;pop(G.lives>0?'GNAM!':'',FX+G.px*CS,FY+G.py*CS-10,C.red,2);
   if(G.lives<=0){G.state='over';G.winT=G.t;sfx('over');saveBest();}}
 /* personal record, kept only in this browser */
-let BEST=0;try{BEST=+localStorage.getItem('locandina_best')||0;}catch(e){}
-function saveBest(){G.newBest=G.score>BEST;if(G.newBest){BEST=G.score;try{localStorage.setItem('locandina_best',String(BEST));}catch(e){}}}
+let BEST=0;try{BEST=+localStorage.getItem('libera_best')||0;}catch(e){}
+function saveBest(){G.newBest=G.score>BEST;if(G.newBest){BEST=G.score;try{localStorage.setItem('libera_best',String(BEST));}catch(e){}}}
 
 function step(){const nc=G.px+G.dx,nr=G.py+G.dy;if(nc<0||nr<0||nc>=COLS||nr>=ROWS){G.dx=G.dy=0;return;}
   const v=grid[nr*COLS+nc];

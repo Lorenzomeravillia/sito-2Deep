@@ -29,7 +29,7 @@ const CFG=(function(){
   const delOf=s=>{const m=/^(IL|LO|LA|I|GLI|LE)\s+(.+)$/.exec(s),a=/^L'\s*(.+)$/.exec(s);
     if(m)return({IL:'DEL',LO:'DELLO',LA:'DELLA',I:'DEI',GLI:'DEGLI',LE:'DELLE'})[m[1]]+' '+m[2];if(a)return "DELL'"+a[1];return 'DI '+s;};
   const short=V?px(V.short_name):'';
-  const title=short&&fits('LIBERA '+short,150)?'LIBERA '+short:'LIBERA LA LOCANDINA';
+  const title=short&&fits('LIBERA '+short,150)?'LIBERA '+short:'LIBERA LA SERATA';
   /* ---- the gig ---- */
   let gig=null;
   if(ev){const [y,m,d]=ev.event_date.split('-').map(Number),dt0=new Date(y,m-1,d),wd=dt0.getDay(),lv=(set.ev&&set.ev[ev.id]&&set.ev[ev.id].lv)||{};
@@ -78,7 +78,7 @@ const CFG=(function(){
   /* the chalkboard on the counter */
   const board=M?[fits(px(M.title),180)?px(M.title):mName,fits(px(M.invite),180)?px(M.invite):'']:['2DEEP · MUSICA DAL VIVO','SEGUICI: @2DEEPLIVEMUSIC'];
   const venueSet=!!V,ofH=venueSet?delOf(String(V.short_name||'').toUpperCase().trim()):'DEI 2DEEP',mNameH=M?String(M.name||M.title).toUpperCase().trim():'';
-  return{px,fits,gig,title,win:title==='LIBERA LA LOCANDINA'?'HAI LIBERATO LA LOCANDINA!':'HAI LIBERATO '+short+'!',pal,
+  return{px,fits,gig,title,win:title==='LIBERA LA SERATA'?'HAI LIBERATO LA SERATA!':'HAI LIBERATO '+short+'!',pal,
     tagline:V&&V.tagline?px(V.tagline):'MUSICA DAL VIVO',board,items,mystery,secrets,venueSet,
     galleryTitle:venueSet?'I SEGRETI '+ofH:'I BRANI SEGRETI DEI 2DEEP',
     prizeSub:venueSet?'I '+secrets.length+' SEGRETI '+ofH+(M?', '+mNameH+' COMPRESO':''):secrets.length+' BRANI SEGRETI DEI 2DEEP',

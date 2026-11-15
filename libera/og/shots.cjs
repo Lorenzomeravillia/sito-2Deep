@@ -1,8 +1,8 @@
-/* node locandina/og/shots.cjs <out dir>: a frame of the game with no date on it (the page built with --artifact, its data
-   swapped for "no dates"), then og.html; convert og.png to assets/giochi/og-locandina.jpg */
+/* node libera/og/shots.cjs <out dir>: a frame of the game with no date on it (the page built with --artifact, its data
+   swapped for "no dates"), then og.html; convert og.png to assets/giochi/og-libera.jpg */
 const {chromium}=require('playwright'),path=require('path'),fs=require('fs'),{execFileSync}=require('child_process');const D=path.resolve(process.argv[2]||'.')+'/';
-(async()=>{const root=path.join(__dirname,'..','..');execFileSync('python3',[path.join(root,'locandina','build.py'),'--artifact',D]);
-  let html=fs.readFileSync(D+'locandina_page.html','utf8').replace('window.__GAME_DATA=','window.__GAME_DATA0=').replace('"use strict";\nwindow.__GAME_DATA0=','"use strict";\nwindow.__GAME_DATA={events:[],venues:[],songs:[],photos:[]};window.__GAME_DATA0=');fs.writeFileSync(D+'og_game.html',html);
+(async()=>{const root=path.join(__dirname,'..','..');execFileSync('python3',[path.join(root,'libera','build.py'),'--artifact',D]);
+  let html=fs.readFileSync(D+'libera_page.html','utf8').replace('window.__GAME_DATA=','window.__GAME_DATA0=').replace('"use strict";\nwindow.__GAME_DATA0=','"use strict";\nwindow.__GAME_DATA={events:[],venues:[],songs:[],photos:[]};window.__GAME_DATA0=');fs.writeFileSync(D+'og_game.html',html);
   const b=await chromium.launch();let p=await b.newPage({viewport:{width:600,height:1066},deviceScaleFactor:2});
   await p.addInitScript(()=>{const o=window.requestAnimationFrame.bind(window);window.__stopRAF=false;window.requestAnimationFrame=cb=>window.__stopRAF?0:o(cb);});
   await p.goto('file://'+D+'og_game.html');await p.waitForTimeout(700);await p.mouse.click(300,500);await p.waitForTimeout(200);

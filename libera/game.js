@@ -1,4 +1,4 @@
-/* ---------------- LIBERA LA LOCANDINA: a calm Xonix ----------------
+/* ---------------- LIBERA: a calm Xonix ----------------
    The field is a grid of 3x3 cells. Land (1) is safe and shows the hidden poster, sea (0) is where Re Divano and his
    friends bounce, trail (2) is the line the note is drawing. Close a loop and every sea cell Re Divano cannot reach turns
    into land (his friends caught there are evicted). 75% of the field and the poster of the next gig is yours. On land nothing can touch you: stop, look, decide. */
@@ -159,8 +159,8 @@ function lose(){G.nearP=null;G.lives--;G.shake=0.35;sfx('hit');for(const [c,r] o
   G.trail=[];G.draw=false;G.dx=G.dy=0;G.inv=1.2;pop(G.lives>0?'GNAM!':'',FX+G.px*CS,FY+G.py*CS-10,C.red,2);
   if(G.lives<=0){G.state='over';G.winT=G.t;sfx('over');saveBest();}}
 /* personal record, kept only in this browser */
-let BEST=0;try{BEST=+localStorage.getItem('locandina_best')||0;}catch(e){}
-function saveBest(){G.newBest=G.score>BEST;if(G.newBest){BEST=G.score;try{localStorage.setItem('locandina_best',String(BEST));}catch(e){}}}
+let BEST=0;try{BEST=+localStorage.getItem('libera_best')||0;}catch(e){}
+function saveBest(){G.newBest=G.score>BEST;if(G.newBest){BEST=G.score;try{localStorage.setItem('libera_best',String(BEST));}catch(e){}}}
 
 function step(){const nc=G.px+G.dx,nr=G.py+G.dy;if(nc<0||nr<0||nc>=COLS||nr>=ROWS){G.dx=G.dy=0;return;}
   const v=grid[nr*COLS+nc];

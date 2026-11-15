@@ -6,5 +6,12 @@
       "source": "/gioca",
       "destination": "/flipper"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/locandina",
+      "destination": "/libera",
+      "permanent": true
+    }
   ]
 }
