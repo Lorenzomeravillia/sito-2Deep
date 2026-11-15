@@ -31,6 +31,10 @@
         .data-item{display:flex;justify-content:space-between;align-items:center;padding:1rem;border:1px solid var(--border);margin-bottom:.5rem;border-radius:4px;gap:1rem}
         .data-item-actions{display:flex;gap:.5rem;flex-shrink:0}
         .data-item-actions button{padding:.4rem .8rem;font-size:.8rem}
+        .len-count{font-weight:400;font-size:.75rem;color:#888;margin-left:.3rem}.len-count.full{color:var(--danger)}
+        .len-hint{font-size:.75rem;color:#b26a00;margin-top:.25rem;min-height:0}
+        .ev-edit{display:grid;grid-template-columns:minmax(0,1fr);gap:.5rem;width:100%;min-width:0}.ev-edit>*{min-width:0}.ev-edit,.ev-edit *{box-sizing:border-box}.ev-edit input{width:100%;min-width:0}.ev-edit .row{display:flex;gap:.5rem}.ev-edit .row>div{flex:1;min-width:0}.data-item>.ev-edit{flex:1 1 100%}.ev-edit label{font-size:.75rem;color:#666}
+        .ev-warn{font-size:.8rem;color:var(--danger)}
         #toast-container{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px}
         .toast{padding:1rem 1.5rem;border-radius:4px;color:var(--white);box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:.9rem;animation:slideIn .3s}
         .toast.success{background:var(--success)}
@@ -178,8 +182,9 @@
                         <div style="flex:1"><label>Data</label><input type="date" id="ev-date" required></div>
                         <div style="flex:1"><label>Ore</label><input type="time" id="ev-time"></div>
                     </div>
-                    <div class="form-group"><label>Locale / Venue</label><input type="text" id="ev-venue" required></div>
-                    <div class="form-group"><label>Città</label><input type="text" id="ev-city" required></div>
+                    <div class="form-group"><label>Locale / Venue <span class="len-count" data-for="ev-venue"></span></label><input type="text" id="ev-venue" maxlength="18" required><div class="len-hint" data-for="ev-venue"></div></div>
+                    <div class="form-group"><label>Città <span class="len-count" data-for="ev-city"></span></label><input type="text" id="ev-city" maxlength="18" required><div class="len-hint" data-for="ev-city"></div></div>
+                    <p style="font-size:.8rem;color:#666;margin:-.8rem 0 1rem">Locale e città: massimo 18 caratteri, perché devono stare per intero nel video promo e nel flipper.</p>
                     <div class="form-group"><label>Note (opzionale)</label><input type="text" id="ev-desc"></div>
                     <label><input type="checkbox" id="ev-pub" checked style="width:auto;margin:0 .4rem 0 0"> Pubblica subito</label>
                     <button type="submit" class="section-save-btn" style="background:var(--text)">Aggiungi</button>
