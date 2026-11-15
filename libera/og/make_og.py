@@ -1,4 +1,4 @@
-"""Rebuild the link preview of 2deep.it/locandina (assets/giochi/og-locandina.jpg, 1200x630): node locandina/og/shots.cjs
+"""Rebuild the link preview of 2deep.it/libera (assets/giochi/og-libera.jpg, 1200x630): node libera/og/shots.cjs
    takes frame.png from the local page and calls this script, which joins the shared sprite sources and compose.js into og.html."""
 import sys, os
 V = os.path.join(os.path.dirname(__file__), '..', '..', 'video-promo')

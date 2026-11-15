@@ -1,10 +1,10 @@
-"""Libera la locandina: a calm Xonix where the note uncovers the poster of the 2Deep's next gig.
+"""Libera: a calm Xonix where the note uncovers the poster of the 2Deep's next gig.
    Built from the promo engine's font, sprites and synth (../video-promo) and the files in this folder.
 
-   python3 locandina/build.py                 -> ../locandina.html, the page at 2deep.it/locandina: dates, venue profiles,
+   python3 libera/build.py                 -> ../libera.html, the page at 2deep.it/libera: dates, venue profiles,
                                                  songs and the band's photos come from Supabase when the page opens
                                                  (site_data.json if it does not answer within 5 seconds)
-   python3 locandina/build.py --artifact DIR  -> DIR/locandina.html for claude.ai: data frozen from site_data.json, the
+   python3 libera/build.py --artifact DIR  -> DIR/libera.html for claude.ai: data frozen from site_data.json, the
                                                  venue photos inline, pinned to the date in --evento (default: the Cantonet)
 
    content.js turns the data into what the game shows (CFG), game.js the game, music.js the song in layers,
@@ -53,8 +53,8 @@ if '--artifact' in sys.argv:
     data['evento'] = evento
     js = '(()=>{\n"use strict";\nwindow.__GAME_DATA=' + json.dumps(data, ensure_ascii=False) + ';\n' + game_js() + '\n})();'
     page = head + '\n<script>\n' + js + '\n</script>\n'
-    (out / 'locandina.html').write_text(page)
-    (out / 'locandina_page.html').write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>' + page + '</body></html>')
+    (out / 'libera.html').write_text(page)
+    (out / 'libera_page.html').write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>' + page + '</body></html>')
     print('artifact', len(page))
 else:
     snap = json.dumps(SNAP, ensure_ascii=False)
@@ -79,26 +79,26 @@ else:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Libera la locandina dei 2Deep: chiudi le aree, scopri dove suoniamo la prossima serata e segnala in calendario.">
+<meta name="description" content="Libera, il gioco dei 2Deep: chiudi le aree, scopri dove suoniamo la prossima serata e segnala in calendario.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://www.2deep.it/locandina">
-<meta property="og:title" content="Libera la locandina · 2Deep">
+<meta property="og:url" content="https://www.2deep.it/libera">
+<meta property="og:title" content="Libera · il gioco dei 2Deep">
 <meta property="og:description" content="Un gioco tranquillo: sotto il mare c'è la locandina della prossima serata dei 2Deep.">
-<meta property="og:image" content="https://www.2deep.it/assets/giochi/og-locandina.jpg">
-<meta property="og:image:secure_url" content="https://www.2deep.it/assets/giochi/og-locandina.jpg">
+<meta property="og:image" content="https://www.2deep.it/assets/giochi/og-libera.jpg">
+<meta property="og:image:secure_url" content="https://www.2deep.it/assets/giochi/og-libera.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Libera la locandina: il gioco dei 2Deep con Katia, Lorenzo e Re Divano">
+<meta property="og:image:alt" content="Libera: il gioco dei 2Deep con Katia, Lorenzo e Re Divano">
 <meta property="og:locale" content="it_IT">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://www.2deep.it/assets/giochi/og-locandina.jpg">
+<meta name="twitter:image" content="https://www.2deep.it/assets/giochi/og-libera.jpg">
 <meta name="theme-color" content="#07050f">
-<link rel="canonical" href="https://www.2deep.it/locandina">
+<link rel="canonical" href="https://www.2deep.it/libera">
 """
     page = (meta + head.replace('<meta name="claude:viewport-fit-sides" content="cover">\n', '').split('<div id="stage"')[0] + '</head>\n<body>\n<div id="stage"' +
             head.split('<div id="stage"', 1)[1] +
             '\n<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>\n<script src="/config.js"></script>\n<script>\nfunction GAME(){\n"use strict";\n' +
             game_js() + '\n}\n' + boot + '\n</script>\n</body>\n</html>\n')
-    (ROOT / 'locandina.html').write_text(page)
-    print('locandina.html', len(page))
+    (ROOT / 'libera.html').write_text(page)
+    print('libera.html', len(page))

@@ -62,13 +62,13 @@ label{display:block;font-weight:500;margin-bottom:.35rem;font-size:.9rem}
   <div id="main" hidden>
     <div class="top-bar">
       <h2>Giochi</h2>
-      <div class="links"><a class="plain" href="/admin">← Admin</a><a href="/flipper" target="_blank" rel="noopener">🕹️ Flipper</a><a href="/locandina" target="_blank" rel="noopener">🧩 Locandina</a></div>
+      <div class="links"><a class="plain" href="/admin">← Admin</a><a href="/flipper" target="_blank" rel="noopener">🕹️ Flipper</a><a href="/libera" target="_blank" rel="noopener">🧩 Libera</a></div>
     </div>
-    <p class="note">I giochi leggono le date e queste schede ogni volta che qualcuno li apre: i link salvati restano validi e mostrano sempre la prossima serata. Se una data non ha una scheda, la Locandina usa la versione neutra (locandina dei 2Deep e brani del repertorio come segreti).</p>
+    <p class="note">I giochi leggono le date e queste schede ogni volta che qualcuno li apre: i link salvati restano validi e mostrano sempre la prossima serata. Se una data non ha una scheda, Libera usa la versione neutra (locandina dei 2Deep e brani del repertorio come segreti).</p>
 
     <div id="listView">
       <h3>Prossime date</h3>
-      <p class="note">Scegli quale scheda usa ogni data. La Locandina mostra la prima data in programma; con "Anteprima" vedi il gioco di una data qualsiasi.</p>
+      <p class="note">Scegli quale scheda usa ogni data. Libera mostra la prima data in programma; con "Anteprima" vedi il gioco di una data qualsiasi.</p>
       <div id="events"></div>
 
       <h3>Schede dei locali</h3>
@@ -148,14 +148,14 @@ function renderList(){
   events.forEach((e,i)=>{const sel=el('select',{'aria-label':'Scheda per '+e.venue,onchange:ev=>linkEvent(e,ev.target.value,sel)},
       el('option',{value:''},'Nessuna: versione neutra'),...venues.map(v=>el('option',{value:v.id,selected:v.id===e.game_venue_id},v.name)));
     E.append(el('div',{class:'item'},el('div',{class:'grow'},el('div',null,el('strong',null,fmtDate(e.event_date)),' · ',e.venue||''),
-        el('div',{class:'sub'},(e.city||'').trim()+(e.event_time?' · ore '+String(e.event_time).slice(0,5):'')+(e.is_published===false?' · non pubblicata':'')+(i===0?' · è quella che la Locandina mostra adesso':''))),
-      sel,el('a',{href:'/locandina?evento='+encodeURIComponent(e.id),target:'_blank',rel:'noopener'},'Anteprima')));});
+        el('div',{class:'sub'},(e.city||'').trim()+(e.event_time?' · ore '+String(e.event_time).slice(0,5):'')+(e.is_published===false?' · non pubblicata':'')+(i===0?' · è quella che Libera mostra adesso':''))),
+      sel,el('a',{href:'/libera?evento='+encodeURIComponent(e.id),target:'_blank',rel:'noopener'},'Anteprima')));});
   const V=$('venues');V.replaceChildren();
   if(!venues.length)V.append(el('p',{class:'note'},'Nessuna scheda: tutte le date usano la versione neutra.'));
   venues.forEach(v=>{const used=events.filter(e=>e.game_venue_id===v.id).length;
     V.append(el('div',{class:'item'},el('div',{class:'grow'},el('strong',null,v.name),el('div',{class:'sub'},(v.items||[]).length+' prodotti'+(v.mystery&&v.mystery.title?' · mistero':'')+' · '+(used?'usata da '+used+(used===1?' data':' date'):'non collegata a date future'))),
       el('button',{type:'button',class:'light',onclick:()=>edit(v)},'Modifica'),
-      el('a',{href:'/locandina?scheda='+encodeURIComponent(v.id),target:'_blank',rel:'noopener'},'Anteprima'),
+      el('a',{href:'/libera?scheda='+encodeURIComponent(v.id),target:'_blank',rel:'noopener'},'Anteprima'),
       el('button',{type:'button',class:'danger',onclick:()=>removeVenue(v)},'Elimina')));});}
 async function linkEvent(e,id,sel){sel.disabled=true;const{error}=await sb.from('site_events').update({game_venue_id:id||null}).eq('id',e.id);sel.disabled=false;
   if(error){toast('Non salvato: '+error.message,true);sel.value=e.game_venue_id||'';return;}e.game_venue_id=id||null;toast(id?'Data collegata alla scheda':'La data usa la versione neutra');renderList();}
@@ -175,7 +175,7 @@ function edit(v){
   $('cNeon').value=cur.colors.neon||'#ff4a5a';$('cCounter').value=cur.colors.counter||'#9a5a35';$('cDate').value=cur.colors.date||'#c9ad62';
   const P=$('prods');P.replaceChildren();cur.items.forEach((it,i)=>P.append(itemBox(it,i)));
   $('mys').replaceChildren(...mysteryFields(cur.mystery));
-  $('pvLink').hidden=!!cur.isNew;$('pvLink').href='/locandina?scheda='+encodeURIComponent(cur.id);
+  $('pvLink').hidden=!!cur.isNew;$('pvLink').href='/libera?scheda='+encodeURIComponent(cur.id);
   $('listView').hidden=true;$('editView').hidden=false;counters();preview();window.scrollTo(0,0);}
 function field(label,obj,key,max,opts={}){const id='f'+Math.random().toString(36).slice(2,8),inp=opts.area?el('textarea',{id,maxLength:max,rows:3,placeholder:opts.ph||''}):el('input',{id,maxLength:max,placeholder:opts.ph||''});
   inp.value=obj[key]||'';inp.addEventListener('input',()=>{obj[key]=inp.value;counters();});
