@@ -13,4 +13,4 @@ function initAudio(){audioOn();}
 function songLayers(){const before=LAYERS;applyLayers();if(G.state!=='play'||before<1||LAYERS<=before)return;
   /* the newest group that has something to play (a group left empty in the panel stays silent) */
   for(let k=LAYERS-1;k>=before;k--){if(!SONG||!SONG.steps[k]||!SONG.steps[k].events.length)continue;const n=CFG.px(stepLabel(k)),t=n&&tw(n+'!')<=TW-20?n+'!':'ENTRA UN ALTRO STRUMENTO!';
-    pop(t,TW/2,FY+FH/2,C.cyan,tw(t)*2<=TW-20?2:1);return;}}
+    pop(t,TW/2,FY+16,C.cyan,tw(t)*2<=TW-20?2:1);return;}}

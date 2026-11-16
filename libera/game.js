@@ -175,8 +175,22 @@ function moveEnemies(dt){const f=G.t<G.freezeUntil?0:(G.t<G.slowUntil?0.45:1)*(1
   /* brushing the line without touching it: PER UN PELO! */
   if(md<=NEAR*NEAR&&G.t-(e.near||-9)>1.5&&!G.nearP){e.near=G.t;G.nearP={t:G.t,x:FX+e.x,y:FY+e.y-14,lives:G.lives};}}}
 
-function pop(txt,x,y,col,sc){if(txt)G.pops.push({txt,x,y,col,sc,t:G.t});}
-function update(dt){G.t+=dt;if(G.shake>0)G.shake-=dt;if(G.inv>0)G.inv-=dt;G.pops=G.pops.filter(p=>G.t-p.t<1.1);G.parts=G.parts.filter(p=>G.t-p.t<0.8);if(AC)songLayers();{const sb=document.getElementById('songBtn'),sv=songBtnVisible();if(sb.hidden===sv){sb.hidden=!sv;if(sv)placeSongBtn();}}
+/* ---- the pop-up words (+19%, SFRATTATO!, GHIACCIO!, IL BASSO! ...): they last long enough to read, never start together
+   (a quarter of a second apart) and never sit on top of each other: a new one moves up, or down, until it is clear ---- */
+const POPL=1.9;
+const popRise=q=>{const u=Math.min(1,Math.max(0,(G.t-q.t)/POPL));return (1-(1-u)*(1-u))*12;};
+function popBox(p,y){const w=tw(p.txt)*p.sc,h=7*p.sc,hw=w/2+FX+4,x=Math.max(hw,Math.min(TW-hw,p.x));return{x,x0:x-w/2-4,x1:x+w/2+4,y0:y-3,y1:y+h+3};}
+function pop(txt,x,y,col,sc){if(!txt)return;const p={txt,x,y,col,sc,t:G.t};
+  const last=G.pops.reduce((m,q)=>Math.max(m,q.t),-9);if(last>G.t-0.25)p.t=last+0.25;
+  const clear=yy=>{const a=popBox(p,yy);return !G.pops.some(q=>{const b=popBox(q,q.y-popRise(q)),c=popBox(q,q.y-12);
+    return a.x0<b.x1&&a.x1>b.x0&&((a.y0<b.y1&&a.y1>b.y0)||(a.y0<c.y1&&a.y1>c.y0));});};
+  const step=7*sc+8,lo=FY+4,hi=FY+FH-7*sc-4,y0=Math.max(lo,Math.min(hi,y)),cand=[y0];
+  for(let k=1;k<=12;k++){const c=y0+(k%2?-1:1)*step*Math.ceil(k/2);if(c>=lo&&c<=hi)cand.push(c);}
+  const ok=cand.find(clear);
+  /* nowhere clear: it waits, in its place, until the ones in the way have faded */
+  if(ok===undefined){p.y=y0;const a=popBox(p,y0);p.t=Math.max(p.t,...G.pops.filter(q=>{const b=popBox(q,q.y-6);return a.x0<b.x1&&a.x1>b.x0&&a.y0<b.y1+12&&a.y1>b.y0-12;}).map(q=>q.t+POPL-0.3));}
+  else p.y=ok;G.pops.push(p);}
+function update(dt){G.t+=dt;if(G.shake>0)G.shake-=dt;if(G.inv>0)G.inv-=dt;G.pops=G.pops.filter(p=>G.t-p.t<POPL);G.parts=G.parts.filter(p=>G.t-p.t<0.8);if(AC)songLayers();{const sb=document.getElementById('songBtn'),sv=songBtnVisible();if(sb.hidden===sv){sb.hidden=!sv;if(sv)placeSongBtn();}}
   /* PER UN PELO! only once the note has survived another half second */
   if(G.nearP&&G.t-G.nearP.t>=0.5){const n=G.nearP;G.nearP=null;if(G.state==='play'&&G.lives===n.lives){G.score+=250;pop('PER UN PELO!',n.x,n.y,C.pink,1);sfx('near');}}
   if(G.infoQ.length&&!G.draw&&G.state==='play'){G.infoQ[0].left-=dt;if(G.infoQ[0].left<=0)G.infoQ.shift();}
@@ -218,7 +232,10 @@ function draw(){ensureHD();ctx=OUT;ctx.setTransform(K,0,0,K,0,0);ctx.imageSmooth
   /* the note */
   if((G.state==='play'||G.state==='intro'||(G.state==='win'&&G.t-G.winT<0.6))&&!(G.inv>0&&Math.floor(G.t*12)%2)){const x=FX+G.px*CS+1,y=FY+G.py*CS+1;if(!drawObj(HD.spr.note,x+0.5,y-0.5,0,false,HALOS.note)){const pg=ctx.createRadialGradient(x+0.5,y+0.5,1,x+0.5,y+0.5,9+Math.sin(G.t*6));pg.addColorStop(0,'rgba(255,236,150,0.55)');pg.addColorStop(1,'rgba(255,224,58,0)');ctx.fillStyle=pg;ctx.beginPath();ctx.arc(x+0.5,y+0.5,10,0,Math.PI*2);ctx.fill();ctx.drawImage(PNOTE,x-4,y-6);}}
   for(const p of G.parts){const u=(G.t-p.t)/0.8;if(u<0)continue;ctx.globalAlpha=1-u;ctx.fillStyle=p.col;ctx.fillRect(Math.round(p.x+p.vx*u*0.8),Math.round(p.y+p.vy*u*0.8),2,2);}ctx.globalAlpha=1;
-  for(const p of G.pops){const u=(G.t-p.t)/1.1,hw=tw(p.txt)*p.sc/2+FX+4,x=Math.max(hw,Math.min(TW-hw,p.x));ctext(p.txt,x,Math.round(p.y-u*16),p.sc,p.col);}
+  /* pop-ups: a quick pop in, a dark backing to read them on the poster, a slow rise, a fade at the end */
+  for(const p of G.pops){const age=G.t-p.t;if(age<0)continue;const y=Math.round(p.y-popRise(p)),b=popBox(p,y),a=Math.min(1,(POPL-age)/0.45),s=age<0.12?0.7+0.3*age/0.12:1;
+    ctx.save();ctx.globalAlpha=Math.max(0,a);ctx.translate(b.x,y+3.5*p.sc);ctx.scale(s,s);ctx.translate(-b.x,-(y+3.5*p.sc));
+    ctx.fillStyle='rgba(7,5,15,0.55)';ctx.fillRect(b.x0,b.y0,b.x1-b.x0,b.y1-b.y0);ctext(p.txt,b.x,y,p.sc,p.col);ctx.restore();}
   ctx.restore();hud();
   if(G.state==='intro')intro();else if(G.state==='win')ending(true);else if(G.state==='over')ending(false);}
 /* cells not yet reached by the wave are painted as sea again; the front shines gold */
