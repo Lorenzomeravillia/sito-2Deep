@@ -90,7 +90,7 @@ label{display:block;font-weight:500;margin-bottom:.35rem;font-size:.9rem}
       </div>
 
       <h3>Prodotti</h3>
-      <p class="note">Fino a tre. Compaiono come polaroid nella locandina, come premi da catturare in mare (ognuno con il suo potere) e come schede con la foto a fine partita.</p>
+      <p class="note">Fino a tre. Compaiono come polaroid nella locandina, come premi da catturare durante la partita (ognuno con il suo potere) e come schede con la foto a fine partita.</p>
       <div id="prods"></div>
 
       <h3>Il mistero <span class="hint">(facoltativo)</span></h3>
@@ -188,7 +188,7 @@ function photoField(obj,slot,o={}){const key=o.key||'photo',wrap=el('div',{class
     try{const r=await shrink(f,o.png),ext=o.png?'.png':'.jpg',path='giochi/'+cur.id+'/'+slot+'-'+Date.now()+ext;
       const{error}=await sb.storage.from(BUCKET).upload(path,r.blob,{contentType:o.png?'image/png':'image/jpeg',upsert:false});if(error)throw error;
       obj[key]=pubUrl(path);draw();
-      if(o.png&&!r.transparent)toast('Questa immagine non ha lo sfondo trasparente: in mare comparirà come un rettangolo. Meglio una foto scontornata.',true);
+      if(o.png&&!r.transparent)toast('Questa immagine non ha lo sfondo trasparente: nel gioco comparirà come un rettangolo. Meglio una foto scontornata.',true);
       else toast('Caricata: ricordati di salvare la scheda');}
     catch(e){toast('Foto non caricata: '+(e.message||e),true);}finally{inp.disabled=false;inp.value='';}});
   draw();return wrap;}
@@ -197,7 +197,7 @@ function itemBox(it,i){const icon=el('select',{onchange:e=>{it.icon=e.target.val
     el('div',{class:'row'},el('div',{class:'fg'},el('label',null,'Icona 3D (se manca la foto scontornata)'),icon),field('Nome breve',it,'name',8,{ph:['COCKTAIL','CRESCIA','BRIOCHE'][i],hint:'Sotto la polaroid.'})),
     field('Titolo',it,'title',30,{ph:['I cocktail di Elisa','La crescia di Urbino','Le brioches'][i]}),
     field('Testo della scheda finale',it,'text',240,{area:true,ph:'Due o tre frasi, solo cose confermate dal locale.'}),photoField(it,'p'+(i+1)),
-    photoField(it,'s'+(i+1),{key:'cut',png:true,label:'Premio in mare: foto scontornata (facoltativa)',hint:'Il prodotto senza sfondo (PNG trasparente). Su iPhone: apri la foto, tieni premuto sul prodotto e condividi o copia il soggetto. Se manca, in mare compare l’icona 3D scelta sopra.'}));}
+    photoField(it,'s'+(i+1),{key:'cut',png:true,label:'Premio da catturare: foto scontornata (facoltativa)',hint:'Il prodotto senza sfondo (PNG trasparente). Su iPhone: apri la foto, tieni premuto sul prodotto e condividi o copia il soggetto. Se manca, nel gioco compare l’icona 3D scelta sopra.'}));}
 function mysteryFields(m){return[field('Nome breve',m,'name',8,{ph:'DAÙ',hint:'Sotto la polaroid col punto di domanda e sul pacco sorpresa.'}),
   field('Titolo',m,'title',29,{ph:'La leggenda del Daù',hint:'Prima riga della lavagnetta.'}),
   field('Invito',m,'invite',29,{ph:'Fattela raccontare al bancone',hint:'Seconda riga della lavagnetta.'}),

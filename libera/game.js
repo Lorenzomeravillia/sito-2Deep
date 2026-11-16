@@ -65,6 +65,14 @@ const PNOTE=mk(9,10);(()=>{const g=PNOTE.getContext('2d');g.imageSmoothingEnable
 const G={found:{},items:[],itemN:0,nextItem:7,freezeUntil:0,slowUntil:0,infoQ:[],parts:[],state:'intro',t:0,lives:3,score:0,pct:0,px:43,py:0,dx:0,dy:0,draw:false,trail:[],moveAcc:0,inv:0,pops:[],winT:0,shake:0,enemies:[]};
 const SPEED=30;   /* cells per second */
 let MASK=mk(COLS,ROWS),REVEAL=mk(FW,FH),COVER=mk(COLS,ROWS),EDGE=null,WAVE=null;
+/* the field still to uncover, drawn once: like the art on the flipper's table, the venue, the date and the time in one colour
+   just lighter than the background, readable if you look */
+const FIELD=(()=>{const c=mk(FW,FH),g=c.getContext('2d'),sv=ctx;g.fillStyle='#0d1030';g.fillRect(0,0,FW,FH);
+  const rows=GIG?[GIG.venue,GIG.date,GIG.time?GIG.time:'',GIG.place]:['PROSSIMA','SERATA','IN ARRIVO'];
+  const lines=rows.filter(Boolean).map(s=>({s,sc:Math.max(1,Math.min(4,Math.floor((FW-36)/Math.max(1,tw(s)))))}));
+  const gap=10,tot=lines.reduce((a,l)=>a+l.sc*7,0)+gap*(lines.length-1);let y=Math.round(FH/2-tot/2);ctx=g;
+  for(const l of lines){dt(l.s,Math.round(FW/2-tw(l.s)*l.sc/2),y,l.sc,'#171c4d');y+=l.sc*7+gap;}ctx=sv;
+  g.fillStyle='#1b2056';for(let y=4;y<FH;y+=9)for(let x=4+((y/9)%2)*4;x<FW;x+=9)g.fillRect(x,y,1,1);return c;})();
 function rebuildReveal(){const m=MASK.getContext('2d'),id=m.createImageData(COLS,ROWS);for(let i=0;i<grid.length;i++)if(grid[i]===1)id.data[i*4+3]=255;m.putImageData(id,0,0);
   const r=REVEAL.getContext('2d');r.globalCompositeOperation='source-over';r.clearRect(0,0,FW,FH);r.drawImage(POSTER,0,0);r.globalCompositeOperation='destination-in';r.imageSmoothingEnabled=false;r.drawImage(MASK,0,0,FW,FH);r.globalCompositeOperation='source-over';rebuildEdge();hdClip();}
 /* the edge between land and sea, drawn once per change as a cyan neon line (cached at the screen's resolution) */
@@ -183,8 +191,8 @@ function fit(){const st=document.getElementById('stage'),aw=st.clientWidth,ah=st
   cv.width=TW*K;cv.height=TH*K;cv.style.width=Math.floor(TW*s)+'px';cv.style.height=Math.floor(TH*s)+'px';rebuildEdge();placePanel();}
 function draw(){ensureHD();ctx=OUT;ctx.setTransform(K,0,0,K,0,0);ctx.imageSmoothingEnabled=false;ctx.fillStyle='#07050f';ctx.fillRect(0,0,TW,TH);
   const sh=G.shake>0?Math.round(Math.sin(G.t*90)*2):0;ctx.save();ctx.translate(sh,0);
-  /* sea: deep blue with a faint grid of dots */
-  ctx.fillStyle='#0d1030';ctx.fillRect(FX,FY,FW,FH);ctx.fillStyle='#161a46';for(let y=FY+4;y<FY+FH;y+=9)for(let x=FX+4+((y/9)%2)*4;x<FX+FW;x+=9)ctx.fillRect(x,y,1,1);
+  /* the field still to uncover: deep blue, a faint grid of dots and the gig written in large, barely visible letters */
+  ctx.drawImage(FIELD,FX,FY);
   /* land shows the poster; at the end the sea washes away too */
   ctx.drawImage(REVEAL,FX,FY);drawPolaroidsHD(false);
   if(G.state==='win'||G.state==='over'){const u=Math.min(1,(G.t-G.winT-0.3)/0.9);if(u>0){ctx.globalAlpha=u;ctx.drawImage(POSTER,FX,FY);ctx.globalAlpha=1;drawPolaroidsHD(true,u);}}
@@ -230,9 +238,9 @@ function hud(){if((G.state==='win'||G.state==='over')&&G.t-G.winT>1.3){const w=G
 const fmt=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 function card(y,h){ctx.fillStyle='rgba(10,7,22,0.88)';ctx.fillRect(14,y,TW-28,h);ctx.strokeStyle='rgba(232,151,200,0.8)';ctx.strokeRect(14.5,y+0.5,TW-29,h-1);}
 const HELP=(()=>{const L=CFG.items.map(i=>i.label),a='CHIUDI DENTRO '+L[0]+', '+L[1],b='E '+L[2]+': TI DANNO UNA MANO.';
-  return CFG.venueSet&&tw(a)<=TW-40&&tw(b)<=TW-40?[a,b]:['CHIUDI DENTRO I PREMI CHE TROVI','IN MARE: TI DANNO UNA MANO.'];})();
+  return CFG.venueSet&&tw(a)<=TW-40&&tw(b)<=TW-40?[a,b]:['CHIUDI DENTRO I PREMI CHE COMPAIONO:','TI DANNO UNA MANO.'];})();
 function intro(){card(110,246);ctext(CFG.title,TW/2,122,tw(CFG.title)*2<=TW-40?2:1,C.yel);
-  const L=['SOTTO IL MARE BLU C\'E LA LOCANDINA','DELLA PROSSIMA SERATA DEI 2DEEP.','','SCORRI IL DITO PER MUOVERE LA NOTA.','CHIUDI LE AREE PER SCOPRIRLA.','','RE DIVANO NON DEVE TOCCARE','LA TUA LINEA. SUL BORDO E SULLE','PARTI SCOPERTE SEI AL SICURO.','',...HELP,'','SCOPRI IL 75% E LA SERATA E TUA.'];
+  const L=['QUI SOTTO SI NASCONDE LA LOCANDINA','DELLA PROSSIMA SERATA DEI 2DEEP.','','SCORRI IL DITO PER MUOVERE LA NOTA.','CHIUDI LE AREE PER SCOPRIRLA.','','RE DIVANO NON DEVE TOCCARE','LA TUA LINEA. SUL BORDO E SULLE','PARTI SCOPERTE SEI AL SICURO.','',...HELP,'','SCOPRI IL 75% E LA SERATA E TUA.'];
   L.forEach((s,i)=>ctext(s,TW/2,148+i*12,1,i>=6&&i<=8?C.pink:i>=10&&i<=11?C.yel:C.white,{outline:null}));
   if(Math.floor(G.t*2)%2)ctext('TOCCA PER INIZIARE',TW/2,330,1,C.cyan,{outline:null});
   if(BEST)ctext('IL TUO RECORD: '+fmt(BEST)+' · BATTILO',TW/2,366,1,C.yel,{outline:null});}
