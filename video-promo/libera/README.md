@@ -15,7 +15,7 @@ Servono Chromium con Playwright, ffmpeg e python3. Il gioco viene ricompilato da
 ## Cosa cambiare per il prossimo indizio
 
 - `vid.js`, `WP`: il tragitto della nota (colonna, riga, pausa in secondi).
-- `vid.js`, `endCard` e `drawH`: testi della scena finale e della colonna di destra (indizio, domanda sul Daù, invito a giocare).
+- `vid.js`, `endCard` e `drawH`: testi della scena finale e della colonna di destra (indizio, «Ma tu lo conosci il Dahu?», invito a giocare).
 - `make.cjs`, `__VIMG`: le immagini dell'indizio (ora il cocktail scontornato).
 
 La musica è il giro interno del gioco (`libera/gamesong.js`), non il brano salvato nel database: niente problemi di diritti sui social.
