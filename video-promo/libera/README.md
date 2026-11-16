@@ -17,6 +17,7 @@ Servono Chromium con Playwright, ffmpeg e python3. Il gioco viene ricompilato da
 - `vid.js`, `WP`: il tragitto della nota (colonna, riga, pausa in secondi).
 - `vid.js`, `endCard` e `drawH`: testi della scena finale e della colonna di destra (indizio, «Ma tu lo conosci il Dahu?», invito a giocare).
 - `make.cjs`, `__VIMG`: le immagini dell'indizio (ora il cocktail scontornato).
+- `make.cjs`, `EVICT`: la parola che compare quando la ciabatta viene sfrattata, solo nel video (nel gioco resta «SFRATTATO!»).
 
 La musica è il giro interno del gioco (`libera/gamesong.js`), non il brano salvato nel database: niente problemi di diritti sui social.
 
