@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sala giochi · 2Deep</title>
+<meta name="description" content="La sala giochi dei 2Deep: il flipper e Libera, due minigiochi per scoprire dove suoniamo dal vivo.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.2deep.it/giochi">
+<meta property="og:title" content="Sala giochi · 2Deep">
+<meta property="og:description" content="Il flipper e Libera: due minigiochi per scoprire dove suoniamo dal vivo.">
+<meta property="og:image" content="https://www.2deep.it/assets/giochi/og-giochi.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="La sala giochi dei 2Deep: il flipper e Libera">
+<meta property="og:locale" content="it_IT">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.2deep.it/assets/giochi/og-giochi.jpg">
+<meta name="theme-color" content="#07050f">
+<link rel="canonical" href="https://www.2deep.it/giochi">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&display=swap">
+<style>
+/* the games hub: same dark arcade world as the games (built by sala-giochi/build.py, the top bar is flipper/sitebar.html) */
+:root{--bg:#07050f;--ink:#f4ecff;--dim:#b8aed4;--neon:#ff7ad8;--cyan:#65dbef;--yel:#f2d27a;--edge:#2a2148;--pix:"Silkscreen","Courier New",monospace;color-scheme:dark}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -10%,#24123f 0%,var(--bg) 60%);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;
+  padding:0 max(16px,env(safe-area-inset-right,0px)) max(24px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+main{max-width:920px;margin:0 auto;padding:28px 0 8px}
+h1{font:400 clamp(30px,8vw,52px)/1.05 var(--pix);color:var(--yel);margin:0 0 10px;letter-spacing:.02em;text-shadow:3px 3px 0 #3a1650,0 0 24px rgba(242,210,122,.25)}
+.intro{color:var(--dim);margin:0 0 26px;max-width:40em}
+.games{display:grid;grid-template-columns:1fr;gap:18px}
+@media (min-width:700px){.games{grid-template-columns:1fr 1fr;gap:22px}}
+.game{display:flex;flex-direction:column;border:1px solid var(--edge);border-radius:14px;overflow:hidden;background:#100b20;color:inherit;text-decoration:none;transition:transform .15s,border-color .15s,box-shadow .15s}
+.game img{display:block;width:100%;height:auto;aspect-ratio:40/21;object-fit:cover;background:#140d28}
+.game .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.game h2{margin:0;font:400 22px/1.1 var(--pix);color:var(--ink)}
+.game p{margin:0;color:var(--dim);font-size:15px}
+.game .play{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;font:700 13px/1 system-ui,sans-serif;letter-spacing:.1em;color:#1a0a24;background:linear-gradient(180deg,#ffe48a,#e8a83a)}
+.game:hover,.game:focus-visible{transform:translateY(-2px);border-color:var(--neon);box-shadow:0 10px 30px rgba(255,122,216,.15)}
+.game:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.note{color:#8a7fb0;font-size:13px;margin:22px 0 0;text-align:center}
+@media (prefers-reduced-motion:reduce){.game{transition:none}.game:hover{transform:none}}
+</style>
+</head>
+<body>
+<style>
+/* the way back to the site, always visible above the game (shared by the flipper and Libera) */
+#sitebar{box-sizing:border-box;height:calc(44px + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;justify-content:space-between;gap:10px;
+  font:700 12px/1 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.07em;border-bottom:1px solid #2a2148}
+#sitebar a{display:inline-flex;align-items:center;gap:7px;min-height:44px;color:#f4ecff;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+#sitebar .sb-home svg{width:18px;height:18px;color:#ff7ad8;flex:none}
+#sitebar .sb-info{min-height:32px;padding:0 12px;border:1px solid #65dbef;border-radius:999px;color:#65dbef}
+#sitebar a:focus-visible{outline:2px solid #65dbef;outline-offset:2px;border-radius:6px}
+@media (hover:hover){#sitebar .sb-home:hover span{text-decoration:underline;text-underline-offset:3px}#sitebar .sb-info:hover{background:rgba(101,219,239,.12)}}
+@media (max-width:330px){#sitebar{font-size:11px;letter-spacing:.04em}#sitebar .sb-info{padding:0 9px}}
+</style>
+<header id="sitebar">
+  <a class="sb-home" href="https://www.2deep.it/" data-site><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg><span>TORNA AL SITO</span></a>
+  <a class="sb-info" href="https://www.2deep.it/#venues" data-site>INFO PER I LOCALI</a>
+</header>
+
+<main>
+  <h1>SALA GIOCHI</h1>
+  <p class="intro">Due minigiochi in stile arcade fatti dai 2Deep. Ogni partita ti fa scoprire dove suoniamo dal vivo.</p>
+  <div class="games">
+    <a class="game" href="/flipper">
+      <img src="/assets/giochi/copertina-flipper.webp" alt="Il flipper dei 2Deep: Katia, Lorenzo e Re Divano" width="800" height="420">
+      <div class="body"><h2>FLIPPER</h2><p>Accendi le lettere D-E-E-P, batti Re Divano e scopri le prossime date.</p><span class="play">GIOCA ▸</span></div>
+    </a>
+    <a class="game" href="/libera">
+      <img src="/assets/giochi/copertina-libera.webp" alt="Libera la serata: il gioco della locandina dei 2Deep" width="800" height="420" loading="lazy">
+      <div class="body"><h2>LIBERA</h2><p>Chiudi le aree con la nota al neon e scopri la locandina della prossima serata.</p><span class="play">GIOCA ▸</span></div>
+    </a>
+  </div>
+  <p class="note">Si gioca col dito sul telefono, o con mouse e tastiera dal computer.</p>
+</main>
+</body>
+</html>

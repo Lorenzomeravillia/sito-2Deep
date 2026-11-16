@@ -145,7 +145,7 @@ function ensureHD(){if(HD.K===K&&!HD.dirty)return;HD.K=K;HD.dirty=false;HD.spr=b
 function hdClip(){HD.clip=POLA.map(p=>{const P=new Path2D(),m=6,c0=Math.max(0,Math.floor((p.x-m)/CS)),c1=Math.min(COLS-1,Math.floor((p.x+PW+m)/CS)),r0=Math.max(0,Math.floor((p.y-m)/CS)),r1=Math.min(ROWS-1,Math.floor((p.y+PH+m)/CS));
   for(let r=r0;r<=r1;r++){let s=-1;for(let c=c0;c<=c1+1;c++){const on=c<=c1&&grid[r*COLS+c]===1;if(on&&s<0)s=c;if(!on&&s>=0){P.rect(FX+s*CS,FY+r*CS,(c-s)*CS,CS);s=-1;}}}return P;});}
 function drawPolaroidsHD(full,alpha){ctx.save();ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.globalAlpha=alpha==null?1:alpha;
-  POLA.forEach((p,i)=>{const s=HD.pol[i];if(!s)return;ctx.save();if(!full&&HD.clip[i])ctx.clip(HD.clip[i]);ctx.translate(FX+p.x+PW/2,FY+p.y+PH/2);ctx.rotate(p.rot||0);
+  POLA.forEach((p,i)=>{const s=HD.pol[i];if(!s)return;ctx.save();ctx.beginPath();ctx.rect(FX,FY,FW,FH);ctx.clip();if(!full&&HD.clip[i])ctx.clip(HD.clip[i]);ctx.translate(FX+p.x+PW/2,FY+p.y+PH/2);ctx.rotate(p.rot||0);
     ctx.drawImage(s.c,-PW/2-s.M,-PH/2-s.M,PW+2*s.M,PH+2*s.M);
     const ft=G.found[p.k];if(ft!==undefined&&G.t-ft<2.5){ctx.strokeStyle=`rgba(255,224,58,${0.5+0.5*Math.sin((G.t-ft)*10)})`;ctx.lineWidth=1.6;ctx.strokeRect(-PW/2-1.5,-PH/2-1.5,PW+3,PH+3);}
     ctx.restore();});ctx.restore();}

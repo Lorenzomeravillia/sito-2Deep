@@ -96,7 +96,7 @@ else:
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.2deep.it/libera">
 <meta property="og:title" content="Libera · il gioco dei 2Deep">
-<meta property="og:description" content="Un gioco tranquillo: sotto il mare c'è la locandina della prossima serata dei 2Deep.">
+<meta property="og:description" content="Un gioco tranquillo: chiudi le aree e scopri la locandina della prossima serata dei 2Deep.">
 <meta property="og:image" content="https://www.2deep.it/assets/giochi/og-libera.jpg">
 <meta property="og:image:secure_url" content="https://www.2deep.it/assets/giochi/og-libera.jpg">
 <meta property="og:image:type" content="image/jpeg">
