@@ -36,13 +36,16 @@ def game_js(store):
 
 
 head = H('head.html')
-cut = head.index('<div id="stage"')
+# the way back to the site (shared with Libera), first thing in the body
+SITEBAR = H('sitebar.html')
+cut = head.index('<!--SITEBAR-->')
+head = head.replace('<!--SITEBAR-->', SITEBAR)
 HEAD, BODY = head[:cut], head[cut:]
 
 if '--artifact' in sys.argv:
     out = pathlib.Path(sys.argv[sys.argv.index('--artifact') + 1])
     out.mkdir(parents=True, exist_ok=True)
-    page = HEAD + BODY + '\n<script>\n' + game_js('store_artifact.js') + '\n</script>\n'
+    page = HEAD + BODY.replace(' data-site>', ' data-site target="_blank" rel="noopener">') + '\n<script>\n' + game_js('store_artifact.js') + '\n</script>\n'
     (out / 'pinball.html').write_text(page)
     (out / 'pinball_page.html').write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>' + page + '</body></html>')
     print('artifact', len(page))

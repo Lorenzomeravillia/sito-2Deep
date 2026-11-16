@@ -1,0 +1,15 @@
+<style>
+/* the way back to the site, always visible above the game (shared by the flipper and Libera) */
+#sitebar{box-sizing:border-box;height:calc(44px + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;justify-content:space-between;gap:10px;
+  font:700 12px/1 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.07em;border-bottom:1px solid #2a2148}
+#sitebar a{display:inline-flex;align-items:center;gap:7px;min-height:44px;color:#f4ecff;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+#sitebar .sb-home svg{width:18px;height:18px;color:#ff7ad8;flex:none}
+#sitebar .sb-info{min-height:32px;padding:0 12px;border:1px solid #65dbef;border-radius:999px;color:#65dbef}
+#sitebar a:focus-visible{outline:2px solid #65dbef;outline-offset:2px;border-radius:6px}
+@media (hover:hover){#sitebar .sb-home:hover span{text-decoration:underline;text-underline-offset:3px}#sitebar .sb-info:hover{background:rgba(101,219,239,.12)}}
+@media (max-width:330px){#sitebar{font-size:11px;letter-spacing:.04em}#sitebar .sb-info{padding:0 9px}}
+</style>
+<header id="sitebar">
+  <a class="sb-home" href="https://www.2deep.it/" data-site><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg><span>TORNA AL SITO</span></a>
+  <a class="sb-info" href="https://www.2deep.it/#venues" data-site>INFO PER I LOCALI</a>
+</header>
