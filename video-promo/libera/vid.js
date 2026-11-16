@@ -55,14 +55,14 @@ function endCard(g,W,H,horiz){const t0=ev.end,u=t-t0;const st=i=>t0+0.18+i*0.16;
     T(g,'AL CANTONET',W/2,y,100,'#ff4a5a',{a:A(3),sc:S(3),glow:'rgba(255,74,90,0.75)',maxW:M});y+=105;T(g,'FELTRE',W/2,y,66,'#ffffff',{a:A(3),sc:S(3),maxW:M});
     y+=130;T(g,'1° INDIZIO',W/2,y,42,'#65dbef',{a:A(4)});sticker(g,IM.cocktail,W/2-180,y+130+bob,230,A(4),-0.08);
     T(g,'I cocktail',W/2+120,y+100,78,'#ffffff',{hand:1,a:A(4)});T(g,'di Elisa',W/2+120,y+180,78,'#ffffff',{hand:1,a:A(4)});
-    y+=300;T(g,'E CHI È IL DAÙ?',W/2,y,50,'#ff7ad8',{a:A(6),sc:S(6),maxW:M});y+=65;T(g,'AL PROSSIMO INDIZIO...',W/2,y,38,'#d8cfe8',{a:A(7),maxW:M});
+    y+=300;T(g,'MA TU LO CONOSCI IL DAHU?',W/2,y,50,'#ff7ad8',{a:A(6),sc:S(6),maxW:M});y+=65;T(g,'AL PROSSIMO INDIZIO...',W/2,y,38,'#d8cfe8',{a:A(7),maxW:M});
     y+=75;T(g,'GIOCA SU 2DEEP.IT/LIBERA',W/2,y,40,'#65dbef',{a:A(8)*pulse,maxW:M});}
   else{const L=1316,M=1060;let y=150;
     T(g,'2DEEP LIVE',L,y,56,'#ff7ad8',{a:A(0),sc:S(0),glow:'rgba(255,122,216,0.6)',maxW:M});y+=130;
     T(g,'SABATO 21 NOVEMBRE',L,y,80,'#f2d27a',{a:A(1),sc:S(1),maxW:M});y+=112;T(g,'ORE 21:00',L,y,74,'#ffffff',{a:A(2),sc:S(2),maxW:M});y+=128;
     T(g,'AL CANTONET · FELTRE',L,y,74,'#ff4a5a',{a:A(3),sc:S(3),glow:'rgba(255,74,90,0.75)',maxW:M});
     y+=160;sticker(g,IM.cocktail,L-250,y+40+bob,190,A(4),-0.08);T(g,'1° INDIZIO',L+90,y-20,38,'#65dbef',{a:A(4)});T(g,'I cocktail di Elisa',L+90,y+50,70,'#ffffff',{hand:1,a:A(4)});
-    T(g,'E CHI È IL DAÙ? AL PROSSIMO INDIZIO...',L,905,36,'#ff7ad8',{a:A(6),maxW:M});T(g,'GIOCA SU 2DEEP.IT/LIBERA',L,975,40,'#65dbef',{a:A(8)*pulse,maxW:M});}
+    T(g,'MA TU LO CONOSCI IL DAHU?',L,858,44,'#ff7ad8',{a:A(6),sc:S(6),maxW:M});T(g,'AL PROSSIMO INDIZIO...',L,918,32,'#d8cfe8',{a:A(7),maxW:M});T(g,'GIOCA SU 2DEEP.IT/LIBERA',L,985,40,'#65dbef',{a:A(8)*pulse,maxW:M});}
   g.restore();}
 /* ---- vertical: the game full frame, a hook, the end card ---- */
 function drawV(){const c=cam(),g=vg;const e=ev.end?eo((t-ev.end)/0.5):0;g.fillStyle='#07050f';g.fillRect(0,0,1080,1920);
@@ -80,7 +80,7 @@ function drawH(){const c=cam(),g=hg;const e=ev.end?eo((t-ev.end)/0.5):0;
   if(closes[0]){const a=ap(closes[0].t+0.3),s=back(ap(closes[0].t+0.3,0.45));T(g,'AL CANTONET',L,300,96,'#ff4a5a',{a,sc:s,glow:'rgba(255,74,90,0.75)'});T(g,'FELTRE',L,395,58,'#ffffff',{a,sc:s});}
   if(closes[1]){const a=ap(closes[1].t+0.3),s=back(ap(closes[1].t+0.3,0.45));T(g,'SAB 21 NOV',L,540,92,'#f2d27a',{a,sc:s});T(g,'ORE 21:00',L,640,64,'#ffffff',{a,sc:s});}
   if(ev.pol){const a=ap(ev.pol+0.2);sticker(g,IM.cocktail,L-240,830,170,a,-0.08);T(g,'1° INDIZIO',L+80,775,34,'#65dbef',{a});T(g,'I cocktail di Elisa',L+80,845,62,'#ffffff',{hand:1,a});}
-  if(ev.gift){const a=ap(ev.gift+0.2);T(g,'E CHI È IL DAÙ?',L,985,40,'#ff7ad8',{a});}}
+  if(ev.gift){const a=ap(ev.gift+0.2);T(g,'MA TU LO CONOSCI IL DAHU?',L,985,40,'#ff7ad8',{a,maxW:M});}}
 function step(){window.__vt=t;sim(1/FPS);window.__lay.push(V.layers());X.draw();drawV();drawH();t+=1/FPS;frame++;
   return [VC.toDataURL('image/jpeg',0.92).slice(23),HC.toDataURL('image/jpeg',0.92).slice(23),t,!!ev.end&&t>=ev.end+5.2];}
 return{step,ev:()=>({ev,closes,t,pct:G.pct})};})();

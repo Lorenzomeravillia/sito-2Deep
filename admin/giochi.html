@@ -94,7 +94,7 @@ label{display:block;font-weight:500;margin-bottom:.35rem;font-size:.9rem}
       <div id="prods"></div>
 
       <h3>Il mistero <span class="hint">(facoltativo)</span></h3>
-      <p class="note">Una curiosità da farsi raccontare alla serata, come la leggenda del Daù: finisce sulla lavagnetta del bancone, nel pacco sorpresa e nell'ultima scheda.</p>
+      <p class="note">Una curiosità da farsi raccontare alla serata, come la leggenda del Dahu: finisce sulla lavagnetta del bancone, nel pacco sorpresa e nell'ultima scheda.</p>
       <div class="box" id="mys"></div>
 
       <div class="actions">
@@ -198,8 +198,8 @@ function itemBox(it,i){const icon=el('select',{onchange:e=>{it.icon=e.target.val
     field('Titolo',it,'title',30,{ph:['I cocktail di Elisa','La crescia di Urbino','Le brioches'][i]}),
     field('Testo della scheda finale',it,'text',240,{area:true,ph:'Due o tre frasi, solo cose confermate dal locale.'}),photoField(it,'p'+(i+1)),
     photoField(it,'s'+(i+1),{key:'cut',png:true,label:'Premio da catturare: foto scontornata (facoltativa)',hint:'Il prodotto senza sfondo (PNG trasparente). Su iPhone: apri la foto, tieni premuto sul prodotto e condividi o copia il soggetto. Se manca, nel gioco compare l’icona 3D scelta sopra.'}));}
-function mysteryFields(m){return[field('Nome breve',m,'name',8,{ph:'DAÙ',hint:'Sotto la polaroid col punto di domanda e sul pacco sorpresa.'}),
-  field('Titolo',m,'title',29,{ph:'La leggenda del Daù',hint:'Prima riga della lavagnetta.'}),
+function mysteryFields(m){return[field('Nome breve',m,'name',8,{ph:'DAHU',hint:'Sotto la polaroid col punto di domanda e sul pacco sorpresa.'}),
+  field('Titolo',m,'title',29,{ph:'La leggenda del Dahu',hint:'Prima riga della lavagnetta.'}),
   field('Invito',m,'invite',29,{ph:'Fattela raccontare al bancone',hint:'Seconda riga della lavagnetta.'}),
   field('Testo della scheda finale',m,'text',240,{area:true,ph:'La curiosità senza svelarla.'}),photoField(m,'mistero')];}
 /* the photo, at most 960 px wide, as JPEG; a cut-out at most 480 px, as PNG, telling whether it really has a transparent background */

@@ -130,7 +130,7 @@ const ITEMSPR={birra:sprite([".wwwww...","#yyyyy#..","#yyyyy###","#yyyyy#.#","#y
   nota:sprite(["...####","...#yy#","...#..#","...#..#",".###.##","####.##",".##...."],{'#':'#ff7ad8',y:'#ffb0e8'},'#0a0716'),
   cocktail:sprite(["#########",".#ppppp#.","..#ooo#..","...#y#...","....#....","....#....","..#####.."],{'#':'#e8e8f4',p:'#ff5fd8',o:'#ff9a2e',y:'#ffe03a'},'#0a0716'),
   crescia:sprite(["...#####...",".##yyyyy##.","#yyyyyyyyy#","#rrppprrpp#","#ppwwwwwpp#",".#########."],{'#':'#c88a3a',y:'#f2d27a',r:'#e8384a',p:'#f0b0a0',w:'#f6f2f0'},'#0a0716'),
-  dau:sprite(["#########","#yywwwyy#","#ywyyywy#","#yyyyywy#","#yyywwyy#","#yyywyyy#","#yyyyyyy#","#yyywyyy#","#########"],{'#':'#8a5a10',y:'#ffc838',w:'#fff6d8'},'#0a0716'),
+  dahu:sprite(["#########","#yywwwyy#","#ywyyywy#","#yyyyywy#","#yyywwyy#","#yyywyyy#","#yyyyyyy#","#yyywyyy#","#########"],{'#':'#8a5a10',y:'#ffc838',w:'#fff6d8'},'#0a0716'),
   brioche:sprite(["..#####..",".#ooooo#.","#oo###oo#","#o#ooo#o#","#o#o#o#o#","#oo##o#o#",".#ooooo#.","..#####.."],{'#':'#8a4a1a',o:'#e0a050'},'#0a0716')};
 const FXPOP={freeze:{pop:'GHIACCIO!',col:'#86cfdc'},life:{pop:"VITA IN PIU'!",col:'#f0646e'},slow:{pop:'RALLENTATI!',col:'#f2d27a'}};
 /* the order they come out: first product, the mystery box, then the other two */
@@ -140,7 +140,7 @@ function spawnItem(){const k=['i0','m','i1','i2'][G.itemN++%4];
     if(!ok||G.enemies.some(e=>Math.hypot(e.x-x,e.y-y)<40)||Math.hypot((G.px+0.5)*CS-x,(G.py+0.5)*CS-y)<30)continue;
     G.items.push({k,c,r,x,y,t:G.t});sfx('spawn');return;}
   G.nextItem=G.t+2;}
-const itemIcon=k=>k==='m'?'dau':CFG.items[+k.slice(1)].icon;
+const itemIcon=k=>k==='m'?'dahu':CFG.items[+k.slice(1)].icon;
 function checkItems(){G.items=G.items.filter(it=>{if(at(it.c,it.r)!==1)return true;let k=it.k;
   /* the mystery box: a big bonus, one of the three helps at random, and the venue's mystery to ask about */
   if(k==='m'){k='i'+((Math.random()*3)|0);G.score+=1500;pop(CFG.mystery.pop,FX+it.x,FY+it.y-40,C.pink,tw(CFG.mystery.pop)*3<=TW-20?3:2);info(CFG.mystery.txt);}
