@@ -26,7 +26,7 @@ PREFIX = "let W=270,H=480;const cv=document.getElementById('c');let ctx=cv.getCo
 def game_js():
     return '\n'.join([PREFIX, P('part_utils.js'), P('part_spritefn.js'), P('sprites.js'), "const OUTC='#0a0716';", P('part_misc.js'),
                       P('part_audio.js'), P('monkey/part_sprites.js'), H('content.js'), H('gamesong.js'), H('song.js'),
-                      FL('store_site.js'), FL('music.js'), H('game.js'), FL('songui.js')])
+                      FL('store_site.js'), FL('music.js'), H('hd.js'), H('game.js'), FL('songui.js')])
 
 
 SNAP = json.loads(H('site_data.json'))
@@ -42,6 +42,8 @@ if '--artifact' in sys.argv:
         # site paths become small inline JPEGs (claude.ai pages cannot load the site's files)
         if not url or not url.startswith('/'):
             return None
+        if url.endswith('.webp'):  # cut-out photos keep their transparency
+            return 'data:image/webp;base64,' + base64.b64encode((ROOT / url.lstrip('/')).read_bytes()).decode()
         im = Image.open(ROOT / url.lstrip('/')).convert('RGB')
         im.thumbnail((640, 800))
         b = io.BytesIO(); im.save(b, 'JPEG', quality=78)
@@ -50,12 +52,16 @@ if '--artifact' in sys.argv:
     for v in data['venues']:
         for it in v.get('items', []):
             it['photo'] = inline(it.get('photo'))
+            it['cut'] = inline(it.get('cut'))
         if v.get('mystery'):
             v['mystery']['photo'] = inline(v['mystery'].get('photo'))
     data['photos'] = []
+    # the 3D icons and the handwriting font, inline too
+    icons = {f.stem: 'data:image/webp;base64,' + base64.b64encode(f.read_bytes()).decode() for f in sorted((ROOT / 'assets/giochi/icone').glob('*.webp'))}
+    font = 'data:font/woff2;base64,' + base64.b64encode((ROOT / 'assets/giochi/caveat-700.woff2').read_bytes()).decode()
     data['evento'] = evento
     # no song in the snapshot: the claude.ai page plays the 2Deep loop (or a song set up on that page, kept in its browser)
-    js = '(()=>{\n"use strict";\nwindow.__GAME_DATA=' + json.dumps(data, ensure_ascii=False) + ';window.__SITE_DATA={};window.__SB=null;\n' + game_js() + '\n})();'
+    js = '(()=>{\n"use strict";\nwindow.__GAME_DATA=' + json.dumps(data, ensure_ascii=False) + ';window.__SITE_DATA={};window.__SB=null;\nwindow.__GAME_ICONS=' + json.dumps(icons) + ';window.__GAME_FONT=' + json.dumps(font) + ';\n' + game_js() + '\n})();'
     page = head + '\n<script>\n' + js + '\n</script>\n'
     (out / 'libera.html').write_text(page)
     (out / 'libera_page.html').write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>' + page + '</body></html>')

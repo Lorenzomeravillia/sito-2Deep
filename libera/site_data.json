@@ -77,21 +77,24 @@
      "name": "Cocktail",
      "title": "I cocktail di Elisa",
      "photo": "/assets/giochi/al-cantonet/cocktail.jpg",
-     "text": "Coloratissimi, in contrasto con i colori scuri del locale. E ci sono anche a zero alcol, con birra zero e prosecco analcolico: chi non beve si gode la serata uguale."
+     "text": "Coloratissimi, in contrasto con i colori scuri del locale. E ci sono anche a zero alcol, con birra zero e prosecco analcolico: chi non beve si gode la serata uguale.",
+     "cut": "/assets/giochi/al-cantonet/cocktail-scontornata.webp"
     },
     {
      "icon": "crescia",
      "name": "Crescia",
      "title": "La crescia di Urbino",
      "photo": "/assets/giochi/al-cantonet/crescia.jpg",
-     "text": "Simile alla piadina, ma sfogliata e più croccante. In autunno anche con funghi e zucca."
+     "text": "Simile alla piadina, ma sfogliata e più croccante. In autunno anche con funghi e zucca.",
+     "cut": "/assets/giochi/al-cantonet/crescia-scontornata.webp"
     },
     {
      "icon": "brioche",
      "name": "Brioche",
      "title": "Le brioches",
      "photo": "/assets/giochi/al-cantonet/brioche.jpg",
-     "text": "Anche farcite con marmellata di castagne o di zucca. E al Cantonet c'è un'offerta vegana, pensata anche per chi ha intolleranze."
+     "text": "Anche farcite con marmellata di castagne o di zucca. E al Cantonet c'è un'offerta vegana, pensata anche per chi ha intolleranze.",
+     "cut": "/assets/giochi/al-cantonet/brioche-scontornata.webp"
     }
    ],
    "mystery": {

@@ -66,7 +66,7 @@ const G={found:{},items:[],itemN:0,nextItem:7,freezeUntil:0,slowUntil:0,infoQ:[]
 const SPEED=30;   /* cells per second */
 let MASK=mk(COLS,ROWS),REVEAL=mk(FW,FH),COVER=mk(COLS,ROWS),EDGE=null,WAVE=null;
 function rebuildReveal(){const m=MASK.getContext('2d'),id=m.createImageData(COLS,ROWS);for(let i=0;i<grid.length;i++)if(grid[i]===1)id.data[i*4+3]=255;m.putImageData(id,0,0);
-  const r=REVEAL.getContext('2d');r.globalCompositeOperation='source-over';r.clearRect(0,0,FW,FH);r.drawImage(POSTER,0,0);r.globalCompositeOperation='destination-in';r.imageSmoothingEnabled=false;r.drawImage(MASK,0,0,FW,FH);r.globalCompositeOperation='source-over';rebuildEdge();}
+  const r=REVEAL.getContext('2d');r.globalCompositeOperation='source-over';r.clearRect(0,0,FW,FH);r.drawImage(POSTER,0,0);r.globalCompositeOperation='destination-in';r.imageSmoothingEnabled=false;r.drawImage(MASK,0,0,FW,FH);r.globalCompositeOperation='source-over';rebuildEdge();hdClip();}
 /* the edge between land and sea, drawn once per change as a cyan neon line (cached at the screen's resolution) */
 function rebuildEdge(){EDGE=mk(FW*K+8*K,FH*K+8*K);const g=EDGE.getContext('2d');g.setTransform(K,0,0,K,4*K,4*K);g.beginPath();
   for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){if(grid[r*COLS+c]!==1)continue;const x=c*CS,y=r*CS;
@@ -108,22 +108,9 @@ function closeArea(){for(const [c,r] of G.trail)grid[r*COLS+c]=1;const reach=new
 
 /* ---- the venue inside the game, never in the way: polaroids hidden in the poster, helpers to catch, photos at the end ----
    Texts and photos come from the venue's profile in the admin (content.js); the neutral version uses songs of the repertoire. */
-const SLOTS=[{x:6,y:128,w:52,h:64},{x:202,y:128,w:52,h:62},{x:14,y:346,w:52,h:62},{x:192,y:346,w:52,h:62}];
+/* four polaroids pinned on the poster, slightly turned (drawn in high definition by hd.js) */
+const SLOTS=[{x:2,y:126,rot:-0.07},{x:198,y:126,rot:0.06},{x:4,y:344,rot:-0.05},{x:194,y:342,rot:0.05}].map(o=>Object.assign(o,{w:PW,h:PH}));
 const POLA=CFG.secrets.slice(0,4).map((sc,i)=>Object.assign({k:'s'+i},SLOTS[i],sc));
-const IMG={};for(const p of POLA)if(p.img&&!p.song&&!IMG[p.img]){IMG[p.img]=new Image();IMG[p.img].src=p.img;}
-function vinyl(g,x,y,w,h,i){const cx=x+w/2,cy=y+h/2,r=Math.min(w,h)/2-2;g.fillStyle='#2a1f3a';g.fillRect(x,y,w,h);
-  g.fillStyle='#0c0a10';g.beginPath();g.arc(cx,cy,r,0,Math.PI*2);g.fill();g.strokeStyle='rgba(255,255,255,0.12)';g.lineWidth=1;for(let k=4;k<r-6;k+=3){g.beginPath();g.arc(cx,cy,k+4,0.3,1.4);g.stroke();}
-  g.fillStyle=['#ff7ad8','#86cfdc','#f2d27a','#f0646e'][i%4];g.beginPath();g.arc(cx,cy,r*0.36,0,Math.PI*2);g.fill();g.fillStyle='#0c0a10';g.fillRect(Math.round(cx)-1,Math.round(cy)-1,2,2);}
-function drawPolaroids(){const g=POSTER.getContext('2d');
-  POLA.forEach((p,pi)=>{g.fillStyle='rgba(0,0,0,0.55)';g.fillRect(p.x+2,p.y+2,p.w,p.h);g.fillStyle='#f4efe6';g.fillRect(p.x,p.y,p.w,p.h);
-    const ix=p.x+3,iy=p.y+3,iw=p.w-6,ih=p.h-14,im=p.img&&!p.song?IMG[p.img]:null,sv=ctx;
-    if(p.song)vinyl(g,ix,iy,iw,ih,pi);
-    else if(im&&im.naturalWidth){const s=Math.max(iw/im.naturalWidth,ih/im.naturalHeight),w=im.naturalWidth*s,h=im.naturalHeight*s;g.save();g.beginPath();g.rect(ix,iy,iw,ih);g.clip();g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';g.drawImage(im,ix+iw/2-w/2,iy+ih/2-h/2,w,h);g.restore();g.imageSmoothingEnabled=false;
-      if(p.q){g.fillStyle='rgba(10,7,22,0.55)';g.fillRect(ix,iy,iw,ih);}}
-    else{g.fillStyle='#1a1214';g.fillRect(ix,iy,iw,ih);if(!p.q&&ITEMSPR[p.icon]){const sp=ITEMSPR[p.icon];g.drawImage(sp,Math.round(ix+iw/2-sp.width*1.5),Math.round(iy+ih/2-sp.height*1.5),sp.width*3,sp.height*3);}}
-    ctx=g;if(p.q)dt('?',Math.round(ix+iw/2-7),Math.round(iy+ih/2-10),3,PAL.gold);
-    g.fillStyle='rgba(230,215,170,0.75)';g.fillRect(p.x+p.w/2-8,p.y-3,16,6);
-    dt(p.label,Math.round(p.x+p.w/2-tw(p.label)/2),p.y+p.h-10,1,'#5a3a2a');ctx=sv;});}
 function checkPolaroids(){for(const p of POLA){if(p.k in G.found)continue;let n=0,t=0;for(let r=Math.floor(p.y/CS);r<=Math.floor((p.y+p.h)/CS);r++)for(let c=Math.floor(p.x/CS);c<=Math.floor((p.x+p.w)/CS);c++){t++;if(at(c,r)===1)n++;}
   if(n/t>=0.6){G.found[p.k]=G.t;G.score+=500;info(p.cap);sfx('chime');}}}
 /* products to catch: one at a time out at sea; close it inside an area and it helps you */
@@ -194,15 +181,14 @@ function update(dt){G.t+=dt;if(G.shake>0)G.shake-=dt;if(G.inv>0)G.inv-=dt;G.pops
 const OUT=cv.getContext('2d');let K=1;
 function fit(){const st=document.getElementById('stage'),aw=st.clientWidth,ah=st.clientHeight,dpr=window.devicePixelRatio||1,s=Math.min(aw/TW,ah/TH);K=Math.max(1,Math.ceil(s*dpr));
   cv.width=TW*K;cv.height=TH*K;cv.style.width=Math.floor(TW*s)+'px';cv.style.height=Math.floor(TH*s)+'px';rebuildEdge();placePanel();}
-function draw(){ctx=OUT;ctx.setTransform(K,0,0,K,0,0);ctx.imageSmoothingEnabled=false;ctx.fillStyle='#07050f';ctx.fillRect(0,0,TW,TH);
+function draw(){ensureHD();ctx=OUT;ctx.setTransform(K,0,0,K,0,0);ctx.imageSmoothingEnabled=false;ctx.fillStyle='#07050f';ctx.fillRect(0,0,TW,TH);
   const sh=G.shake>0?Math.round(Math.sin(G.t*90)*2):0;ctx.save();ctx.translate(sh,0);
   /* sea: deep blue with a faint grid of dots */
   ctx.fillStyle='#0d1030';ctx.fillRect(FX,FY,FW,FH);ctx.fillStyle='#161a46';for(let y=FY+4;y<FY+FH;y+=9)for(let x=FX+4+((y/9)%2)*4;x<FX+FW;x+=9)ctx.fillRect(x,y,1,1);
   /* land shows the poster; at the end the sea washes away too */
-  ctx.drawImage(REVEAL,FX,FY);
-  if(G.state==='win'||G.state==='over'){const u=Math.min(1,(G.t-G.winT-0.3)/0.9);if(u>0){ctx.globalAlpha=u;ctx.drawImage(POSTER,FX,FY);ctx.globalAlpha=1;}}
+  ctx.drawImage(REVEAL,FX,FY);drawPolaroidsHD(false);
+  if(G.state==='win'||G.state==='over'){const u=Math.min(1,(G.t-G.winT-0.3)/0.9);if(u>0){ctx.globalAlpha=u;ctx.drawImage(POSTER,FX,FY);ctx.globalAlpha=1;drawPolaroidsHD(true,u);}}
   drawWave();
-  for(const p of POLA){const ft=G.found[p.k];if(ft===undefined||G.t-ft>2.5)continue;const a=0.5+0.5*Math.sin((G.t-ft)*10);ctx.strokeStyle=`rgba(255,224,58,${a})`;ctx.lineWidth=2;ctx.strokeRect(FX+p.x-2,FY+p.y-2,p.w+4,p.h+4);}
   if(EDGE&&G.state!=='win'&&G.state!=='over'){ctx.globalAlpha=0.8+0.2*Math.sin(G.t*3);ctx.drawImage(EDGE,FX-4,FY-4,FW+8,FH+8);ctx.globalAlpha=1;}
   /* the line being drawn: a thin neon thread that turns from gold to red the further you go out */
   if(G.trail.length){const pts=[[G.trail[0][2],G.trail[0][3]],...G.trail.map(t=>[t[0],t[1]])],risk=Math.min(1,G.trail.length/160),
@@ -211,16 +197,18 @@ function draw(){ctx=OUT;ctx.setTransform(K,0,0,K,0,0);ctx.imageSmoothingEnabled=
     ctx.save();ctx.shadowColor=col;ctx.shadowBlur=(4+3*Math.sin(G.t*14))*K;ctx.strokeStyle=col;ctx.globalAlpha=0.55;ctx.lineWidth=2.4;ctx.stroke();ctx.restore();
     ctx.strokeStyle='#fff6d8';ctx.lineWidth=1;ctx.stroke();}
   /* products out at sea, with a gold halo; they blink before leaving */
-  if(G.state==='play')for(const it of G.items){const age=G.t-it.t;if(age>13&&Math.floor(G.t*8)%2)continue;const x=FX+it.x,y=FY+it.y,hg=ctx.createRadialGradient(x,y,2,x,y,17+Math.sin(G.t*5)*2);hg.addColorStop(0,'rgba(255,224,58,0.55)');hg.addColorStop(1,'rgba(255,224,58,0)');ctx.fillStyle=hg;ctx.fillRect(x-20,y-20,40,40);
+  if(G.state==='play')for(const it of G.items){const age=G.t-it.t;if(age>13&&Math.floor(G.t*8)%2)continue;const x=FX+it.x,y=FY+it.y;
+    if(drawObj(HD.spr[it.k],x,y+Math.sin(G.t*4)*1.5,Math.sin(G.t*2+it.c)*0.07,false,HALOS.prize))continue;const hg=ctx.createRadialGradient(x,y,2,x,y,17+Math.sin(G.t*5)*2);hg.addColorStop(0,'rgba(255,224,58,0.55)');hg.addColorStop(1,'rgba(255,224,58,0)');ctx.fillStyle=hg;ctx.fillRect(x-20,y-20,40,40);
     const im=ITEMSPR[itemIcon(it.k)],bob=Math.round(Math.sin(G.t*4)*1.5);ctx.drawImage(im,Math.round(x-im.width),Math.round(y-im.height)+bob,im.width*2,im.height*2);}
   /* enemies */
   /* at the end the enemies leave the poster; after a defeat only Re Divano stays */
   const ef=Math.max(0,1-(G.t-G.winT)/0.6),fade=e=>G.state==='win'||(G.state==='over'&&!e.boss)?ef:1;
-  {for(const e of G.enemies){ctx.globalAlpha=fade(e);if(!ctx.globalAlpha)continue;const hx=FX+e.x,hy=FY+e.y,hg=ctx.createRadialGradient(hx,hy,2,hx,hy,e.r+9);hg.addColorStop(0,'rgba(255,60,80,0.32)');hg.addColorStop(1,'rgba(255,60,80,0)');ctx.fillStyle=hg;ctx.fillRect(hx-e.r-9,hy-e.r-9,2*e.r+18,2*e.r+18);}
-    for(const e of G.enemies){ctx.globalAlpha=fade(e);if(!ctx.globalAlpha)continue;const im=ENEMY[e.k],flip=e.vx<0;ctx.save();ctx.translate(Math.round(FX+e.x),Math.round(FY+e.y));if(flip)ctx.scale(-1,1);ctx.drawImage(im,-Math.round(im.width/2),-Math.round(im.height/2));ctx.restore();
+  {const hdE=e=>HD.spr[e.k];for(const e of G.enemies){ctx.globalAlpha=fade(e);if(!ctx.globalAlpha||hdE(e))continue;const hx=FX+e.x,hy=FY+e.y,hg=ctx.createRadialGradient(hx,hy,2,hx,hy,e.r+9);hg.addColorStop(0,'rgba(255,60,80,0.32)');hg.addColorStop(1,'rgba(255,60,80,0)');ctx.fillStyle=hg;ctx.fillRect(hx-e.r-9,hy-e.r-9,2*e.r+18,2*e.r+18);}
+    for(const e of G.enemies){ctx.globalAlpha=fade(e);if(!ctx.globalAlpha)continue;const flip=e.vx<0,wob=e.k==='slip'?Math.sin(G.t*7+e.r)*0.18:e.k==='remote'?Math.sin(G.t*3)*0.12:0;
+      if(!drawObj(hdE(e),FX+e.x,FY+e.y,wob,flip,HALOS.enemy)){const im=ENEMY[e.k];ctx.save();ctx.translate(Math.round(FX+e.x),Math.round(FY+e.y));if(flip)ctx.scale(-1,1);ctx.drawImage(im,-Math.round(im.width/2),-Math.round(im.height/2));ctx.restore();}
       if(G.t<G.freezeUntil){ctx.fillStyle='rgba(150,220,255,0.45)';ctx.beginPath();ctx.arc(FX+e.x,FY+e.y,e.r+2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffffff';ctx.fillRect(Math.round(FX+e.x+e.r-2),Math.round(FY+e.y-e.r),1,1);}}ctx.globalAlpha=1;}
   /* the note */
-  if((G.state==='play'||G.state==='intro'||(G.state==='win'&&G.t-G.winT<0.6))&&!(G.inv>0&&Math.floor(G.t*12)%2)){const x=FX+G.px*CS+1,y=FY+G.py*CS+1,pg=ctx.createRadialGradient(x+0.5,y+0.5,1,x+0.5,y+0.5,9+Math.sin(G.t*6));pg.addColorStop(0,'rgba(255,236,150,0.55)');pg.addColorStop(1,'rgba(255,224,58,0)');ctx.fillStyle=pg;ctx.beginPath();ctx.arc(x+0.5,y+0.5,10,0,Math.PI*2);ctx.fill();ctx.drawImage(PNOTE,x-4,y-6);}
+  if((G.state==='play'||G.state==='intro'||(G.state==='win'&&G.t-G.winT<0.6))&&!(G.inv>0&&Math.floor(G.t*12)%2)){const x=FX+G.px*CS+1,y=FY+G.py*CS+1;if(!drawObj(HD.spr.note,x+0.5,y-0.5,0,false,HALOS.note)){const pg=ctx.createRadialGradient(x+0.5,y+0.5,1,x+0.5,y+0.5,9+Math.sin(G.t*6));pg.addColorStop(0,'rgba(255,236,150,0.55)');pg.addColorStop(1,'rgba(255,224,58,0)');ctx.fillStyle=pg;ctx.beginPath();ctx.arc(x+0.5,y+0.5,10,0,Math.PI*2);ctx.fill();ctx.drawImage(PNOTE,x-4,y-6);}}
   for(const p of G.parts){const u=(G.t-p.t)/0.8;if(u<0)continue;ctx.globalAlpha=1-u;ctx.fillStyle=p.col;ctx.fillRect(Math.round(p.x+p.vx*u*0.8),Math.round(p.y+p.vy*u*0.8),2,2);}ctx.globalAlpha=1;
   for(const p of G.pops){const u=(G.t-p.t)/1.1,hw=tw(p.txt)*p.sc/2+FX+4,x=Math.max(hw,Math.min(TW-hw,p.x));ctext(p.txt,x,Math.round(p.y-u*16),p.sc,p.col);}
   ctx.restore();hud();
@@ -305,6 +293,5 @@ addEventListener('resize',()=>{if(!GAL.hidden)galPlace();});
 /* ---- loop ---- */
 let last=0;function loop(ts){const dt=Math.min(0.05,(ts-(last||ts))/1000);last=ts;let a=dt;while(a>0){const s=Math.min(a,1/120);update(s);a-=s;}draw();requestAnimationFrame(loop);}
 addEventListener('resize',()=>{fit();placeSongBtn();});newGame();fit();requestAnimationFrame(loop);
-drawPolaroids();rebuildReveal();
-Promise.all(Object.values(IMG).map(i=>new Promise(r=>{if(i.complete)return r();i.onload=i.onerror=()=>r();}))).then(()=>{drawPolaroids();rebuildReveal();});
+rebuildReveal();
 window.__X={G,grid,update,draw,closeArea,setDir,mus:()=>({buf:!!SONGBUF,midi:!!(SONG&&SONG.midi),name:SONG&&SONG.name,layers:MLG.length,on:MLG.map(g=>+g.gain.value.toFixed(2)),lay:LAYERS}),best:()=>BEST};

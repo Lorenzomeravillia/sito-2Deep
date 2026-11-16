@@ -165,7 +165,7 @@ async function removeVenue(v){if(!confirm('Eliminare la scheda "'+v.name+'"? Le 
   toast('Scheda eliminata');load();}
 
 /* ---- editor ---- */
-const blankItem=()=>({icon:'cocktail',name:'',title:'',text:'',photo:''});
+const blankItem=()=>({icon:'cocktail',name:'',title:'',text:'',photo:'',cut:''});
 function edit(v){
   cur=v?JSON.parse(JSON.stringify(v)):{id:crypto.randomUUID(),isNew:true,name:'',short_name:'',tagline:'',colors:{},items:[],mystery:{}};
   while(cur.items.length<3)cur.items.push(blankItem());
@@ -180,29 +180,34 @@ function edit(v){
 function field(label,obj,key,max,opts={}){const id='f'+Math.random().toString(36).slice(2,8),inp=opts.area?el('textarea',{id,maxLength:max,rows:3,placeholder:opts.ph||''}):el('input',{id,maxLength:max,placeholder:opts.ph||''});
   inp.value=obj[key]||'';inp.addEventListener('input',()=>{obj[key]=inp.value;counters();});
   return el('div',{class:'fg'},el('label',{for:id},label,' ',el('span',{class:'cnt','data-for':id})),inp,opts.hint?el('div',{class:'hint'},opts.hint):null);}
-function photoField(obj,slot){const wrap=el('div',{class:'fg'}),inp=el('input',{type:'file',accept:'image/*'});
-  const draw=()=>{wrap.replaceChildren(el('label',null,'Foto'),el('div',{class:'photo'},obj.photo?el('img',{src:obj.photo,alt:''}):el('div',{class:'ph-empty'},'nessuna foto'),
-      el('div',null,inp,obj.photo?el('button',{type:'button',class:'light',style:'margin-top:.4rem',onclick:()=>{obj.photo='';draw();}},'Togli la foto'):null,
-        el('div',{class:'hint'},'Meglio verticale. Viene rimpicciolita prima di caricarla.'))));};
+function photoField(obj,slot,o={}){const key=o.key||'photo',wrap=el('div',{class:'fg'}),inp=el('input',{type:'file',accept:o.png?'image/png,image/webp,image/*':'image/*'});
+  const draw=()=>{wrap.replaceChildren(el('label',null,o.label||'Foto'),el('div',{class:'photo'},obj[key]?el('img',{src:obj[key],alt:'',style:o.png?'object-fit:contain;background:repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 50%/14px 14px':''}):el('div',{class:'ph-empty'},o.png?'nessuna':'nessuna foto'),
+      el('div',null,inp,obj[key]?el('button',{type:'button',class:'light',style:'margin-top:.4rem',onclick:()=>{obj[key]='';draw();}},'Togli'):null,
+        el('div',{class:'hint'},o.hint||'Meglio verticale. Viene rimpicciolita prima di caricarla.'))));};
   inp.addEventListener('change',async()=>{const f=inp.files&&inp.files[0];if(!f)return;inp.disabled=true;
-    try{const blob=await shrink(f),path='giochi/'+cur.id+'/'+slot+'-'+Date.now()+'.jpg';
-      const{error}=await sb.storage.from(BUCKET).upload(path,blob,{contentType:'image/jpeg',upsert:false});if(error)throw error;
-      obj.photo=pubUrl(path);draw();toast('Foto caricata: ricordati di salvare la scheda');}
+    try{const r=await shrink(f,o.png),ext=o.png?'.png':'.jpg',path='giochi/'+cur.id+'/'+slot+'-'+Date.now()+ext;
+      const{error}=await sb.storage.from(BUCKET).upload(path,r.blob,{contentType:o.png?'image/png':'image/jpeg',upsert:false});if(error)throw error;
+      obj[key]=pubUrl(path);draw();
+      if(o.png&&!r.transparent)toast('Questa immagine non ha lo sfondo trasparente: in mare comparirà come un rettangolo. Meglio una foto scontornata.',true);
+      else toast('Caricata: ricordati di salvare la scheda');}
     catch(e){toast('Foto non caricata: '+(e.message||e),true);}finally{inp.disabled=false;inp.value='';}});
   draw();return wrap;}
 function itemBox(it,i){const icon=el('select',{onchange:e=>{it.icon=e.target.value;}},...ICONS.map(([k,l])=>el('option',{value:k,selected:it.icon===k},l)));
   return el('div',{class:'box'},el('h4',null,'Prodotto '+(i+1),el('span',{class:'power'},'Potere: '+POWERS[i])),
-    el('div',{class:'row'},el('div',{class:'fg'},el('label',null,'Icona nel gioco'),icon),field('Nome breve',it,'name',8,{ph:['COCKTAIL','CRESCIA','BRIOCHE'][i],hint:'Sotto la polaroid.'})),
+    el('div',{class:'row'},el('div',{class:'fg'},el('label',null,'Icona 3D (se manca la foto scontornata)'),icon),field('Nome breve',it,'name',8,{ph:['COCKTAIL','CRESCIA','BRIOCHE'][i],hint:'Sotto la polaroid.'})),
     field('Titolo',it,'title',30,{ph:['I cocktail di Elisa','La crescia di Urbino','Le brioches'][i]}),
-    field('Testo della scheda finale',it,'text',240,{area:true,ph:'Due o tre frasi, solo cose confermate dal locale.'}),photoField(it,'p'+(i+1)));}
+    field('Testo della scheda finale',it,'text',240,{area:true,ph:'Due o tre frasi, solo cose confermate dal locale.'}),photoField(it,'p'+(i+1)),
+    photoField(it,'s'+(i+1),{key:'cut',png:true,label:'Premio in mare: foto scontornata (facoltativa)',hint:'Il prodotto senza sfondo (PNG trasparente). Su iPhone: apri la foto, tieni premuto sul prodotto e condividi o copia il soggetto. Se manca, in mare compare l’icona 3D scelta sopra.'}));}
 function mysteryFields(m){return[field('Nome breve',m,'name',8,{ph:'DAÙ',hint:'Sotto la polaroid col punto di domanda e sul pacco sorpresa.'}),
   field('Titolo',m,'title',29,{ph:'La leggenda del Daù',hint:'Prima riga della lavagnetta.'}),
   field('Invito',m,'invite',29,{ph:'Fattela raccontare al bancone',hint:'Seconda riga della lavagnetta.'}),
   field('Testo della scheda finale',m,'text',240,{area:true,ph:'La curiosità senza svelarla.'}),photoField(m,'mistero')];}
-/* the photo, at most 960 px wide, as JPEG */
-function shrink(file){return new Promise((ok,ko)=>{const img=new Image(),u=URL.createObjectURL(file);
-  img.onload=()=>{const k=Math.min(1,960/img.naturalWidth),w=Math.round(img.naturalWidth*k),h=Math.round(img.naturalHeight*k),c=document.createElement('canvas');c.width=w;c.height=h;
-    c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(u);c.toBlob(b=>b?ok(b):ko(new Error('conversione non riuscita')),'image/jpeg',0.82);};
+/* the photo, at most 960 px wide, as JPEG; a cut-out at most 480 px, as PNG, telling whether it really has a transparent background */
+function shrink(file,png){return new Promise((ok,ko)=>{const img=new Image(),u=URL.createObjectURL(file);
+  img.onload=()=>{const mx=png?480:960,k=Math.min(1,mx/Math.max(img.naturalWidth,png?img.naturalHeight:0)),w=Math.round(img.naturalWidth*k),h=Math.round(img.naturalHeight*k),c=document.createElement('canvas');c.width=w;c.height=h;
+    const g=c.getContext('2d');g.drawImage(img,0,0,w,h);URL.revokeObjectURL(u);let transparent=false;
+    if(png){const d=g.getImageData(0,0,w,h).data;for(let i=3;i<d.length;i+=16)if(d[i]<200){transparent=true;break;}}
+    c.toBlob(b=>b?ok({blob:b,transparent}):ko(new Error('conversione non riuscita')),png?'image/png':'image/jpeg',0.82);};
   img.onerror=()=>{URL.revokeObjectURL(u);ko(new Error('immagine non leggibile'));};img.src=u;});}
 function counters(){document.querySelectorAll('.cnt[data-for]').forEach(s=>{const i=$(s.dataset.for);if(!i)return;const n=i.value.length,mx=i.maxLength;s.textContent=n+'/'+mx;s.classList.toggle('full',n>=mx);});}
 /* "IL CANTONET" -> "LIBERA IL CANTONET" and "I SEGRETI DEL CANTONET", as the game writes them */
@@ -213,7 +218,7 @@ $('fShort').addEventListener('input',()=>{preview();counters();});['fName','fTag
 $('newVenue').addEventListener('click',()=>edit(null));
 $('cancel').addEventListener('click',()=>{$('editView').hidden=true;$('listView').hidden=false;load();});
 $('editView').addEventListener('submit',async e=>{e.preventDefault();if(busy)return;
-  const items=cur.items.map(it=>({icon:it.icon||'cocktail',name:(it.name||'').trim(),title:(it.title||'').trim(),text:(it.text||'').trim(),photo:it.photo||''})).filter(it=>it.name||it.title);
+  const items=cur.items.map(it=>({icon:it.icon||'cocktail',name:(it.name||'').trim(),title:(it.title||'').trim(),text:(it.text||'').trim(),photo:it.photo||'',cut:it.cut||''})).filter(it=>it.name||it.title);
   const m=cur.mystery,mystery=(m.name||m.title)?{name:m.name.trim(),title:m.title.trim(),invite:m.invite.trim(),text:m.text.trim(),photo:m.photo||''}:{};
   const row={id:cur.id,name:$('fName').value.trim(),short_name:$('fShort').value.trim().toUpperCase(),tagline:$('fTag').value.trim().toUpperCase()||null,
     colors:{neon:$('cNeon').value,counter:$('cCounter').value,date:$('cDate').value},items,mystery,updated_at:new Date().toISOString()};
@@ -222,7 +227,7 @@ $('editView').addEventListener('submit',async e=>{e.preventDefault();if(busy)ret
   const{error}=await sb.from('game_venues').upsert(row);busy=false;$('save').disabled=false;
   if(error)return toast('Non salvata: '+error.message,true);
   /* photos replaced or removed in this edit leave the bucket */
-  const keep=new Set([...items.map(i=>i.photo),mystery.photo].filter(Boolean)),old=[];
+  const keep=new Set([...items.map(i=>i.photo),...items.map(i=>i.cut),mystery.photo].filter(Boolean)),old=[];
   const ls=await sb.storage.from(BUCKET).list('giochi/'+cur.id);(ls.data||[]).forEach(f=>{const p='giochi/'+cur.id+'/'+f.name;if(![...keep].some(u=>ownPath(u)===p))old.push(p);});
   if(old.length)await sb.storage.from(BUCKET).remove(old);
   cur.isNew=false;$('pvLink').hidden=false;toast('Scheda salvata');
