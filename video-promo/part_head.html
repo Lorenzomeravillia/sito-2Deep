@@ -113,6 +113,14 @@ a.btn{text-decoration:none;display:inline-block}
     </div>
     <label class="chk"><input type="checkbox" id="sfx" checked> Effetti sonori del gioco (lucchetti, monete, passi)</label>
     <div class="row"><label for="vol">Volume musica</label><input id="vol" type="range" min="0" max="150" step="5" value="100"><output id="volV" for="vol">100%</output></div>
+    <fieldset>
+      <legend>ECO</legend>
+      <p class="meta">Vale per le tracce con il suono Lead (pulse 25%). Con il volume a 0 l’eco è spenta.</p>
+      <div class="row"><label for="echoMix">Volume eco</label><input id="echoMix" type="range" min="0" max="80" step="1" value="28"><output id="echoMixV" for="echoMix">28%</output></div>
+      <div class="row"><label for="echoTime">Ritardo</label><input id="echoTime" type="range" min="0.08" max="0.6" step="0.01" value="0.3"><output id="echoTimeV" for="echoTime">0,30 s</output></div>
+      <div class="row"><label for="echoRep">Ripetizioni</label><input id="echoRep" type="range" min="1" max="6" step="1" value="1"><output id="echoRepV" for="echoRep">1</output></div>
+      <button id="echoReset" class="btn small" type="button">Valori iniziali</button>
+    </fieldset>
     <p class="note">La colonna sonora dura sempre {DURS} secondi, esattamente quanto il video. ▶ Anteprima ti fa sentire subito le scelte di questa schermata e si aggiorna da sola quando cambi tracce o suoni. Applica le rende la musica del video e del render MP4.</p>
     <div class="dock">
       <div class="pvrow"><button id="pvBtn" class="btn" type="button" aria-pressed="false">▶ Anteprima</button><button id="apply" class="btn primary" type="button">Applica</button></div>
