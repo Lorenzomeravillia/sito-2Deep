@@ -176,7 +176,8 @@ function moveEnemies(dt){const f=G.t<G.freezeUntil?0:(G.t<G.slowUntil?0.45:1)*(1
   if(md<=NEAR*NEAR&&G.t-(e.near||-9)>1.5&&!G.nearP){e.near=G.t;G.nearP={t:G.t,x:FX+e.x,y:FY+e.y-14,lives:G.lives};}}}
 
 /* ---- the pop-up words (+19%, SFRATTATO!, GHIACCIO!, IL BASSO! ...): they last long enough to read, never start together
-   (a quarter of a second apart) and never sit on top of each other: a new one moves up, or down, until it is clear ---- */
+   (a quarter of a second apart) and never sit on top of each other: a new one moves up, or down, until it is clear.
+   Where it can, it sits on the dark part still to uncover, not on the poster just revealed (venue, date and time stay readable) ---- */
 const POPL=1.9;
 const popRise=q=>{const u=Math.min(1,Math.max(0,(G.t-q.t)/POPL));return (1-(1-u)*(1-u))*12;};
 function popBox(p,y){const w=tw(p.txt)*p.sc,h=7*p.sc,hw=w/2+FX+4,x=Math.max(hw,Math.min(TW-hw,p.x));return{x,x0:x-w/2-4,x1:x+w/2+4,y0:y-3,y1:y+h+3};}
@@ -186,7 +187,9 @@ function pop(txt,x,y,col,sc){if(!txt)return;const p={txt,x,y,col,sc,t:G.t};
     return a.x0<b.x1&&a.x1>b.x0&&((a.y0<b.y1&&a.y1>b.y0)||(a.y0<c.y1&&a.y1>c.y0));});};
   const step=7*sc+8,lo=FY+4,hi=FY+FH-7*sc-4,y0=Math.max(lo,Math.min(hi,y)),cand=[y0];
   for(let k=1;k<=12;k++){const c=y0+(k%2?-1:1)*step*Math.ceil(k/2);if(c>=lo&&c<=hi)cand.push(c);}
-  const ok=cand.find(clear);
+  const land=yy=>{const a=popBox(p,yy);let n=0,l=0;const c0=Math.max(0,Math.floor((a.x0-FX)/CS)),c1=Math.min(COLS-1,Math.floor((a.x1-FX)/CS)),r0=Math.max(0,Math.floor((a.y0-FY)/CS)),r1=Math.min(ROWS-1,Math.floor((a.y1-FY)/CS));
+    for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++){n++;if(grid[r*COLS+c]===1)l++;}return n?l/n:0;};
+  const free=cand.filter(clear),ok=free.find(yy=>land(yy)<0.35)??free[0];
   /* nowhere clear: it waits, in its place, until the ones in the way have faded */
   if(ok===undefined){p.y=y0;const a=popBox(p,y0);p.t=Math.max(p.t,...G.pops.filter(q=>{const b=popBox(q,q.y-6);return a.x0<b.x1&&a.x1>b.x0&&a.y0<b.y1+12&&a.y1>b.y0-12;}).map(q=>q.t+POPL-0.3));}
   else p.y=ok;G.pops.push(p);}
@@ -235,7 +238,7 @@ function draw(){ensureHD();ctx=OUT;ctx.setTransform(K,0,0,K,0,0);ctx.imageSmooth
   /* pop-ups: a quick pop in, a dark backing to read them on the poster, a slow rise, a fade at the end */
   for(const p of G.pops){const age=G.t-p.t;if(age<0)continue;const y=Math.round(p.y-popRise(p)),b=popBox(p,y),a=Math.min(1,(POPL-age)/0.45),s=age<0.12?0.7+0.3*age/0.12:1;
     ctx.save();ctx.globalAlpha=Math.max(0,a);ctx.translate(b.x,y+3.5*p.sc);ctx.scale(s,s);ctx.translate(-b.x,-(y+3.5*p.sc));
-    ctx.fillStyle='rgba(7,5,15,0.55)';ctx.fillRect(b.x0,b.y0,b.x1-b.x0,b.y1-b.y0);ctext(p.txt,b.x,y,p.sc,p.col);ctx.restore();}
+    ctx.fillStyle='rgba(7,5,15,0.82)';ctx.fillRect(b.x0,b.y0,b.x1-b.x0,b.y1-b.y0);ctext(p.txt,b.x,y,p.sc,p.col);ctx.restore();}
   ctx.restore();hud();
   if(G.state==='intro')intro();else if(G.state==='win')ending(true);else if(G.state==='over')ending(false);}
 /* cells not yet reached by the wave are painted as sea again; the front shines gold */
