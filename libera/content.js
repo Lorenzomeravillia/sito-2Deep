@@ -73,7 +73,7 @@ const CFG=(function(){
     return{song:true,label:'BRANO',cap:'IN REPERTORIO: '+px(s.t),title:s.t,hand:'♪ '+s.t,labelHand:'♪ un nostro brano',img:photos.length?photos[(si-1)%photos.length]:null,
       text:'È uno dei brani del nostro repertorio'+(s.a?', l\'originale è di '+s.a:'')+'. Vieni a sentirlo dal vivo.'};};
   while(secrets.length<3){const s=songSecret();if(!s)break;secrets.push(s);}
-  if(M)secrets.push({img:M.photo||null,q:true,label:fits(mName,48)?mName:mName.slice(0,8),cap:'HAI SCOPERTO: '+(fits('HAI SCOPERTO: '+px(M.title),250)?px(M.title):mName),title:M.title||M.name,hand:M.title||M.name,labelHand:M.name||'',text:M.text||''});
+  if(M)secrets.push({img:M.photo||null,q:true,label:fits(mName,48)?mName:mName.slice(0,8),cap:/\?\s*$/.test(M.title||'')&&fits(px(M.title),250)?px(M.title):'HAI SCOPERTO: '+(fits('HAI SCOPERTO: '+px(M.title),250)?px(M.title):mName),title:M.title||M.name,hand:M.title||M.name,labelHand:M.name||'',text:M.text||''});
   else{const s=songSecret();if(s)secrets.push(s);}
   /* the chalkboard on the counter */
   const board=M?[fits(px(M.title),180)?px(M.title):mName,fits(px(M.invite),180)?px(M.invite):'']:['2DEEP · MUSICA DAL VIVO','SEGUICI: @2DEEPLIVEMUSIC'];
