@@ -5,10 +5,13 @@ const {chromium}=require('playwright'),fs=require('fs'),{spawn,execFileSync}=req
 const path=require('path'),D=__dirname+'/',REPO=path.resolve(__dirname,'../..')+'/',OUT=D+'out/';fs.mkdirSync(OUT,{recursive:true});
 const PREVIEW=process.argv[2]==='preview'?process.argv[3].split(',').map(Number):null;
 const b64=f=>fs.readFileSync(f).toString('base64');
+/* only in the video: the word that pops when the slipper (staying at home) is kicked out */
+const EVICT='SABATO SI ESCE!';
 (async()=>{
   /* the page with hooks: sound effects logged with the video time, internals exposed for the offline audio */
   execFileSync('python3',[REPO+'libera/build.py','--artifact',D+'build'],{stdio:'ignore'});
   let html=fs.readFileSync(D+'build/libera_page.html','utf8');
+  if(!html.includes("pop('SFRATTATO!'"))throw new Error('SFRATTATO not found');html=html.replace("pop('SFRATTATO!'","pop('"+EVICT+"'");
   html=html.replace("function sfx(k,a){if(!AC)return;","function sfx(k,a){if(window.__sfxLog&&!window.__offline)window.__sfxLog.push([window.__vt||0,k,a?JSON.parse(JSON.stringify(a)):null]);if(!AC)return;");
   const i=html.lastIndexOf('\n})();\n</script>');
   html=html.slice(0,i)+"\nwindow.__V={setAC:v=>{AC=v;},getAC:()=>AC,sfx,song:()=>SONGBUF,layers:()=>gameLayers(),POLA,FX,FY,PW,PH};"+html.slice(i);
