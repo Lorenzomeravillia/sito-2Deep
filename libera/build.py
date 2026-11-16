@@ -31,6 +31,8 @@ def game_js():
 
 SNAP = json.loads(H('site_data.json'))
 head = H('head.html')
+# the way back to the site (the flipper's bar), first thing in the body
+SITEBAR = FL('sitebar.html')
 
 if '--artifact' in sys.argv:
     from PIL import Image
@@ -62,7 +64,7 @@ if '--artifact' in sys.argv:
     data['evento'] = evento
     # no song in the snapshot: the claude.ai page plays the 2Deep loop (or a song set up on that page, kept in its browser)
     js = '(()=>{\n"use strict";\nwindow.__GAME_DATA=' + json.dumps(data, ensure_ascii=False) + ';window.__SITE_DATA={};window.__SB=null;\nwindow.__GAME_ICONS=' + json.dumps(icons) + ';window.__GAME_FONT=' + json.dumps(font) + ';\n' + game_js() + '\n})();'
-    page = head + '\n<script>\n' + js + '\n</script>\n'
+    page = head.replace('<!--SITEBAR-->', SITEBAR.replace(' data-site>', ' data-site target="_blank" rel="noopener">')) + '\n<script>\n' + js + '\n</script>\n'
     (out / 'libera.html').write_text(page)
     (out / 'libera_page.html').write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>' + page + '</body></html>')
     print('artifact', len(page))
@@ -107,8 +109,8 @@ else:
 <meta name="theme-color" content="#07050f">
 <link rel="canonical" href="https://www.2deep.it/libera">
 """
-    page = (meta + head.replace('<meta name="claude:viewport-fit-sides" content="cover">\n', '').split('<div id="stage"')[0] + '</head>\n<body>\n<div id="stage"' +
-            head.split('<div id="stage"', 1)[1] +
+    page = (meta + head.replace('<meta name="claude:viewport-fit-sides" content="cover">\n', '').split('<!--SITEBAR-->')[0] + '</head>\n<body>\n' + SITEBAR +
+            head.split('<!--SITEBAR-->', 1)[1] +
             '\n<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>\n<script src="/config.js"></script>\n<script>\nfunction GAME(){\n"use strict";\n' +
             game_js() + '\n}\n' + boot + '\n</script>\n</body>\n</html>\n')
     (ROOT / 'libera.html').write_text(page)
