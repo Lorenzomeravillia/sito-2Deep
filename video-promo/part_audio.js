@@ -11,6 +11,11 @@ function Engine(ac){
   this.leadBus=ac.createGain();this.leadBus.connect(this.musicBus);
   const dl=ac.createDelay(1);dl.delayTime.value=0.3;const dg=ac.createGain();dg.gain.value=0.28;this.leadBus.connect(dl);dl.connect(dg);dg.connect(this.musicBus);
 }
+/* the echo on the tracks played with the Lead sound, rebuilt from settings (the default above stays for pages that never call this):
+   mix = level of the first repeat (0 switches it off), rep repeats `time` seconds apart, each at 60% of the one before */
+Engine.prototype.setLeadEcho=function(o){const ac=this.ac;this.leadBus.disconnect();this.leadBus.connect(this.musicBus);
+  const n=Math.max(0,Math.min(6,Math.round(o.rep||0))),tm=Math.max(0.05,Math.min(1,+o.time||0.3));if(!n||!(o.mix>0))return;
+  for(let k=1;k<=n;k++){const d=ac.createDelay(k*tm+0.1);d.delayTime.value=k*tm;const g=ac.createGain();g.gain.value=o.mix*Math.pow(0.6,k-1);this.leadBus.connect(d);d.connect(g);g.connect(this.musicBus);}};
 Engine.prototype.osc=function(t,dur,freq,shape,vol,o={}){
   const ac=this.ac,os=ac.createOscillator(),g=ac.createGain();
   if(shape==='tri')os.type='triangle';else if(shape==='sine')os.type='sine';else os.setPeriodicWave(this.w[shape]||(this.w[shape]=pulseWave(ac,shape)));
@@ -52,6 +57,7 @@ async function renderSoundtrack(o,sr){
   if(!OAC)throw new Error('questo browser non supporta l’audio offline');
   const len=Math.round(sr*DUR),ac=new OAC(1,len,sr),E=new Engine(ac),mv=0.75*o.vol;
   if(o.mode==='midi'){const g=E.musicBus.gain;g.setValueAtTime(0,0);g.linearRampToValueAtTime(mv,0.04);g.setValueAtTime(mv,DUR-0.5);g.linearRampToValueAtTime(0,DUR);}else E.musicBus.gain.value=mv;
+  if(o.echo)E.setLeadEcho(o.echo);
   (o.mode==='midi'?o.events:defaultSong()).forEach(e=>{if(e.t<DUR)E.note(e);});
   if(o.sfx)scheduleSfx(E);
   const buf=await new Promise((res,rej)=>{ac.oncomplete=e=>res(e.renderedBuffer);const p=ac.startRendering();if(p&&p.then)p.then(res,rej);});

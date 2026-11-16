@@ -3,7 +3,7 @@ const HOOK={afterExport(){},closePanels(){}};
 /* ---------------- playback + controls ---------------- */
 function fit(){const dpr=window.devicePixelRatio||1,vw=innerWidth*dpr,vh=innerHeight*dpr;let s=Math.floor(Math.min(vw/W,vh/H));if(s<1)s=Math.min(vw/W,vh/H);cv.style.width=(W*s/dpr)+'px';cv.style.height=(H*s/dpr)+'px';}
 const $=id=>document.getElementById(id);
-const au=$('au'),ui={bar:$('bar'),play:$('play'),open:$('openMusic'),panel:$('panel'),close:$('close'),srcDef:$('srcDef'),srcMidi:$('srcMidi'),midiBox:$('midiBox'),file:$('file'),fileInfo:$('fileInfo'),tracks:$('tracks'),offset:$('offset'),offsetV:$('offsetV'),speed:$('speed'),speedV:$('speedV'),transp:$('transp'),loop:$('loop'),sfx:$('sfx'),vol:$('vol'),volV:$('volV'),apply:$('apply'),status:$('status'),pv:$('pv'),pvBtn:$('pvBtn'),pvRow:$('pvRow'),pvSeek:$('pvSeek'),pvTime:$('pvTime')};
+const au=$('au'),ui={bar:$('bar'),play:$('play'),open:$('openMusic'),panel:$('panel'),close:$('close'),srcDef:$('srcDef'),srcMidi:$('srcMidi'),midiBox:$('midiBox'),file:$('file'),fileInfo:$('fileInfo'),tracks:$('tracks'),offset:$('offset'),offsetV:$('offsetV'),speed:$('speed'),speedV:$('speedV'),transp:$('transp'),loop:$('loop'),sfx:$('sfx'),vol:$('vol'),volV:$('volV'),echoMix:$('echoMix'),echoMixV:$('echoMixV'),echoTime:$('echoTime'),echoTimeV:$('echoTimeV'),echoRep:$('echoRep'),echoRepV:$('echoRepV'),echoReset:$('echoReset'),apply:$('apply'),status:$('status'),pv:$('pv'),pvBtn:$('pvBtn'),pvRow:$('pvRow'),pvSeek:$('pvSeek'),pvTime:$('pvTime')};
 if(EXPORT){ui.bar.hidden=true;render(0);return;}
 fit();addEventListener('resize',fit);
 let t0=performance.now(),playing=false,info=null,busy=false,exporting=false,curOpts={mode:'default',sfx:true,vol:1};
@@ -24,7 +24,7 @@ async function prepare(opts,label,user){
   busy=false;refreshApply();
 }
 function collect(){
-  const base={sfx:ui.sfx.checked,vol:(+ui.vol.value)/100};
+  const base={sfx:ui.sfx.checked,vol:(+ui.vol.value)/100,echo:{mix:(+ui.echoMix.value)/100,time:+ui.echoTime.value,rep:+ui.echoRep.value}};
   if(ui.srcDef.checked||!info)return{...base,mode:'default'};
   return{...base,mode:'midi',events:midiEvents(info,{offset:+ui.offset.value,speed:(+ui.speed.value)/100,transp:+ui.transp.value,loop:ui.loop.checked})};
 }
@@ -87,6 +87,11 @@ ui.file.addEventListener('change',()=>{const f=ui.file.files&&ui.file.files[0];i
 ui.offset.addEventListener('input',()=>{ui.offsetV.textContent=fmtT(+ui.offset.value);dirty();});
 ui.speed.addEventListener('input',()=>{ui.speedV.textContent=ui.speed.value+'%';dirty();});
 ui.vol.addEventListener('input',()=>{ui.volV.textContent=ui.vol.value+'%';dirty();});
+function echoText(){const off=+ui.echoMix.value===0,r=+ui.echoRep.value;ui.echoMixV.textContent=off?'spenta':ui.echoMix.value+'%';
+  ui.echoTimeV.textContent=(+ui.echoTime.value).toFixed(2).replace('.',',')+' s';ui.echoRepV.textContent=String(r);ui.echoTime.disabled=ui.echoRep.disabled=off;}
+[ui.echoMix,ui.echoTime,ui.echoRep].forEach(el=>el.addEventListener('input',()=>{echoText();dirty();}));
+ui.echoReset.addEventListener('click',()=>{ui.echoMix.value=28;ui.echoTime.value=0.3;ui.echoRep.value=1;echoText();dirty();});
+echoText();
 [ui.transp,ui.loop,ui.sfx].forEach(el=>el.addEventListener('change',dirty));
 ui.apply.addEventListener('click',()=>{if(playing)stop();const o=collect();
   if(o.mode==='midi'&&!o.events.length){setStatus('Dal punto scelto non ci sono note: sposta “Parti da” più indietro.',true);return;}

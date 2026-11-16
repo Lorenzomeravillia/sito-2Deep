@@ -98,8 +98,11 @@ const LHEAD=[
 "....BBBBBBBB....",
 "......BBBB......"];
 const LHMAP={H:'#5a3218',h:'#8f5a2c',i:'#b88048',S:'#f2b48c',s:'#c47e58',B:'#4a2814',b:'#6e4024',G:'#3ec8ff',k:'#140c1c',L:'#bfe8ff',m:'#5e1620',W:'#f6f2f0'};
-function buildLor(leg){
+/* part: 'all' (the whole figure, as always), 'back' (legs, torso, upper arms: what sits behind the guitar) or 'front' (forearms,
+   fretting hand and head: what sits in front of it). back + buildHarpHi() + front is Lorenzo with the guitar drawn at 3x */
+function buildLor(leg,part){part=(part==='back'||part==='front')?part:'all';   /* [0,1,2].map(buildLor) passes the index as part: that is 'all' */const back=part!=='front',guit=part==='all',front=part!=='back';
   const P=new PG(30,46),c=LC;
+  if(back){
   [[6,'L'],[13,'R']].forEach(([lx,side])=>{
     const lifted=(leg===1&&side==='R')||(leg===2&&side==='L'),bot=lifted?40:42;
     P.r(lx,35,5,bot-34,c.J);P.r(lx,35,1,bot-34,c.Jl);P.r(lx+4,35,1,bot-34,c.Jd);P.p(lx+2,39,c.Jd);P.p(lx+1,37,c.Jl);
@@ -112,6 +115,8 @@ function buildLor(leg){
   P.p(8,16,c.Tl);P.p(9,17,c.Tl);P.p(15,16,c.Tl);P.p(14,17,c.Tl);
   P.ln(4,18,2,26,c.T,3);P.ln(3,18,1,25,c.Tl,1);
   P.ln(19,18,21,26,c.T,3);
+  }
+  if(guit){
   P.el(7,31,7.2,5.4,c.U);P.el(11,26.5,5.2,4,c.U);
   const isU=(x,y)=>P.get(x,y)===c.U,edge=[];
   for(let y=0;y<46;y++)for(let x=0;x<30;x++)if(isU(x,y)&&(!isU(x,y-1)||!isU(x-1,y)||!isU(x+1,y)||!isU(x,y+1)))edge.push([x,y,(!isU(x,y-1)||!isU(x-1,y))&&(y<30||x<6)]);
@@ -123,12 +128,52 @@ function buildLor(leg){
   P.ln(24,10,9.5,34,c.str);P.ln(25.5,11,11.5,34,c.str);
   P.ln(12,24,24,9,c.U,2);P.ln(11,23,23,8,c.Ul,1);
   P.r(22,5,4,4,c.U);P.p(26,5,c.peg);P.p(26,7,c.peg);P.p(23,4,c.peg);P.p(22,5,c.Ul);
+  }
+  if(front){
   P.ln(2,27,9,32.5,c.T,3);
   P.ln(21,26,22,22,c.T,3);
   P.r(21,19,3,3,c.S);P.p(23,21,c.s);P.p(21,21,c.s);
   P.art(LHEAD,LHMAP,4,0);
+  }
   return P.canvas('#0a0716');
 }
+/* Lorenzo's harp guitar at three times the resolution (pixels a third of the size), same footprint as his sprite (32x48 with
+   the outline), to be drawn between buildLor(leg,'back') and buildLor(leg,'front'). Two separate arms: the neck, with its
+   strings parallel, to its own headstock; above it the harp arm, which rises steeply and hooks forward, its strings opening
+   in a fan from the bridge to the tuners along the hook */
+function buildHarpHi(){const S=3,P=new PG(32*S,48*S),c=LC,X=v=>(v+1)*S,blk='#08080e',rim='#6c6c96',dk='#2a2a40';
+  const L=(x0,y0,x1,y1,col,th)=>P.ln(X(x0),X(y0),X(x1),X(y1),col,th);
+  /* body: lower and upper bout, a light rim on the upper left, a dark one elsewhere */
+  P.el(X(7),X(31),7.2*S,5.4*S,blk);P.el(X(11),X(26.5),5.2*S,4*S,blk);
+  /* the neck: a dark fretboard to its own headstock */
+  L(13.2,27,25.4,20.6,'#16101a',7);
+  /* the harp arm: from the upper bout, steeply up, then the hook forward */
+  L(11.6,25,18.4,10.8,blk,6);L(18.4,10.8,20.6,7.2,blk,6);L(20.4,7.4,25.8,4.6,blk,6);
+  P.el(X(25.8),X(4.7),2.2,2.6,blk);
+  /* neck headstock */
+  for(let k=0;k<9;k++)L(25.2,19.2+k*0.4,28.2,17.6+k*0.4,blk,2);
+  const solid=(x,y)=>{const v=P.get(x,y);return v!==null&&v!==undefined;},W=P.w,H=P.h,rimPts=[];
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(solid(x,y)&&(!solid(x,y-1)||!solid(x-1,y)||!solid(x+1,y)||!solid(x,y+1)))rimPts.push([x,y,!solid(x,y-1)||!solid(x-1,y)]);
+  rimPts.forEach(([x,y,tl])=>P.p(x,y,tl?rim:dk));
+  /* soundhole */
+  P.el(X(10.6),X(28.4),1.9*S,1.9*S,c.gold);P.el(X(10.6),X(28.4),1.3*S,1.3*S,'#000000');   /* on the neck's line, between the bridge and the neck */
+  /* one bridge for both sets of strings, slanted across the lower bout (partly under the strumming hand): the harp strings
+     leave from its upper end, the neck strings from its lower end, so the two groups open apart and never cross */
+  const B0=[4.9,27.3],B1=[7.7,31.4],onB=t=>[B0[0]+(B1[0]-B0[0])*t,B0[1]+(B1[1]-B0[1])*t];
+  L(B0[0],B0[1],B1[0],B1[1],c.bridge,4);
+  /* neck strings: four, parallel to the neck, from where each meets the bridge up to the nut */
+  const N0=[13.2,27],N1=[25.6,20.5],nd=[N1[0]-N0[0],N1[1]-N0[1]],nl=Math.hypot(nd[0],nd[1]),nu=[nd[0]/nl,nd[1]/nl],np=[-nu[1],nu[0]];
+  for(let k=-1.5;k<=1.5;k++){const o=k*0.42,P0=[N0[0]+np[0]*o,N0[1]+np[1]*o],bd=[B1[0]-B0[0],B1[1]-B0[1]];
+    const den=nu[0]*bd[1]-nu[1]*bd[0],tt=((B0[0]-P0[0])*bd[1]-(B0[1]-P0[1])*bd[0])/den,A=[P0[0]+nu[0]*tt,P0[1]+nu[1]*tt];
+    L(A[0],A[1],N1[0]+np[0]*o,N1[1]+np[1]*o,'#8c8cae',1);}
+  /* pegs: neck headstock and the harp hook */
+  [[26,16.7],[27.4,16],[28.8,15.4],[26.4,22.2],[27.8,21.5],[29.1,20.8]].forEach(([x,y])=>P.r(X(x),X(y),2,2,c.peg));
+  [[20.6,5.3],[22,4.4],[23.4,3.7],[24.8,3.1],[26.2,2.8],[27.4,3.4]].forEach(([x,y])=>P.r(X(x),X(y),2,2,c.peg));
+  /* harp strings: six, a fan from the bridge on the lower bout to the tuners along the hook */
+  const top=[[19.8,9.4],[21.2,7.9],[22.6,7],[24,6.3],[25.4,5.7],[26.8,5.3]];
+  top.forEach(([x,y],k)=>{const a=onB(0.04+k*0.1);L(a[0],a[1],x,y,'#b4b4d0',1);});
+  [0.04,0.54,0.98].forEach(t=>{const a=onB(t);P.r(X(a[0])-1,X(a[1])-1,2,2,c.gold);});
+  return P.canvas();}
 const KC={D:'#2b4fc0',Dl:'#5a7ee8',Dd:'#1b2f7c',pk:'#14204e',pb:'#a87444',pc:'#e0c08c',pl:'#9cc0ff',belt:'#6e3e1e',ring:'#d8b058',S:'#f2b48c',s:'#c47e58',t1:'#e8609a',t2:'#3ec89a',t3:'#2e6fa8',t4:'#f0c040',O:'#c87e3a',Ol:'#eca45a',Od:'#8a4a1a',hole:'#3a1a08',nk:'#6a3a14',nst:'#e8dcc0',hs:'#4a2810',peg:'#e0e0f0',st1:'#d8303a',st2:'#f0ece0',st3:'#141414',sand:'#7a4a24',y:'#f0c040'};
 const KHEAD=[
 "....kKKkK.....",
@@ -978,6 +1023,11 @@ function Engine(ac){
   this.leadBus=ac.createGain();this.leadBus.connect(this.musicBus);
   const dl=ac.createDelay(1);dl.delayTime.value=0.3;const dg=ac.createGain();dg.gain.value=0.28;this.leadBus.connect(dl);dl.connect(dg);dg.connect(this.musicBus);
 }
+/* the echo on the tracks played with the Lead sound, rebuilt from settings (the default above stays for pages that never call this):
+   mix = level of the first repeat (0 switches it off), rep repeats `time` seconds apart, each at 60% of the one before */
+Engine.prototype.setLeadEcho=function(o){const ac=this.ac;this.leadBus.disconnect();this.leadBus.connect(this.musicBus);
+  const n=Math.max(0,Math.min(6,Math.round(o.rep||0))),tm=Math.max(0.05,Math.min(1,+o.time||0.3));if(!n||!(o.mix>0))return;
+  for(let k=1;k<=n;k++){const d=ac.createDelay(k*tm+0.1);d.delayTime.value=k*tm;const g=ac.createGain();g.gain.value=o.mix*Math.pow(0.6,k-1);this.leadBus.connect(d);d.connect(g);g.connect(this.musicBus);}};
 Engine.prototype.osc=function(t,dur,freq,shape,vol,o={}){
   const ac=this.ac,os=ac.createOscillator(),g=ac.createGain();
   if(shape==='tri')os.type='triangle';else if(shape==='sine')os.type='sine';else os.setPeriodicWave(this.w[shape]||(this.w[shape]=pulseWave(ac,shape)));
@@ -1019,6 +1069,7 @@ async function renderSoundtrack(o,sr){
   if(!OAC)throw new Error('questo browser non supporta l’audio offline');
   const len=Math.round(sr*DUR),ac=new OAC(1,len,sr),E=new Engine(ac),mv=0.75*o.vol;
   if(o.mode==='midi'){const g=E.musicBus.gain;g.setValueAtTime(0,0);g.linearRampToValueAtTime(mv,0.04);g.setValueAtTime(mv,DUR-0.5);g.linearRampToValueAtTime(0,DUR);}else E.musicBus.gain.value=mv;
+  if(o.echo)E.setLeadEcho(o.echo);
   (o.mode==='midi'?o.events:defaultSong()).forEach(e=>{if(e.t<DUR)E.note(e);});
   if(o.sfx)scheduleSfx(E);
   const buf=await new Promise((res,rej)=>{ac.oncomplete=e=>res(e.renderedBuffer);const p=ac.startRendering();if(p&&p.then)p.then(res,rej);});
