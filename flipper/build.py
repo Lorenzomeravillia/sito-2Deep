@@ -37,7 +37,7 @@ def game_js(store):
 
 head = H('head.html')
 # the way back to the site (shared with Libera), first thing in the body
-SITEBAR = H('sitebar.html')
+SITEBAR = H('sitebar.html') + H('nozoom.html')  # the bar back to the site, and no page zoom
 cut = head.index('<!--SITEBAR-->')
 head = head.replace('<!--SITEBAR-->', SITEBAR)
 HEAD, BODY = head[:cut], head[cut:]
@@ -47,7 +47,7 @@ if '--artifact' in sys.argv:
     out.mkdir(parents=True, exist_ok=True)
     page = HEAD + BODY.replace(' data-site>', ' data-site target="_blank" rel="noopener">') + '\n<script>\n' + game_js('store_artifact.js') + '\n</script>\n'
     (out / 'pinball.html').write_text(page)
-    (out / 'pinball_page.html').write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>' + page + '</body></html>')
+    (out / 'pinball_page.html').write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"></head><body>' + page + '</body></html>')
     print('artifact', len(page))
 else:
     # on the site: read dates, video names and the song first, then start the game (snapshot after 5 s without an answer)
@@ -64,7 +64,7 @@ else:
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="description" content="Il flipper dei 2Deep: gioca, scopri le prossime serate dal vivo e segnale in calendario.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.2deep.it/flipper">

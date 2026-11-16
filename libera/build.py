@@ -32,7 +32,7 @@ def game_js():
 SNAP = json.loads(H('site_data.json'))
 head = H('head.html')
 # the way back to the site (the flipper's bar), first thing in the body
-SITEBAR = FL('sitebar.html')
+SITEBAR = FL('sitebar.html') + FL('nozoom.html')  # and no page zoom
 
 if '--artifact' in sys.argv:
     from PIL import Image
@@ -66,7 +66,7 @@ if '--artifact' in sys.argv:
     js = '(()=>{\n"use strict";\nwindow.__GAME_DATA=' + json.dumps(data, ensure_ascii=False) + ';window.__SITE_DATA={};window.__SB=null;\nwindow.__GAME_ICONS=' + json.dumps(icons) + ';window.__GAME_FONT=' + json.dumps(font) + ';\n' + game_js() + '\n})();'
     page = head.replace('<!--SITEBAR-->', SITEBAR.replace(' data-site>', ' data-site target="_blank" rel="noopener">')) + '\n<script>\n' + js + '\n</script>\n'
     (out / 'libera.html').write_text(page)
-    (out / 'libera_page.html').write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>' + page + '</body></html>')
+    (out / 'libera_page.html').write_text('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"></head><body>' + page + '</body></html>')
     print('artifact', len(page))
 else:
     snap = json.dumps(SNAP, ensure_ascii=False)
@@ -91,7 +91,7 @@ else:
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="description" content="Libera, il gioco dei 2Deep: chiudi le aree, scopri dove suoniamo la prossima serata e segnala in calendario.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.2deep.it/libera">
