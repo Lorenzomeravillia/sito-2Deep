@@ -38,6 +38,52 @@ function paintRemote(g,W,H){g.save();g.scale(W/10,H/24);const rg=g.createLinearG
   g.fillStyle='#ff3b4a';g.beginPath();g.arc(5,4.2,1.5,0,Math.PI*2);g.fill();
   [['#7ee08a',2.4],['#ffd23f',5],['#5aa9ff',7.6]].forEach(([c,x])=>{g.fillStyle=c;g.beginPath();g.arc(x,9.2,1,0,Math.PI*2);g.fill();});
   g.fillStyle='#a2a2b4';for(let r=0;r<3;r++)for(const x of [2.4,5,7.6]){g.beginPath();g.arc(x,13.4+r*2.9,0.85,0,Math.PI*2);g.fill();}g.restore();}
+/* Re Divano, upgraded: the same red sofa with tufted cushions, rolled armrests, angry eyes and brows and a grimace,
+   painted with volume (drawn in a 104x58 frame, like the pixel one) */
+function paintSofa(g,W,H,crown){const CH=crown?22:0;g.save();g.scale(W/104,H/(58+CH));g.translate(0,CH);
+  const R='#c8313f',Rl='#ef6a72',Rd='#7e1622',Rs='#4a0a12';
+  const rr=(x,y,w,h,r)=>{g.beginPath();g.roundRect(x,y,w,h,r);};
+  const lin=(x0,y0,x1,y1,stops)=>{const gr=g.createLinearGradient(x0,y0,x1,y1);stops.forEach(([o,c])=>gr.addColorStop(o,c));return gr;};
+  const rad=(x,y,r0,r1,stops)=>{const gr=g.createRadialGradient(x,y,r0,x,y,r1);stops.forEach(([o,c])=>gr.addColorStop(o,c));return gr;};
+  /* legs */
+  [10,24,78,92].forEach(x=>{g.beginPath();g.moveTo(x-1.8,48);g.lineTo(x+1.8,48);g.lineTo(x+1.1,57);g.lineTo(x-1.1,57);g.closePath();g.fillStyle=lin(x-2,0,x+2,0,[[0,'#3e1f0c'],[0.45,'#8a5428'],[1,'#2a1406']]);g.fill();});
+  /* base */
+  rr(3,40,98,10,3);g.fillStyle=lin(0,40,0,50,[[0,'#a52634'],[0.35,Rd],[1,Rs]]);g.fill();
+  g.strokeStyle='rgba(255,140,150,0.35)';g.lineWidth=0.7;g.beginPath();g.moveTo(6,41.2);g.lineTo(98,41.2);g.stroke();
+  /* backrest */
+  rr(10,4,84,30,7);g.fillStyle=lin(0,4,0,34,[[0,Rl],[0.18,R],[1,Rd]]);g.fill();
+  /* back cushions, tufted */
+  [[14,51],[53,90]].forEach(([a,b])=>{rr(a,8.5,b-a,23,5.5);g.fillStyle=rad((a+b)/2,14,2,24,[[0,'#f0767e'],[0.45,R],[1,'#8f1a28']]);g.fill();
+    g.strokeStyle='rgba(60,0,10,0.35)';g.lineWidth=0.8;g.stroke();
+    [[a+(b-a)*0.2,27.3],[a+(b-a)*0.8,27.3]].forEach(([x,y])=>{g.strokeStyle='rgba(70,5,15,0.4)';g.lineWidth=0.5;for(let k=0;k<4;k++){const an=k*Math.PI/2+0.6;g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(an)*2.8,y+Math.sin(an)*1.8);g.stroke();}
+      g.fillStyle=rad(x-0.4,y-0.4,0.2,1.6,[[0,'#ff9aa2'],[1,Rs]]);g.beginPath();g.arc(x,y,1.3,0,Math.PI*2);g.fill();});});
+  /* armrests, rolled tops */
+  [[8.5,1],[95.5,-1]].forEach(([cx,d])=>{rr(cx-8.5,19,17,31,3);g.fillStyle=lin(cx-8.5*d,0,cx+8.5*d,0,[[0,'#9c2030'],[0.35,R],[0.75,'#d9454f'],[1,Rd]]);g.fill();
+    g.beginPath();g.ellipse(cx,20,8.8,5.8,0,0,Math.PI*2);g.fillStyle=rad(cx-d*2.5,18.5,0.5,9,[[0,'#ff9aa0'],[0.35,Rl],[0.8,R],[1,Rd]]);g.fill();
+    g.strokeStyle='rgba(60,0,10,0.4)';g.lineWidth=0.6;g.beginPath();g.ellipse(cx,20.5,4.2,2.6,0,0,Math.PI*2);g.stroke();
+    g.fillStyle='rgba(40,0,8,0.35)';g.fillRect(cx-8.5,46,17,4);});
+  /* seat cushions */
+  [[16,52.5],[51.5,88]].forEach(([a,b])=>{rr(a,29.5,b-a,12.5,3.5);g.fillStyle=lin(0,29.5,0,42,[[0,'#f27a82'],[0.3,R],[0.7,'#a82434'],[1,Rd]]);g.fill();
+    g.strokeStyle='rgba(60,0,10,0.4)';g.lineWidth=0.7;g.stroke();
+    g.strokeStyle='rgba(255,170,175,0.35)';g.lineWidth=0.6;g.beginPath();g.moveTo(a+3,31.2);g.lineTo(b-3,31.2);g.stroke();});
+  /* velvet sheen */
+  g.globalCompositeOperation='source-atop';g.fillStyle=lin(0,0,104,58,[[0,'rgba(255,255,255,0.14)'],[0.5,'rgba(255,255,255,0)'],[1,'rgba(0,0,0,0.18)']]);g.fillRect(0,0,104,58);g.globalCompositeOperation='source-over';
+  /* face: angry eyes on the back cushions, thick brows, a grimace on the base */
+  [[32,19.5],[72,19.5]].forEach(([x,y])=>{g.beginPath();g.ellipse(x,y,6.8,5.2,0,0,Math.PI*2);g.fillStyle=rad(x-1.5,y-1.8,0.5,7.5,[[0,'#ffffff'],[0.7,'#f1ece8'],[1,'#c9bfbf']]);g.fill();
+    g.strokeStyle='rgba(60,0,10,0.6)';g.lineWidth=0.6;g.stroke();
+    g.beginPath();g.ellipse(x-2,y+1,2.9,3,0,0,Math.PI*2);g.fillStyle=rad(x-2.6,y+0.4,0.2,3.2,[[0,'#3a2b45'],[1,'#0c0710']]);g.fill();
+    g.fillStyle='#ffffff';g.beginPath();g.arc(x-3,y,0.9,0,Math.PI*2);g.fill();
+    /* upper lid, half closed: angry */
+    /* upper lid slanting down towards the nose: the angry look */
+    const dx=x<52?1:-1;g.save();g.beginPath();g.ellipse(x,y,6.8,5.2,0,0,Math.PI*2);g.clip();g.fillStyle=lin(0,y-6,0,y-1,[[0,'#a01e2c'],[1,'#c8313f']]);
+    g.beginPath();g.moveTo(x-8,y-7);g.lineTo(x+8,y-7);g.lineTo(x+7*dx>x?x+8:x-8,y-7);g.lineTo(x+7*dx,y-0.8);g.lineTo(x-7*dx,y-4.2);g.closePath();g.fill();g.restore();});
+  g.lineCap='round';g.strokeStyle=lin(0,9,0,16,[[0,'#2a0408'],[1,'#4a0a12']]);g.lineWidth=3.4;
+  g.beginPath();g.moveTo(23,10.5);g.quadraticCurveTo(31,11,39.5,15.5);g.stroke();g.beginPath();g.moveTo(81,10.5);g.quadraticCurveTo(73,11,64.5,15.5);g.stroke();
+  /* grimace */
+  rr(39,43,26,5.6,2.6);g.fillStyle='#24050b';g.fill();
+  rr(41,43.6,22,2.3,1);g.fillStyle=lin(0,43.6,0,46,[[0,'#ffffff'],[1,'#d9d2cc']]);g.fill();
+  g.strokeStyle='rgba(80,60,60,0.6)';g.lineWidth=0.4;for(let x=44.5;x<62;x+=3.6){g.beginPath();g.moveTo(x,43.6);g.lineTo(x,45.9);g.stroke();}
+  g.restore();}
 function buildSprites(){const S={};
   S.note=bake(17,18.5,paintNote);
   /* prizes: the cut-out photo when the venue has one, otherwise the 3D icon of its kind; the mystery box is a gift */
@@ -46,7 +92,9 @@ function buildSprites(){const S={};
   const gift=hdImg(iconUrl('regalo'));if(ready(gift))S.m=bakeImg(gift,24);
   const sl=hdImg(iconUrl('ciabatta'));if(ready(sl))S.slip=bakeImg(sl,21);
   S.remote=bake(9,22,paintRemote);
-  S.sofa=bake(26,22,(g,W,H)=>g.drawImage(ENEMY.sofa,0,0,W,H),true);
+  /* Re Divano in volume, with the 3D crown (the pixel one until the crown arrives) */
+  const cr=hdImg(iconUrl('corona'));S.sofa=ready(cr)?bake(30,25,(g,W,H)=>{paintSofa(g,W,H,true);const cw=W*0.33;g.drawImage(cr,W/2-cw/2,-H*0.02,cw,cw*cr.naturalHeight/cr.naturalWidth);})
+    :bake(26,22,(g,W,H)=>g.drawImage(ENEMY.sofa,0,0,W,H),true);
   return S;}
 /* ---- polaroids: real proportions (88x107 mm, square photo 79x79), ivory paper slightly curved at the edges, tape,
    a handwritten caption ---- */
