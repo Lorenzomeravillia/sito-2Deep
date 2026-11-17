@@ -7,6 +7,9 @@ const PREVIEW=process.argv[2]==='preview'?process.argv[3].split(',').map(Number)
 const b64=f=>fs.readFileSync(f).toString('base64');
 /* only in the video: the word that pops when the slipper (staying at home) is kicked out */
 const EVICT='SABATO SI ESCE!';
+/* the clues: INDIZIO=2 node make.cjs ... picks one */
+const CLUES={1:{},2:{n:2,mirror:true,item:'i1',slot:1,img:'crescia',hook:['COSA SI MANGIA','SABATO?'],hookH:'COSA SI MANGIA SABATO?',v:['La crescia','di Urbino'],h:'La crescia di Urbino',sub:'+ OFFERTA VEGANA'}};
+const NCLUE=+(process.env.INDIZIO||1),CLUE=CLUES[NCLUE];if(!CLUE)throw new Error('indizio '+NCLUE+' non definito');
 (async()=>{
   /* the page with hooks: sound effects logged with the video time, internals exposed for the offline audio */
   execFileSync('python3',[REPO+'libera/build.py','--artifact',D+'build'],{stdio:'ignore'});
@@ -21,11 +24,11 @@ const EVICT='SABATO SI ESCE!';
   await p.addInitScript(()=>{const o=window.requestAnimationFrame.bind(window);window.__stopRAF=false;window.requestAnimationFrame=cb=>window.__stopRAF?0:o(cb);window.__sfxLog=[];window.__lay=[];});
   await p.goto('file://'+D+'build/rec.html');await p.waitForTimeout(1200);
   await p.mouse.click(151,300);await p.waitForTimeout(1500);
-  await p.evaluate(async([silk,cav,cock,gift])=>{window.__stopRAF=true;await new Promise(r=>setTimeout(r,80));
+  await p.evaluate(async([silk,cav,cock,gift,cres,clue])=>{window.__CLUE=clue;window.__stopRAF=true;await new Promise(r=>setTimeout(r,80));
     for(const [n,u] of [['Silk','data:font/woff2;base64,'+silk],['Caveat','data:font/woff2;base64,'+cav]]){const f=new FontFace(n,'url('+u+')',{weight:n==='Caveat'?'700':'400'});await f.load();document.fonts.add(f);}
-    window.__VIMG={cocktail:'data:image/webp;base64,'+cock,gift:'data:image/webp;base64,'+gift};window.__sfxLog.length=0;},
+    window.__VIMG={cocktail:'data:image/webp;base64,'+cock,crescia:'data:image/webp;base64,'+cres,gift:'data:image/webp;base64,'+gift};window.__sfxLog.length=0;},
     [b64(D+'silkscreen-400.woff2'),
-     b64(REPO+'assets/giochi/caveat-700.woff2'),b64(REPO+'assets/giochi/al-cantonet/cocktail-scontornata.webp'),b64(REPO+'assets/giochi/icone/regalo.webp')]);
+     b64(REPO+'assets/giochi/caveat-700.woff2'),b64(REPO+'assets/giochi/al-cantonet/cocktail-scontornata.webp'),b64(REPO+'assets/giochi/icone/regalo.webp'),b64(REPO+'assets/giochi/al-cantonet/crescia-scontornata.webp'),CLUE]);
   await p.addScriptTag({content:fs.readFileSync(D+'vid.js','utf8')});await p.waitForTimeout(300);
   console.log('canvas',await p.evaluate(()=>[document.getElementById('c').width,document.getElementById('c').height]));
   const enc=name=>{const f=spawn('ffmpeg',['-y','-loglevel','error','-f','image2pipe','-framerate','30','-c:v','mjpeg','-i','-','-c:v','libx264','-preset','veryfast','-crf','18','-pix_fmt','yuv420p','-r','30',OUT+name+'_tmp.mp4']);f.stderr.on('data',d=>process.stderr.write(d));return f;};
@@ -52,7 +55,7 @@ const EVICT='SABATO SI ESCE!';
       for(let i=0;i<L.length;i++){i16[2*i]=Math.max(-1,Math.min(1,L[i]))*32767;i16[2*i+1]=Math.max(-1,Math.min(1,R[i]))*32767;}
       let s='';const u8=new Uint8Array(i16.buffer);for(let i=0;i<u8.length;i+=32768)s+=String.fromCharCode.apply(null,u8.subarray(i,i+32768));return btoa(s);},n/30);
     fs.writeFileSync(OUT+'audio.s16',Buffer.from(pcm,'base64'));
-    for(const o of ['v','h']){const name=o==='v'?'2deep_libera_indizio1_verticale.mp4':'2deep_libera_indizio1_orizzontale.mp4';
+    for(const o of ['v','h']){const name='2deep_libera_indizio'+NCLUE+(o==='v'?'_verticale.mp4':'_orizzontale.mp4');
       execFileSync('ffmpeg',['-y','-loglevel','error','-i',OUT+o+'_tmp.mp4','-f','s16le','-ar','44100','-ac','2','-i',OUT+'audio.s16','-map','0:v','-map','1:a','-c:v','copy','-af','loudnorm=I=-14:TP=-1.5:LRA=11','-ar','44100','-c:a','aac','-b:a','192k','-shortest','-movflags','+faststart',OUT+'mux_tmp.mp4']);fs.renameSync(OUT+'mux_tmp.mp4',OUT+name);}
     console.log('sfx',await p.evaluate(()=>window.__sfxLog.length));}
   console.log('errs',JSON.stringify(errs));await b.close();})();

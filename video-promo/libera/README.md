@@ -8,11 +8,15 @@ Due video, verticale 1080×1920 e orizzontale 1920×1080, girati dentro il gioco
 cd video-promo/libera
 node make.cjs preview 3,6.5,11,15   # solo alcuni fotogrammi in out/, per controllare
 node make.cjs                        # i due mp4 in out/
+INDIZIO=2 node make.cjs              # un altro indizio (definiti in make.cjs, CLUES)
 ```
 
 Servono Chromium con Playwright, ffmpeg e python3. Il gioco viene ricompilato da `libera/build.py --artifact`, con i dati di `libera/site_data.json` (oggi: Al Cantonet, sab 21 novembre, ore 21).
 
 ## Cosa cambiare per il prossimo indizio
+
+Ogni indizio è una voce di `CLUES` in `make.cjs`: polaroid da scoprire, premio, immagine, frase d'aggancio e testi. L'indizio 2 rifà la partita a specchio, così scopre la polaroid di destra.
+
 
 - `vid.js`, `WP`: il tragitto della nota (colonna, riga, pausa in secondi).
 - `vid.js`, `endCard` e `drawH`: testi della scena finale e della colonna di destra (indizio, «Ma tu lo conosci il Dahu?», invito a giocare).
