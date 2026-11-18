@@ -8,12 +8,6 @@ body{background:var(--bg);color:var(--ink);margin:0;overflow:hidden;padding:0 ma
 #c{display:block;image-rendering:pixelated;box-shadow:0 0 0 1px var(--edge),0 0 40px rgba(255,122,216,.12)}
 #panel{position:absolute;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1.25fr 1fr 0.9fr;gap:6px}#panel #spec,#panel #again{grid-column:1/-1}
 #panel[hidden],#panel [hidden]{display:none!important}
-#dpad{position:absolute;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;touch-action:none}
-#dpad button{display:flex;align-items:center;justify-content:center;padding:0;color:var(--cyan);background:linear-gradient(180deg,#221a3a,#150f27);border:1px solid rgba(101,219,239,.55);border-radius:12px;box-shadow:0 4px 0 #0b0618;cursor:pointer;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-#dpad button svg{width:22px;height:22px}
-#dpad button.cur{color:var(--neon);border-color:var(--neon)}
-#dpad button.on{transform:translateY(3px);box-shadow:0 1px 0 #0b0618;color:#fff;border-color:#fff}
-#dpad button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 #panel a,#panel button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:0;padding:4px 8px;border-radius:9px;text-align:center;font:600 11.5px/1.2 system-ui,sans-serif;letter-spacing:.04em;text-decoration:none;color:var(--ink);cursor:pointer;
   border:1px solid rgba(255,122,216,.6);background:linear-gradient(180deg,#3a1d52,#1e1035);box-shadow:0 4px 0 #0b0618}
 #panel #cal{border-color:rgba(101,219,239,.65);background:linear-gradient(180deg,#14394d,#0e1f34)}
@@ -88,9 +82,8 @@ body{background:var(--bg);color:var(--ink);margin:0;overflow:hidden;padding:0 ma
 #song #sStatus.warn{color:#ff9a9a}
 </style>
 <!--SITEBAR-->
-<div id="stage" aria-label="Gioco: muovi la nota con le frecce sotto il campo o scorrendo il dito, chiudi le aree per scoprire la locandina">
+<div id="stage" aria-label="Gioco: muovi la nota con lo scorrimento del dito, chiudi le aree per scoprire la locandina">
   <canvas id="c" width="270" height="480" role="img" aria-label="Campo di gioco"></canvas>
-  <div id="dpad" role="group" aria-label="Frecce per muovere la nota"><button type="button" data-d="L" aria-label="Sinistra"><svg viewBox="0 0 10 10" aria-hidden="true" style="transform:rotate(0deg)"><path d="M7 1.2 2.2 5 7 8.8Z" fill="currentColor"/></svg></button><button type="button" data-d="U" aria-label="Su"><svg viewBox="0 0 10 10" aria-hidden="true" style="transform:rotate(90deg)"><path d="M7 1.2 2.2 5 7 8.8Z" fill="currentColor"/></svg></button><button type="button" data-d="D" aria-label="Giù"><svg viewBox="0 0 10 10" aria-hidden="true" style="transform:rotate(270deg)"><path d="M7 1.2 2.2 5 7 8.8Z" fill="currentColor"/></svg></button><button type="button" data-d="R" aria-label="Destra"><svg viewBox="0 0 10 10" aria-hidden="true" style="transform:rotate(180deg)"><path d="M7 1.2 2.2 5 7 8.8Z" fill="currentColor"/></svg></button></div>
   <div id="panel" hidden>
     <button id="spec" type="button"><span class="gift" aria-hidden="true">🎁</span><span class="st"><b id="spec1">APRI IL TUO PREMIO</b><small id="spec2">I 4 SEGRETI DEL CANTONET</small></span></button>
     <a id="cal" href="#" target="_blank" rel="noopener">AGGIUNGI AL<br>CALENDARIO</a>
