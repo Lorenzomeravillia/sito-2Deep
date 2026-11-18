@@ -37,7 +37,10 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);overfl
 #wrap{position:relative;height:calc(100% - 44px - env(safe-area-inset-top,0px) - max(12px, env(safe-area-inset-bottom,0px)));display:flex;align-items:center;justify-content:center;touch-action:none}
 canvas{display:block;touch-action:none}
 #opt{position:absolute;font:600 12px var(--ui);letter-spacing:.04em;color:var(--dim);background:rgba(18,10,38,.75);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
-#opt:focus-visible,.seg button:focus-visible,#close:focus-visible,.btns button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+#mood{position:absolute;font:600 12px var(--ui);letter-spacing:.04em;color:var(--cyan);background:rgba(18,10,38,.75);border:1px solid rgba(79,227,255,.45);border-radius:999px;padding:7px 13px;cursor:pointer;touch-action:none;box-shadow:0 0 12px rgba(79,227,255,.18)}
+#mood .ic{color:var(--gold)}
+#pauseNote{color:var(--gold)}
+#opt:focus-visible,#mood:focus-visible,.seg button:focus-visible,#close:focus-visible,.btns button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 #sheet{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(5,3,12,.72)}
 #sheet[hidden],[hidden]{display:none!important}
 #sheet .box{width:min(360px,100%);max-height:calc(100% - 24px);overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 0 40px rgba(255,95,210,.18);box-sizing:border-box}
@@ -112,10 +115,12 @@ html,body{touch-action:none;overscroll-behavior:none}
 
 <div id="wrap">
   <canvas id="c" role="img" aria-label="Gioco: rompi i mattoncini con la pallina, accendi l'insegna e scopri la prossima serata dei 2Deep"></canvas>
+  <button id="mood" type="button" aria-label="Cambia atmosfera musicale"><span class="ic" aria-hidden="true">♫</span> Atmosfera: <span id="moodName">2Deep</span></button>
   <button id="opt" type="button">Opzioni</button>
   <div id="sheet" hidden>
     <div class="box" role="dialog" aria-label="Opzioni">
       <h2>Opzioni</h2>
+      <p id="pauseNote" hidden>Gioco in pausa: è arrivato un gesto "indietro". Tocca Gioca per riprendere da dove eri, oppure torna indietro un'altra volta per uscire.</p>
       <p>Trascina il dito in qualsiasi punto per muovere la racchetta, tocca per lanciare. Ogni mattoncino suona una nota: tra un rimbalzo e l'altro la pallina compone una frase che si chiude con l'ultimo colpo.</p>
       <div class="row"><span>VELOCITÀ PALLINA</span><div class="seg" data-k="speed"><button id="sp1" type="button" data-v="lenta">Lenta</button><button id="sp2" type="button" data-v="normale">Normale</button><button id="sp3" type="button" data-v="veloce">Veloce</button></div></div>
       <div class="row"><span>RACCHETTA</span><div class="seg" data-k="pad"><button id="pd1" type="button" data-v="S">Corta</button><button id="pd2" type="button" data-v="M">Media</button><button id="pd3" type="button" data-v="L">Lunga</button></div></div>
@@ -177,7 +182,7 @@ html,body{touch-action:none;overscroll-behavior:none}
         <div class="btns"><button id="mCopy" type="button">Copia le impostazioni</button></div>
         <textarea id="mCopyTxt" readonly hidden aria-label="Impostazioni della musica"></textarea>
       </details>
-      <p>Capsule: L racchetta larga, S pallina lenta, M tre palline, V vita in più.</p>
+      <p>Capsule: M tre palline (la più frequente), L racchetta larga (fino a due insieme), S pallina lenta, V vita in più. Il pulsante Atmosfera cambia l'accompagnamento a ogni tocco.</p>
       <button id="close" type="button">Gioca</button>
     </div>
   </div>
@@ -191,13 +196,14 @@ html,body{touch-action:none;overscroll-behavior:none}
 window.MATTONCINI=function(){
 "use strict";
 const W=270,H=480,TOP=40;
-const cv=document.getElementById('c'),g=cv.getContext('2d'),wrap=document.getElementById('wrap'),optB=document.getElementById('opt');
+const cv=document.getElementById('c'),g=cv.getContext('2d'),wrap=document.getElementById('wrap'),optB=document.getElementById('opt'),moodB=document.getElementById('mood');
 let scale=1,dpr=1,K=1;
 const mk=(w,h)=>{const c=document.createElement('canvas');c.width=Math.max(1,Math.ceil(w));c.height=Math.max(1,Math.ceil(h));return c;};
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 function fit(){const r=wrap.getBoundingClientRect();scale=Math.min(r.width/W,r.height/H);dpr=Math.min(3,window.devicePixelRatio||1);K=scale*dpr;
   cv.style.width=Math.floor(W*scale)+'px';cv.style.height=Math.floor(H*scale)+'px';cv.width=Math.round(W*K);cv.height=Math.round(H*K);bake();}
-function placeOpt(){const r=cv.getBoundingClientRect(),w=wrap.getBoundingClientRect();optB.style.left=(r.right-w.left-optB.offsetWidth-8)+'px';optB.style.top=(r.bottom-w.top-optB.offsetHeight-8)+'px';}
+function placeOpt(){const r=cv.getBoundingClientRect(),w=wrap.getBoundingClientRect();optB.style.left=(r.right-w.left-optB.offsetWidth-8)+'px';optB.style.top=(r.bottom-w.top-optB.offsetHeight-8)+'px';
+  moodB.style.left=(r.left-w.left+8)+'px';moodB.style.top=(r.bottom-w.top-moodB.offsetHeight-8)+'px';}
 
 /* ---- settings and record, per viewer ---- */
 const SPEED={lenta:150,normale:185,veloce:225},PADW={S:38,M:48,L:60};
@@ -492,13 +498,13 @@ const LAYOUTS=[
   (r,c)=>{const hx=Math.abs(c-4.5),heart=(r>=2&&r<=9)&&((r<=3&&(Math.abs(hx-2)<=1.2))||(r>3&&hx<=5.6-(r-3)*0.95));return heart?2:(r===0?3:1);},
   (r,c)=>(c===1||c===8)&&r>=1?3:((r+c)%3===0?2:1)];
 const FCLOG=[];let notesLvl=0,bricks=[],balls=[],caps=[],parts=[],pops=[],trail=[],orbs=[],boss=null,bossDone=false,SIGN=[],lvl=1,flashSign=0;
-let comboT=-9,paddle,st,lives=3,score=0,combo=0,hits=0,shake=0,wideUntil=0,slowUntil=0,t=0,sim=0,acc=0,stT=0,flash=0,slowT=0,slowF=1,zoom={x:W/2,y:H/2,t:-9},bannerTxt=null,bannerT=-9;
+let comboT=-9,paddle,st,lives=3,score=0,combo=0,hits=0,shake=0,wideT=[],slowUntil=0,t=0,sim=0,acc=0,stT=0,flash=0,slowT=0,slowF=1,zoom={x:W/2,y:H/2,t:-9},bannerTxt=null,bannerT=-9;
 function banner(s){bannerTxt=s;bannerT=t;}
 function buildLevel(){bricks=[];const lay=LAYOUTS[(lvl-1)%LAYOUTS.length],gold=new Set(),ng=6+Math.min(4,lvl);
   while(gold.size<ng)gold.add((2+Math.floor(Math.random()*10))*COLS+Math.floor(Math.random()*COLS));
   for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){const hp=Math.min(3,lay(r,c)+(lvl>3&&r<3?1:0)),isG=hp===1&&gold.has(r*COLS+c);
     bricks.push({x:BX+c*BW,y:BY+r*BH,c,r,hp,max:hp,gold:isG,col:isG?'#ffd36b':ROWCOL[r],alive:true,hitT:-9,wob:0});}
-  bakeBricks();setSign(SIGNS[(lvl-1)%SIGNS.length]);notesLvl=0;boss=null;bossDone=false;caps=[];hits=Math.min(40,(lvl-1)*12);wideUntil=slowUntil=0;}
+  bakeBricks();setSign(SIGNS[(lvl-1)%SIGNS.length]);notesLvl=0;boss=null;bossDone=false;caps=[];hits=Math.min(40,(lvl-1)*12);wideT=[];slowUntil=0;}
 function newGame(){lvl=1;lives=3;score=0;paddle={x:W/2,y:H-46,h:10,base:PADW[S.pad],w:PADW[S.pad],sq:0,hitT:-9};buildLevel();newKey();ready();}
 function nextLevel(){lvl++;lives=Math.min(5,lives+1);buildLevel();newKey();banner('LIVELLO '+lvl);ready();}
 function ready(){st='ready';stT=t;combo=0;balls=[{x:paddle.x,y:paddle.y-4,vx:0,vy:0,r:3.2,stuck:true}];}
@@ -525,7 +531,12 @@ let down=null;
 cv.addEventListener('pointerdown',e=>{audio();if(AC&&AC.state==='suspended')AC.resume();startGroove();down={id:e.pointerId,t:performance.now(),moved:0,lx:e.clientX};cv.setPointerCapture(e.pointerId);e.preventDefault();});
 cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&!down){const r=cv.getBoundingClientRect();paddle.x=(e.clientX-r.left)/scale;clampPaddle();return;}
   if(!down||e.pointerId!==down.id)return;paddle.x+=(e.clientX-down.lx)/scale*1.15;down.moved+=Math.abs(e.clientX-down.lx);down.lx=e.clientX;clampPaddle();e.preventDefault();});
-cv.addEventListener('pointerup',e=>{if(!down)return;const tap=down.moved<10&&performance.now()-down.t<350;down=null;
+moodB.addEventListener('pointerdown',e=>{down={id:e.pointerId,t:performance.now(),moved:0,lx:e.clientX,mood:true};try{cv.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();});
+moodB.addEventListener('click',e=>{if(e.detail===0)nextMood();});
+/* touch defaults off on the game surface: no browser gesture starts from a drag on the canvas */
+for(const el of [cv,moodB]){el.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});el.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});}
+cv.addEventListener('pointerup',e=>{if(!down)return;const tap=down.moved<10&&performance.now()-down.t<350,fromMood=down.mood;down=null;arm();
+  if(fromMood){if(tap)nextMood();return;}
   if(st==='ready'&&(tap||e.pointerType==='mouse'))launch();else if(st==='over'&&t-stT>1.2)newGame();else if(st==='win'&&t-stT>1.6)nextLevel();});
 cv.addEventListener('pointercancel',()=>{down=null;});
 function clampPaddle(){paddle.x=clamp(paddle.x,paddle.w/2+4,W-paddle.w/2-4);}
@@ -565,16 +576,19 @@ function onReal(b){return (k,x)=>{
   else if(k==='brick'){const br=x;br.hitT=t;b.real=(b.real||0)+1;combo++;comboT=t;score+=10*Math.min(combo,12);ballNote(b,br);
     for(const n of bricks)if(n.alive&&Math.abs(n.c-br.c)<=1&&Math.abs(n.r-br.r)<=1){n.wob=Math.max(n.wob,0.6);n.hitT=Math.max(n.hitT,t-0.06);}
     burst(br.x+BW/2,br.y+BH/2,br.col,12,80);shake=Math.min(3.5,shake+0.8);
-    if(br.gold||Math.random()<0.05){const kk=['L','S','M','V'][Math.floor(Math.random()*4)];caps.push({k:kk,x:br.x+BW/2,y:br.y+BH/2,vy:60});}
+    if(br.gold||Math.random()<0.065){/* more multiball: more polyphony and shorter screens */const kk=pickW([['M',0.45],['L',0.25],['S',0.15],['V',0.15]]);caps.push({k:kk,x:br.x+BW/2,y:br.y+BH/2,vy:60});}
     const p=1-alive()/bricks.length;musicLevel(p);checkSign();if(!boss&&!bossDone&&p>=0.5)spawnBoss();
     if(targets()<=3&&!cadence)cadence='pre';zoom.x=br.x+BW/2;zoom.y=br.y+BH/2;if(!targets())win();}
   else if(k==='boss'){const B=x;B.flashT=t;b.real=(b.real||0)+1;bossThump();ballNote(b,null);shake=Math.min(5,shake+2.5);burst(B.x,B.y,'#ff3d6e',10,70);burst(B.x,B.y-10,'#ffffff',6,50);score+=60;
     if(B.hp<=0){bossDone=true;burst(B.x,B.y,'#ff3d6e',40,140);burst(B.x,B.y,'#ffd36b',24,120);pop('RE DIVANO K.O.',B.x,B.y,'#ff5fd2',true);score+=500;lineChime();
       zoom.x=B.x;zoom.y=B.y;boss=null;if(targets()<=3&&!cadence)cadence='pre';if(!targets())win();}}};}
 const CAPS={L:{col:'#4fe3ff',txt:'RACCHETTA LARGA'},S:{col:'#5cf5a8',txt:'PALLINA LENTA'},M:{col:'#ff5fd2',txt:'TRE PALLINE'},V:{col:'#ff3d6e',txt:'VITA IN PIÙ'}};
-function catchCap(c){const d=CAPS[c.k];pop(d.txt,c.x,paddle.y-20,d.col);capNote();score+=50;
-  if(c.k==='L')wideUntil=t+12;else if(c.k==='S')slowUntil=sim+10;else if(c.k==='V')lives=Math.min(5,lives+1);
-  else if(c.k==='M'){const src=balls.find(b=>!b.stuck)||balls[0];if(!src)return;for(const a of [-0.5,0.5]){const sp=Math.hypot(src.vx,src.vy)||speedOf(hits,slowUntil,sim),ang=Math.atan2(src.vx,-src.vy)+a;
+function catchCap(c){const d=CAPS[c.k];let tx=d.txt;capNote();score+=50;
+  /* wide paddle: up to two at once, each with its own 12 seconds; a third one only renews the older */
+  if(c.k==='L'){const on=wideT.filter(x=>x>t).sort((a,b)=>a-b);if(on.length<2)on.push(t+12);else{on[0]=t+12;tx+=' · MAX';}if(on.length===2&&!tx.endsWith('MAX'))tx+=' x2';wideT=on;}
+  pop(tx,c.x,paddle.y-20,d.col);
+  if(c.k==='S')slowUntil=sim+10;else if(c.k==='V')lives=Math.min(5,lives+1);
+  else if(c.k==='M'){const src=balls.find(b=>!b.stuck)||balls[0];if(!src)return;for(const a of [-0.5,0.5]){if(balls.length>=9)break;const sp=Math.hypot(src.vx,src.vy)||speedOf(hits,slowUntil,sim),ang=Math.atan2(src.vx,-src.vy)+a;
     const nb={x:src.x,y:src.y,vx:Math.sin(ang)*sp,vy:-Math.cos(ang)*sp,r:3.2,stuck:false};balls.push(nb);forecast(nb);}}}
 function win(){st='win';stT=t;slowT=1.3;slowF=0.3;zoom.t=t;flash=1;balls=[];caps=[];SIGN.forEach(L=>L.letters.forEach(l=>{if(!l.lit){l.lit=true;l.litT=t;}}));
   if(score>best){best=score;save();}finaleMusic();for(let i=0;i<5;i++)setTimeout(()=>{burst(40+Math.random()*190,BY+Math.random()*140,['#ff5fd2','#4fe3ff','#ffd36b','#5cf5a8'][i%4],30,150);},i*180);}
@@ -586,7 +600,7 @@ function physStep(){sim+=STEP;if(boss)bossMove(boss,sim);const Wd={bricks,boss,g
   balls=balls.filter(b=>b.y<H+12);if(st==='play'&&!balls.length)lose();}
 function update(dt){t+=dt;flash=Math.max(0,flash-dt*3);shake=Math.max(0,shake-dt*10);flashSign=Math.max(0,flashSign-dt*2.5);
   const kv=(keys.ArrowLeft?-1:0)+(keys.ArrowRight?1:0);if(kv){paddle.x+=kv*280*dt;clampPaddle();}
-  const tw=paddle.base*(t<wideUntil?1.45:1);paddle.w+=(tw-paddle.w)*Math.min(1,dt*10);clampPaddle();paddle.sq=Math.max(0,paddle.sq-dt*5);
+  const nw=wideT.filter(x=>x>t).length,tw=Math.min(96,paddle.base*[1,1.4,1.75][nw]);paddle.w+=(tw-paddle.w)*Math.min(1,dt*10);clampPaddle();paddle.sq=Math.max(0,paddle.sq-dt*5);
   for(const b of bricks)b.wob=Math.max(0,b.wob-dt*2.6);
   if(st==='ready'){for(const b of balls){b.x=paddle.x;b.y=paddle.y-b.r-1;}}
   if(st==='play'){acc+=dt;let n=0;while(acc>=STEP&&n<24){physStep();acc-=STEP;n++;if(st!=='play')break;}if(n>=24)acc=0;for(const b of balls)trail.push({x:b.x,y:b.y,t});}
@@ -795,12 +809,24 @@ function syncMusic(){for(const [id,k,f] of RNG){$(id).value=MS[k];$(id+'V').text
   document.querySelectorAll('[data-mk]').forEach(s=>s.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(MS[s.dataset.mk]===b.dataset.v))));
   for(const [id,k] of SEL)$(id).value=MS[k];
   document.querySelectorAll('#mScenes button').forEach(b=>b.setAttribute('aria-pressed',String(MS.scene===b.dataset.scene)));}
-function musicChanged(repad){saveMS();syncMusic();applyVolumes();if(repad&&AC&&started)setPad(curChord(),AC.currentTime+0.02);}
+function musicChanged(repad){saveMS();syncMusic();applyVolumes();showMood();if(repad&&AC&&started)setPad(curChord(),AC.currentTime+0.02);}
+/* the Atmosfera button: one tap, the next atmosphere from a shuffled bag, so every one comes round before any repeats */
+const SCENE_NAMES={'2deep':'2Deep',quiete:'Quiete',brezza:'Brezza',groove:'Groove',bossa:'Bossa',viaggio:'Viaggio',spazio:'Spazio'};let moodBag=[];
+function showMood(){$('moodName').textContent=SCENE_NAMES[MS.scene]||'su misura';}
+function applyScene(id){const sc=SCENES[id];if(!sc)return;Object.assign(MS,JSON.parse(JSON.stringify(sc)));MS.scene=id;pend=null;musicChanged(false);repad(true);}
+function nextMood(){audio();if(AC&&AC.state==='suspended')AC.resume();startGroove();
+  let id;do{if(!moodBag.length)moodBag=Object.keys(SCENES).filter(k=>k!==MS.scene).sort(()=>Math.random()-0.5);id=moodBag.shift();}while(id===MS.scene);
+  applyScene(id);banner('ATMOSFERA '+SCENE_NAMES[id].toUpperCase());}
+/* a back swipe pauses instead of leaving: one history entry of our own, added on a release (a real user gesture).
+   In apps like Facebook the back gesture walks the page history first, so the first swipe lands here */
+let guard=false;
+function arm(){if(guard)return;try{history.pushState({mattoncini:1},'',location.href);guard=true;}catch(e){}}
+addEventListener('popstate',()=>{if(!guard)return;guard=false;if(st==='over'){history.back();return;}
+  if(sheet.hidden){$('pauseNote').hidden=false;sheet.hidden=false;syncSeg();syncMusic();}});
 {for(const [id,k,,acc,re] of RNG){$(id).addEventListener('input',e=>{MS[k]=+e.target.value;if(acc)MS.scene='';musicChanged(false);if(re==='pad')repad(false);});
     if(re==='full')$(id).addEventListener('change',()=>repad(true));}
   for(const [id,k] of SEL)$(id).addEventListener('change',e=>{MS[k]=e.target.value;MS.scene='';musicChanged(false);if(k!=='drum')repad(true);});
-  document.querySelectorAll('#mScenes button').forEach(b=>b.addEventListener('click',()=>{const sc=SCENES[b.dataset.scene];if(!sc)return;
-    Object.assign(MS,JSON.parse(JSON.stringify(sc)));MS.scene=b.dataset.scene;pend=null;musicChanged(false);repad(true);}));
+  document.querySelectorAll('#mScenes button').forEach(b=>b.addEventListener('click',()=>applyScene(b.dataset.scene)));
   $('mPaddle').addEventListener('change',e=>{MS.paddle=e.target.checked;musicChanged(false);});
   $('mEnrich').addEventListener('change',e=>{MS.enrich=e.target.checked;musicChanged(true);});
   $('mAccel').addEventListener('change',e=>{MS.accel=e.target.checked;musicChanged(false);});
@@ -810,15 +836,15 @@ function musicChanged(repad){saveMS();syncMusic();applyVolumes();if(repad&&AC&&s
   $('mNow').addEventListener('click',()=>{audio();if(AC&&AC.state==='suspended')AC.resume();startGroove();lastChangeT=-1e9;chordReq=true;});
   $('mCopy').addEventListener('click',()=>{const s=JSON.stringify(MS),ta=$('mCopyTxt');ta.value=s;const done=()=>{$('mCopy').textContent='Copiate';setTimeout(()=>{$('mCopy').textContent='Copia le impostazioni';},1500);};
     try{navigator.clipboard.writeText(s).then(done,()=>{ta.hidden=false;ta.select();});}catch(e){ta.hidden=false;ta.select();}});}
-optB.addEventListener('click',()=>{sheet.hidden=false;syncSeg();syncMusic();});
-$('close').addEventListener('click',()=>{sheet.hidden=true;audio();if(AC&&AC.state==='suspended')AC.resume();startGroove();});
+optB.addEventListener('click',()=>{$('pauseNote').hidden=true;sheet.hidden=false;syncSeg();syncMusic();});
+$('close').addEventListener('click',()=>{sheet.hidden=true;$('pauseNote').hidden=true;arm();audio();if(AC&&AC.state==='suspended')AC.resume();startGroove();});
 document.addEventListener('visibilitychange',()=>{if(!AC)return;if(document.hidden)AC.suspend();else AC.resume();});
 for(let i=0;i<9;i++)orbs.push({x:Math.random()*W,y:Math.random()*H,v:4+Math.random()*7,s:14+Math.random()*22,p:Math.random()*6});
 paddle={x:W/2,y:H-46,h:10,base:PADW[S.pad],w:PADW[S.pad],sq:0,hitT:-9};
-setSign(SIGNS[0]);addEventListener('resize',()=>{fit();placeOpt();});fit();placeOpt();
+setSign(SIGNS[0]);showMood();addEventListener('resize',()=>{fit();placeOpt();});fit();placeOpt();
 if(document.fonts){document.fonts.load('30px "Tilt Neon"').then(()=>document.fonts.load('700 16px "Fredoka"')).then(()=>{bake();placeOpt();}).catch(()=>{});}
 newGame();let last=performance.now();
-window.__MATT={FCLOG,get bricks(){return bricks;},get balls(){return balls;},get boss(){return boss;},get st(){return st;},onReal,forecast,win,nextLevel,get lvl(){return lvl;},NLOG,get MS(){return MS;},get chords(){return chords;}};
+window.__MATT={FCLOG,get bricks(){return bricks;},get balls(){return balls;},get boss(){return boss;},get st(){return st;},onReal,forecast,win,nextLevel,get lvl(){return lvl;},NLOG,get MS(){return MS;},catchCap,get paddle(){return paddle;},get t(){return t;},get chords(){return chords;}};
 function frame(now){let dt=Math.min(1/30,(now-last)/1000);last=now;if(slowT>0){slowT-=dt;dt*=slowF;}if(sheet.hidden&&!document.hidden)update(dt);if(!document.hidden)musicTick();draw();requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
 };
