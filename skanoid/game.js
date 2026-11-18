@@ -1,202 +1,8 @@
-<!doctype html>
-<html lang="it">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="description" content="Mattoncini, il gioco dei 2Deep: rompi i mattoncini, accendi l'insegna al neon con la prossima serata. Ogni colpo suona una nota, a 432 Hz.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://www.2deep.it/mattoncini">
-<meta property="og:title" content="Mattoncini · il gioco dei 2Deep">
-<meta property="og:description" content="Rompi i mattoncini e accendi l'insegna della prossima serata. Il muro suona: ogni colpo è una nota, a 432 Hz.">
-<meta property="og:image" content="https://www.2deep.it/assets/giochi/og-mattoncini.jpg">
-<meta property="og:image:secure_url" content="https://www.2deep.it/assets/giochi/og-mattoncini.jpg">
-<meta property="og:image:type" content="image/jpeg">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Mattoncini: il gioco dei 2Deep, mattoncini al neon sopra l'insegna della serata">
-<meta property="og:locale" content="it_IT">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://www.2deep.it/assets/giochi/og-mattoncini.jpg">
-<meta name="theme-color" content="#05030c">
-<link rel="canonical" href="https://www.2deep.it/mattoncini">
-<title>Mattoncini · 2Deep</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Tilt+Neon&display=swap">
-<style>
-/* One game screen under the site bar: 9:16 canvas centred, options in a sheet over it. Single dark look by choice: a neon sign in a night bar. */
-:root{
-  --bg:#05030c; --panel:#120a26; --line:#33245c; --ink:#f6f0ff; --dim:#a99cc8;
-  --pink:#ff5fd2; --cyan:#4fe3ff; --gold:#ffd36b;
-  --ui:'Fredoka', 'Trebuchet MS', system-ui, sans-serif;
-  color-scheme:dark;
-}
-html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);overflow:hidden;overscroll-behavior:none;padding:0 max(16px,env(safe-area-inset-left,0px)) 0 max(16px,env(safe-area-inset-right,0px));-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
-#sitebar{margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-#wrap{position:relative;height:calc(100% - 44px - env(safe-area-inset-top,0px) - max(12px, env(safe-area-inset-bottom,0px)));display:flex;align-items:center;justify-content:center;touch-action:none}
-canvas{display:block;touch-action:none}
-#opt{position:absolute;font:600 12px var(--ui);letter-spacing:.04em;color:var(--dim);background:rgba(18,10,38,.75);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
-#mood{position:absolute;font:600 12px var(--ui);letter-spacing:.04em;color:var(--cyan);background:rgba(18,10,38,.75);border:1px solid rgba(79,227,255,.45);border-radius:999px;padding:7px 13px;cursor:pointer;touch-action:none;box-shadow:0 0 12px rgba(79,227,255,.18)}
-#mood .ic{color:var(--gold)}
-#mood.wait{border-color:var(--gold)}#mood.wait #moodName{animation:mb .5s ease-in-out infinite;color:var(--gold)}
-@keyframes mb{50%{opacity:.3}}
-@media (prefers-reduced-motion:reduce){#mood.wait #moodName{animation:none}}
-#pauseNote{color:var(--gold)}
-#opt:focus-visible,#mood:focus-visible,.seg button:focus-visible,#close:focus-visible,.btns button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
-#sheet{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(5,3,12,.72)}
-#sheet[hidden],[hidden]{display:none!important}
-#sheet .box{width:min(360px,100%);max-height:calc(100% - 24px);overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 0 40px rgba(255,95,210,.18);box-sizing:border-box}
-#sheet h2{margin:0;font:700 18px var(--ui);color:var(--pink)}
-#sheet p{margin:0;font:500 13px/1.5 var(--ui);color:var(--dim)}
-.row{display:flex;flex-direction:column;gap:6px}
-.row span{font:600 11px var(--ui);letter-spacing:.08em;color:var(--dim)}
-.seg{display:flex;gap:6px}
-.seg button{flex:1;min-width:0;font:600 13px var(--ui);color:var(--ink);background:#0b0619;border:1px solid var(--line);border-radius:10px;padding:9px 4px;cursor:pointer}
-.seg button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan);background:#0c1a2b}
-#close{font:700 15px var(--ui);color:#1a0f00;background:var(--gold);border:0;border-radius:12px;padding:12px;cursor:pointer}
-.lab{display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);padding-top:14px}
-.lab summary{cursor:pointer;font:700 15px var(--ui);color:var(--cyan);list-style-position:inside;padding:4px 0}
-.lab summary:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px}
-.lab:not([open]){gap:0}
-.rng{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;font:500 13px var(--ui);color:var(--ink)}
-.rng input{grid-column:1 / -1;width:100%;accent-color:var(--cyan)}
-.rng output{font:600 12px var(--ui);color:var(--cyan);font-variant-numeric:tabular-nums}
-.chk{display:flex;gap:8px;align-items:center;font:500 13px var(--ui);color:var(--ink)}
-.chk input{width:18px;height:18px;accent-color:var(--cyan)}
-.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
-.btns{display:flex;gap:8px;flex-wrap:wrap}
-.btns button{flex:1;min-width:0;font:600 13px var(--ui);color:var(--ink);background:#0b0619;border:1px solid var(--line);border-radius:10px;padding:9px 6px;cursor:pointer}
-#sheet .box{touch-action:pan-y}
-#mScenes{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
-#mScenes button{font:600 13px var(--ui);color:var(--ink);background:#0b0619;border:1px solid var(--line);border-radius:10px;padding:9px 4px;cursor:pointer}
-#mScenes button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold);background:#1d1608}
-#mScenes button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
-.seg.g3{display:grid;grid-template-columns:repeat(3,1fr)}
-.sel{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
-.sel label{display:flex;flex-direction:column;justify-content:space-between;gap:5px;font:600 11px var(--ui);letter-spacing:.08em;color:var(--dim)}
-.sel select{font:600 13px var(--ui);color:var(--ink);background:#0b0619;border:1px solid var(--line);border-radius:10px;padding:8px 6px;min-width:0}
-.lab h3{margin:6px 0 0;font:700 13px var(--ui);letter-spacing:.06em;color:var(--pink)}
-#mCopyTxt{width:100%;min-height:60px;font:12px ui-monospace,monospace;background:#0b0619;color:var(--dim);border:1px solid var(--line);border-radius:8px;box-sizing:border-box}
-</style>
-</head>
-<body>
-<style>
-/* the way back to the site, always visible above the game (shared by the flipper and Libera) */
-#sitebar{box-sizing:border-box;height:calc(44px + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px);display:flex;align-items:center;justify-content:space-between;gap:10px;
-  font:700 12px/1 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.07em;border-bottom:1px solid #2a2148}
-#sitebar a{display:inline-flex;align-items:center;gap:7px;min-height:44px;color:#f4ecff;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
-#sitebar .sb-home svg{width:18px;height:18px;color:#ff7ad8;flex:none}
-#sitebar .sb-info{min-height:32px;padding:0 12px;border:1px solid #65dbef;border-radius:999px;color:#65dbef}
-#sitebar a:focus-visible{outline:2px solid #65dbef;outline-offset:2px;border-radius:6px}
-@media (hover:hover){#sitebar .sb-home:hover span{text-decoration:underline;text-underline-offset:3px}#sitebar .sb-info:hover{background:rgba(101,219,239,.12)}}
-@media (max-width:330px){#sitebar{font-size:11px;letter-spacing:.04em}#sitebar .sb-info{padding:0 9px}}
-</style>
-<header id="sitebar">
-  <a class="sb-home" href="https://www.2deep.it/" data-site><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg><span>TORNA AL SITO</span></a>
-  <a class="sb-info" href="https://www.2deep.it/#venues" data-site>INFO PER I LOCALI</a>
-</header>
-<style>
-/* game pages: the page itself never zooms (iOS double tap or pinch on the bars and margins could leave it zoomed in with
-   the game catching every gesture, so no way back). Panels that scroll keep vertical scrolling. */
-html,body{touch-action:none;overscroll-behavior:none}
-#song{touch-action:pan-y}
-</style>
-<script>
-/* Safari ignores user-scalable=no since iOS 10: block its pinch gestures and fast double taps, and if the page is zoomed anyway
-   (accessibility zoom, a gesture that slipped through) bring it back to normal size */
-(function(){var no=function(e){e.preventDefault();};
-  ['gesturestart','gesturechange','gestureend'].forEach(function(t){document.addEventListener(t,no,{passive:false});});
-  document.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length>1)e.preventDefault();},{passive:false});
-  var last=0;document.addEventListener('touchend',function(e){var n=Date.now();if(n-last<350&&!(e.target.closest&&e.target.closest('a,button,input,select,textarea,label')))e.preventDefault();last=n;},{passive:false});
-  var vv=window.visualViewport,m=document.querySelector('meta[name=viewport]');if(!vv||!m)return;
-  var base=m.getAttribute('content'),t=0;
-  function reset(){if(vv.scale<=1.01)return;m.setAttribute('content','width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover');
-    setTimeout(function(){m.setAttribute('content',base);},400);}
-  vv.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(reset,600);});setTimeout(reset,1000);})();
-</script>
-
-<div id="wrap">
-  <canvas id="c" role="img" aria-label="Gioco: rompi i mattoncini con la pallina, accendi l'insegna e scopri la prossima serata dei 2Deep"></canvas>
-  <button id="mood" type="button" aria-label="Cambia atmosfera musicale"><span class="ic" aria-hidden="true">♫</span> Atmosfera: <span id="moodName">2Deep</span></button>
-  <button id="opt" type="button">Opzioni</button>
-  <div id="sheet" hidden>
-    <div class="box" role="dialog" aria-label="Opzioni">
-      <h2>Opzioni</h2>
-      <p id="pauseNote" hidden>Gioco in pausa: è arrivato un gesto "indietro". Tocca Gioca per riprendere da dove eri, oppure torna indietro un'altra volta per uscire.</p>
-      <p>Trascina il dito in qualsiasi punto per muovere la racchetta, tocca per lanciare. Ogni mattoncino suona una nota: tra un rimbalzo e l'altro la pallina compone una frase che si chiude con l'ultimo colpo.</p>
-      <div class="row"><span>VELOCITÀ PALLINA</span><div class="seg" data-k="speed"><button id="sp1" type="button" data-v="lenta">Lenta</button><button id="sp2" type="button" data-v="normale">Normale</button><button id="sp3" type="button" data-v="veloce">Veloce</button></div></div>
-      <div class="row"><span>RACCHETTA</span><div class="seg" data-k="pad"><button id="pd1" type="button" data-v="S">Corta</button><button id="pd2" type="button" data-v="M">Media</button><button id="pd3" type="button" data-v="L">Lunga</button></div></div>
-      <div class="row"><span>ACCORDATURA</span><div class="seg" data-k="tune"><button id="tn1" type="button" data-v="432">La a 432 Hz</button><button id="tn2" type="button" data-v="440">La a 440 Hz</button></div></div>
-      <p>Noi suoniamo a 432 Hz. Prova a passare dall'una all'altra mentre la musica va, e ascolta.</p>
-      <details class="lab" id="labBox">
-        <summary>Laboratorio musica · per musicisti e curiosi</summary>
-        <p>Qui puoi cambiare come suona il muro. La musica continua mentre sei qui e il gioco è in pausa: le modifiche si sentono subito. Valgono solo sul tuo telefono.</p>
-        <div class="row"><span>NOTE DEI MATTONCINI</span><div class="seg" data-k="quant"><button id="qt1" type="button" data-v="tempo">A tempo</button><button id="qt2" type="button" data-v="libero">Libere</button></div></div>
-        <h3>MELODIA DELLA PALLINA</h3>
-        <label class="rng" for="mCx">Complessità della melodia<output id="mCxV"></output><input id="mCx" type="range" min="0" max="1" step="0.05"></label>
-        <p>A zero ogni frase sale e scende ad arco sui cinque suoni più sicuri dell'accordo. Salendo cambiano la nota di partenza e il registro (le file alte suonano più acute), arrivano salti di terza e di quarta, frasi a valle, a onda e in progressione, la scala completa dell'accordo e, verso il massimo, acciaccature cromatiche che risolvono di semitono. L'ultima nota della frase atterra sempre sulla fondamentale.</p>
-        <h3>ACCOMPAGNAMENTO</h3>
-        <div class="row"><span>ATMOSFERE DALL'APP TAPPETO ARMONICO</span><div id="mScenes">
-          <button type="button" data-scene="2deep">2Deep</button><button type="button" data-scene="quiete">Quiete</button><button type="button" data-scene="brezza">Brezza</button>
-          <button type="button" data-scene="groove">Groove</button><button type="button" data-scene="bossa">Bossa</button><button type="button" data-scene="viaggio">Viaggio</button>
-          <button type="button" data-scene="spazio">Spazio</button></div></div>
-        <p>Un'atmosfera cambia armonia, timbri, percussioni e spazio. Tempo e melodia restano i tuoi.</p>
-        <div class="row"><span>ARMONIA</span><div class="seg g3" data-mk="prog">
-          <button type="button" data-v="spa">Spa</button><button type="button" data-v="tappeto">Semplice</button><button type="button" data-v="colore">Colore</button>
-          <button type="button" data-v="ricco">Ricco</button><button type="button" data-v="modale">Modale</button><button type="button" data-v="libero">Libero</button></div></div>
-        <p>Spa: il giro senza dominante. Semplice: triadi con la dominante. Colore: settime, sus e add9. Ricco: none e seste, dominanti secondarie, accordi presi in prestito. Modale: pedale di tonica e accordi sospesi. Libero: le fondamentali si muovono per terze e semitoni, colori lidi e dorici.</p>
-        <div class="sel">
-          <label for="mTim">TIMBRO DEL TAPPETO<select id="mTim"><option value="spa">Spa (2Deep)</option><option value="caldo">Pad caldo</option><option value="archi">Archi</option><option value="organo">Organo</option><option value="coro">Coro</option><option value="vetro">Vetro FM</option><option value="campana">Campana FM</option><option value="epiano">Piano elettrico FM</option></select></label>
-          <label for="mTimHi">TIMBRO OTTAVA ALTA<select id="mTimHi"><option value="spa">Spa (2Deep)</option><option value="caldo">Pad caldo</option><option value="archi">Archi</option><option value="organo">Organo</option><option value="coro">Coro</option><option value="vetro">Vetro FM</option><option value="campana">Campana FM</option><option value="epiano">Piano elettrico FM</option></select></label>
-          <label for="mDrum">PERCUSSIONI<select id="mDrum"><option value="reggae">Reggae e ska (2Deep)</option><option value="respiro">Rado</option><option value="pulsazione">Dritto</option><option value="bossa">Bossa</option><option value="spezzato">Spezzato</option><option value="sussurro">Sussurro</option><option value="none">Nessuna</option></select></label>
-        </div>
-        <label class="rng" for="mDens">Densità delle percussioni<output id="mDensV"></output><input id="mDens" type="range" min="0" max="1" step="0.05"></label>
-        <label class="rng" for="mSwing">Swing<output id="mSwingV"></output><input id="mSwing" type="range" min="0" max="0.6" step="0.05"></label>
-        <label class="rng" for="mPump">Pompaggio del tappeto sul battere<output id="mPumpV"></output><input id="mPump" type="range" min="0" max="1" step="0.05"></label>
-        <label class="rng" for="mBright">Luminosità del tappeto<output id="mBrightV"></output><input id="mBright" type="range" min="0" max="1" step="0.05"></label>
-        <label class="rng" for="mRev">Riverbero<output id="mRevV"></output><input id="mRev" type="range" min="0" max="1" step="0.02"></label>
-        <label class="rng" for="mDly">Eco sul tappeto<output id="mDlyV"></output><input id="mDly" type="range" min="0" max="1" step="0.05"></label>
-        <label class="rng" for="mChorus">Ampiezza (chorus)<output id="mChorusV"></output><input id="mChorus" type="range" min="0" max="1" step="0.05"></label>
-        <h3>ACCORDI E TEMPO</h3>
-        <label class="rng" for="mTransT">Durata della dissolvenza tra accordi<output id="mTransTV"></output><input id="mTransT" type="range" min="0.3" max="8" step="0.1"></label>
-        <label class="rng" for="mAuto">Cambio automatico ogni<output id="mAutoV"></output><input id="mAuto" type="range" min="2" max="40" step="1"></label>
-        <label class="chk" for="mPaddle"><input id="mPaddle" type="checkbox">La racchetta cambia accordo</label>
-        <label class="rng" for="mGap">Con la racchetta, non prima di<output id="mGapV"></output><input id="mGap" type="range" min="0" max="30" step="1"></label>
-        <div class="btns"><button id="mNow" type="button">Cambia accordo adesso</button><button id="mReset" type="button">Valori iniziali</button></div>
-        <div class="row"><span>VOCI DEL TAPPETO</span>
-          <div class="vgrid">
-            <label class="chk" for="mv_sub"><input id="mv_sub" type="checkbox" data-v="sub">Basso</label>
-            <label class="chk" for="mv_drone"><input id="mv_drone" type="checkbox" data-v="drone">Bordone</label>
-            <label class="chk" for="mv_root"><input id="mv_root" type="checkbox" data-v="root">Fondamentale</label>
-            <label class="chk" for="mv_third"><input id="mv_third" type="checkbox" data-v="third">Terza</label>
-            <label class="chk" for="mv_fifth"><input id="mv_fifth" type="checkbox" data-v="fifth">Quinta</label>
-            <label class="chk" for="mv_ninth"><input id="mv_ninth" type="checkbox" data-v="ninth">Nona</label>
-            <label class="chk" for="mv_sixth"><input id="mv_sixth" type="checkbox" data-v="sixth">Sesta</label>
-            <label class="chk" for="mv_seventh"><input id="mv_seventh" type="checkbox" data-v="seventh">Settima</label>
-            <label class="chk" for="mv_high"><input id="mv_high" type="checkbox" data-v="high">Ottava alta</label>
-          </div></div>
-        <label class="chk" for="mEnrich"><input id="mEnrich" type="checkbox">Le voci entrano man mano che si accende l'insegna</label>
-        <label class="rng" for="mBpm">Tempo di partenza<output id="mBpmV"></output><input id="mBpm" type="range" min="60" max="120" step="1"></label>
-        <label class="chk" for="mAccel"><input id="mAccel" type="checkbox">Il tempo accelera con la pallina</label>
-        <label class="rng" for="mVolPad">Volume tappeto<output id="mVolPadV"></output><input id="mVolPad" type="range" min="0" max="1.5" step="0.05"></label>
-        <label class="rng" for="mVolDrum">Volume percussioni<output id="mVolDrumV"></output><input id="mVolDrum" type="range" min="0" max="1.5" step="0.05"></label>
-        <label class="rng" for="mVolNote">Volume note della pallina<output id="mVolNoteV"></output><input id="mVolNote" type="range" min="0" max="1.5" step="0.05"></label>
-        <div class="btns"><button id="mCopy" type="button">Copia le impostazioni</button></div>
-        <textarea id="mCopyTxt" readonly hidden aria-label="Impostazioni della musica"></textarea>
-      </details>
-      <p>Capsule: M tre palline (la più frequente), L racchetta larga (fino a due insieme), S pallina lenta, V vita in più. Il pulsante Atmosfera cambia l'accompagnamento a ogni tocco.</p>
-      <button id="close" type="button">Gioca</button>
-    </div>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
-<script src="/config.js"></script>
-<script>
-/* Mattoncini, the 2Deep's breakout: candy-glass bricks over a neon sign with the next gig, music made by the ball.
+/* Skanoid, the 2Deep's breakout (Arkanoid with ska in the name): candy-glass bricks over a neon sign with the next gig, music made by the ball.
    window.__GAME_DATA={events:[site_events rows], evento:id|null} comes before; window.__LAB=true shows the music lab. */
-window.MATTONCINI=function(){
+window.SKANOID=function(){
+/* settings saved under the game's first name are carried over once */
+const LS=k=>{try{let v=localStorage.getItem('skanoid_'+k);if(v==null){v=localStorage.getItem('mattoncini_'+k);if(v!=null)localStorage.setItem('skanoid_'+k,v);}return v;}catch(e){return null;}};
 "use strict";
 const W=270,H=480,TOP=40;
 const cv=document.getElementById('c'),g=cv.getContext('2d'),wrap=document.getElementById('wrap'),optB=document.getElementById('opt'),moodB=document.getElementById('mood');
@@ -211,8 +17,8 @@ function placeOpt(){const r=cv.getBoundingClientRect(),w=wrap.getBoundingClientR
 /* ---- settings and record, per viewer ---- */
 const SPEED={lenta:150,normale:185,veloce:225},PADW={S:38,M:48,L:60};
 let S={speed:'normale',pad:'M',quant:'tempo',tune:432},best=0;
-try{Object.assign(S,JSON.parse(localStorage.getItem('mattoncini_opts')||'{}'));best=+localStorage.getItem('mattoncini_best')||0;}catch(e){}
-const save=()=>{try{localStorage.setItem('mattoncini_opts',JSON.stringify(S));localStorage.setItem('mattoncini_best',String(best));}catch(e){}};
+try{Object.assign(S,JSON.parse(LS('opts')||'{}'));best=+LS('best')||0;}catch(e){}
+const save=()=>{try{localStorage.setItem('skanoid_opts',JSON.stringify(S));localStorage.setItem('skanoid_best',String(best));}catch(e){}};
 
 /* ---- the gig, from the site's dates: the one in the address, otherwise the next published one that is not cancelled ---- */
 const GIG=(function(){const D=window.__GAME_DATA||{},SKIP=/annull|rinviat|cancellat|saltat/i,pad=n=>String(n).padStart(2,'0'),d0=new Date(),
@@ -252,8 +58,8 @@ const SCENES={'2deep':{prog:'spa',tim:'spa',timHi:'spa',drum:'reggae',dens:0.5,s
   viaggio:{prog:'modale',tim:'vetro',timHi:'coro',drum:'spezzato',dens:0.5,swing:0.1,pump:0.15,bright:0.5,rev:0.44,dly:0.35,chorus:0.35,transT:3.2,v:SCENE_V},
   spazio:{prog:'libero',tim:'campana',timHi:'coro',drum:'sussurro',dens:0.35,swing:0,pump:0,bright:0.4,rev:0.6,dly:0.4,chorus:0.4,transT:4.5,v:SCENE_V}};
 let MS=JSON.parse(JSON.stringify(MDEF));
-try{const o=JSON.parse(localStorage.getItem('mattoncini_music')||'null');if(o){Object.assign(MS,o);MS.v=Object.assign({},MDEF.v,o.v||{});}}catch(e){}
-const saveMS=()=>{try{localStorage.setItem('mattoncini_music',JSON.stringify(MS));}catch(e){}};
+try{const o=JSON.parse(LS('music')||'null');if(o){Object.assign(MS,o);MS.v=Object.assign({},MDEF.v,o.v||{});}}catch(e){}
+const saveMS=()=>{try{localStorage.setItem('skanoid_music',JSON.stringify(MS));}catch(e){}};
 let AC=null,BUS=null,MEL=null,PADF=null,PADG=null,PADDUCK=null,DRUMG=null,NOTEG=null,NOISE=null,DL=null,REVG=null,PADDLY=null,started=false,nextStep=0,stepN=0,ring=[];
 let KEY=2;const MAJ=[0,2,4,5,7,9,11],NAMES=['DO','DO#','RE','MIB','MI','FA','FA#','SOL','LAB','LA','SIB','SI'];
 const PROG={spa:{0:[[3,4],[5,3],[1,1]],3:[[0,5],[5,1.5],[1,1]],5:[[3,4],[0,2],[1,1]],1:[[3,3],[0,1],[5,1]]},
@@ -678,51 +484,8 @@ function bakeLetter(l,L,lit){const pad=L.fs*0.8,c=mk((l.w+pad*2)*K,(L.fs*1.6+pad
 function bakeBg(){const c=mk(W*K,H*K),x=c.getContext('2d');x.scale(K,K);const gr=x.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#14072e');gr.addColorStop(0.55,'#0b0620');gr.addColorStop(1,'#05030c');x.fillStyle=gr;x.fillRect(0,0,W,H);
   x.globalAlpha=0.18;x.strokeStyle='#3d2a6e';x.lineWidth=0.5;for(let y=BY-6,r=0;y<BY+ROWS*BH+10;y+=9,r++){x.beginPath();x.moveTo(BX-4,y);x.lineTo(BX+COLS*BW+4,y);x.stroke();for(let xx=BX-4+(r%2)*9;xx<BX+COLS*BW+4;xx+=18){x.beginPath();x.moveTo(xx,y);x.lineTo(xx,y+9);x.stroke();}}
   x.globalAlpha=1;const fl=x.createLinearGradient(0,H-90,0,H);fl.addColorStop(0,'rgba(79,227,255,0)');fl.addColorStop(1,'rgba(79,227,255,0.10)');x.fillStyle=fl;x.fillRect(0,H-90,W,90);return c;}
-function paintSofa(g,W,H,crown){const CH=crown?22:0;g.save();g.scale(W/104,H/(58+CH));g.translate(0,CH);
-  const R='#c8313f',Rl='#ef6a72',Rd='#7e1622',Rs='#4a0a12';
-  const rr=(x,y,w,h,r)=>{g.beginPath();g.roundRect(x,y,w,h,r);};
-  const lin=(x0,y0,x1,y1,stops)=>{const gr=g.createLinearGradient(x0,y0,x1,y1);stops.forEach(([o,c])=>gr.addColorStop(o,c));return gr;};
-  const rad=(x,y,r0,r1,stops)=>{const gr=g.createRadialGradient(x,y,r0,x,y,r1);stops.forEach(([o,c])=>gr.addColorStop(o,c));return gr;};
-  /* legs */
-  [10,24,78,92].forEach(x=>{g.beginPath();g.moveTo(x-1.8,48);g.lineTo(x+1.8,48);g.lineTo(x+1.1,57);g.lineTo(x-1.1,57);g.closePath();g.fillStyle=lin(x-2,0,x+2,0,[[0,'#3e1f0c'],[0.45,'#8a5428'],[1,'#2a1406']]);g.fill();});
-  /* base */
-  rr(3,40,98,10,3);g.fillStyle=lin(0,40,0,50,[[0,'#a52634'],[0.35,Rd],[1,Rs]]);g.fill();
-  g.strokeStyle='rgba(255,140,150,0.35)';g.lineWidth=0.7;g.beginPath();g.moveTo(6,41.2);g.lineTo(98,41.2);g.stroke();
-  /* backrest */
-  rr(10,4,84,30,7);g.fillStyle=lin(0,4,0,34,[[0,Rl],[0.18,R],[1,Rd]]);g.fill();
-  /* back cushions, tufted */
-  [[14,51],[53,90]].forEach(([a,b])=>{rr(a,8.5,b-a,23,5.5);g.fillStyle=rad((a+b)/2,14,2,24,[[0,'#f0767e'],[0.45,R],[1,'#8f1a28']]);g.fill();
-    g.strokeStyle='rgba(60,0,10,0.35)';g.lineWidth=0.8;g.stroke();
-    [[a+(b-a)*0.2,27.3],[a+(b-a)*0.8,27.3]].forEach(([x,y])=>{g.strokeStyle='rgba(70,5,15,0.4)';g.lineWidth=0.5;for(let k=0;k<4;k++){const an=k*Math.PI/2+0.6;g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(an)*2.8,y+Math.sin(an)*1.8);g.stroke();}
-      g.fillStyle=rad(x-0.4,y-0.4,0.2,1.6,[[0,'#ff9aa2'],[1,Rs]]);g.beginPath();g.arc(x,y,1.3,0,Math.PI*2);g.fill();});});
-  /* armrests, rolled tops */
-  [[8.5,1],[95.5,-1]].forEach(([cx,d])=>{rr(cx-8.5,19,17,31,3);g.fillStyle=lin(cx-8.5*d,0,cx+8.5*d,0,[[0,'#9c2030'],[0.35,R],[0.75,'#d9454f'],[1,Rd]]);g.fill();
-    g.beginPath();g.ellipse(cx,20,8.8,5.8,0,0,Math.PI*2);g.fillStyle=rad(cx-d*2.5,18.5,0.5,9,[[0,'#ff9aa0'],[0.35,Rl],[0.8,R],[1,Rd]]);g.fill();
-    g.strokeStyle='rgba(60,0,10,0.4)';g.lineWidth=0.6;g.beginPath();g.ellipse(cx,20.5,4.2,2.6,0,0,Math.PI*2);g.stroke();
-    g.fillStyle='rgba(40,0,8,0.35)';g.fillRect(cx-8.5,46,17,4);});
-  /* seat cushions */
-  [[16,52.5],[51.5,88]].forEach(([a,b])=>{rr(a,29.5,b-a,12.5,3.5);g.fillStyle=lin(0,29.5,0,42,[[0,'#f27a82'],[0.3,R],[0.7,'#a82434'],[1,Rd]]);g.fill();
-    g.strokeStyle='rgba(60,0,10,0.4)';g.lineWidth=0.7;g.stroke();
-    g.strokeStyle='rgba(255,170,175,0.35)';g.lineWidth=0.6;g.beginPath();g.moveTo(a+3,31.2);g.lineTo(b-3,31.2);g.stroke();});
-  /* velvet sheen */
-  g.globalCompositeOperation='source-atop';g.fillStyle=lin(0,0,104,58,[[0,'rgba(255,255,255,0.14)'],[0.5,'rgba(255,255,255,0)'],[1,'rgba(0,0,0,0.18)']]);g.fillRect(0,0,104,58);g.globalCompositeOperation='source-over';
-  /* face: angry eyes on the back cushions, thick brows, a grimace on the base */
-  [[32,19.5],[72,19.5]].forEach(([x,y])=>{g.beginPath();g.ellipse(x,y,6.8,5.2,0,0,Math.PI*2);g.fillStyle=rad(x-1.5,y-1.8,0.5,7.5,[[0,'#ffffff'],[0.7,'#f1ece8'],[1,'#c9bfbf']]);g.fill();
-    g.strokeStyle='rgba(60,0,10,0.6)';g.lineWidth=0.6;g.stroke();
-    g.beginPath();g.ellipse(x-2,y+1,2.9,3,0,0,Math.PI*2);g.fillStyle=rad(x-2.6,y+0.4,0.2,3.2,[[0,'#3a2b45'],[1,'#0c0710']]);g.fill();
-    g.fillStyle='#ffffff';g.beginPath();g.arc(x-3,y,0.9,0,Math.PI*2);g.fill();
-    /* upper lid, half closed: angry */
-    /* upper lid slanting down towards the nose: the angry look */
-    const dx=x<52?1:-1;g.save();g.beginPath();g.ellipse(x,y,6.8,5.2,0,0,Math.PI*2);g.clip();g.fillStyle=lin(0,y-6,0,y-1,[[0,'#a01e2c'],[1,'#c8313f']]);
-    g.beginPath();g.moveTo(x-8,y-7);g.lineTo(x+8,y-7);g.lineTo(x+7*dx>x?x+8:x-8,y-7);g.lineTo(x+7*dx,y-0.8);g.lineTo(x-7*dx,y-4.2);g.closePath();g.fill();g.restore();});
-  g.lineCap='round';g.strokeStyle=lin(0,9,0,16,[[0,'#2a0408'],[1,'#4a0a12']]);g.lineWidth=3.4;
-  g.beginPath();g.moveTo(23,10.5);g.quadraticCurveTo(31,11,39.5,15.5);g.stroke();g.beginPath();g.moveTo(81,10.5);g.quadraticCurveTo(73,11,64.5,15.5);g.stroke();
-  /* grimace */
-  rr(39,43,26,5.6,2.6);g.fillStyle='#24050b';g.fill();
-  rr(41,43.6,22,2.3,1);g.fillStyle=lin(0,43.6,0,46,[[0,'#ffffff'],[1,'#d9d2cc']]);g.fill();
-  g.strokeStyle='rgba(80,60,60,0.6)';g.lineWidth=0.4;for(let x=44.5;x<62;x+=3.6){g.beginPath();g.moveTo(x,43.6);g.lineTo(x,45.9);g.stroke();}
-  g.restore();}
-const CROWN=new Image();CROWN.src='/assets/giochi/icone/corona.webp';
+/*__SOFA__*/
+const CROWN=new Image();CROWN.src='/*__CROWN__*/';
 function bakeSofa(){const w=60,h=w*(58+22)/104,c=mk((w+16)*K,(h+16)*K),x=c.getContext('2d');x.scale(K,K);x.translate(8,8);x.shadowColor='rgba(255,61,110,0.9)';x.shadowBlur=10;paintSofa(x,w,h,true);
   x.shadowBlur=0;if(CROWN.complete&&CROWN.naturalWidth){const cw=w*0.33;x.drawImage(CROWN,w/2-cw/2,-h*0.02,cw,cw*CROWN.naturalHeight/CROWN.naturalWidth);}return {c,w,h};}
 CROWN.onload=()=>{if(K)SPR.sofa=bakeSofa();};
@@ -839,7 +602,7 @@ function nextMood(){audio();if(AC&&AC.state==='suspended')AC.resume();startGroov
 /* a back swipe pauses instead of leaving: one history entry of our own, added on a release (a real user gesture).
    In apps like Facebook the back gesture walks the page history first, so the first swipe lands here */
 let guard=false;
-function arm(){if(guard)return;try{history.pushState({mattoncini:1},'',location.href);guard=true;}catch(e){}}
+function arm(){if(guard)return;try{history.pushState({skanoid:1},'',location.href);guard=true;}catch(e){}}
 addEventListener('popstate',()=>{if(!guard)return;guard=false;if(st==='over'){history.back();return;}
   if(sheet.hidden){$('pauseNote').hidden=false;sheet.hidden=false;syncSeg();syncMusic();}});
 {for(const [id,k,,acc,re] of RNG){$(id).addEventListener('input',e=>{MS[k]=+e.target.value;if(acc)MS.scene='';musicChanged(false);if(re==='pad')repad(false);});
@@ -863,17 +626,7 @@ paddle={x:W/2,y:H-46,h:10,base:PADW[S.pad],w:PADW[S.pad],sq:0,hitT:-9};
 setSign(SIGNS[0]);showMood();addEventListener('resize',()=>{fit();placeOpt();});fit();placeOpt();
 if(document.fonts){document.fonts.load('30px "Tilt Neon"').then(()=>document.fonts.load('700 16px "Fredoka"')).then(()=>{bake();placeOpt();}).catch(()=>{});}
 newGame();let last=performance.now();
-window.__MATT={FCLOG,get bricks(){return bricks;},get balls(){return balls;},get boss(){return boss;},get st(){return st;},onReal,forecast,win,nextLevel,get lvl(){return lvl;},NLOG,get MS(){return MS;},catchCap,get paddle(){return paddle;},get t(){return t;},get chords(){return chords;}};
+window.__SKANOID={FCLOG,get bricks(){return bricks;},get balls(){return balls;},get boss(){return boss;},get st(){return st;},onReal,forecast,win,nextLevel,get lvl(){return lvl;},NLOG,get MS(){return MS;},catchCap,get paddle(){return paddle;},get t(){return t;},get chords(){return chords;}};
 function frame(now){let dt=Math.min(1/30,(now-last)/1000);last=now;if(slowT>0){slowT-=dt;dt*=slowF;}if(sheet.hidden&&!document.hidden)update(dt);if(!document.hidden)musicTick();draw();requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
 };
-
-(function(){var SNAP=[{"id": "e62a516a-e2de-425d-97fa-dabcf30f4026", "event_date": "2026-11-14", "event_time": "18:00:00", "venue": "Monkey's bar", "city": "Cugnan (BL)", "description": null, "is_published": true}, {"id": "f93c1503-53ec-42f1-83e0-1d42d595c403", "event_date": "2026-11-21", "event_time": "21:00:00", "venue": "Al Cantonet", "city": "Feltre ", "description": null, "is_published": true}, {"id": "1dad713d-caf0-4099-8215-166af5cd4d88", "event_date": "2026-11-28", "event_time": "16:00:00", "venue": "Al Chioschetto", "city": "Cimolais", "description": null, "is_published": true}, {"id": "a2d7f94c-5278-4003-b309-91f9f4fee539", "event_date": "2027-01-16", "event_time": null, "venue": "Locale Misterioso!", "city": "Visome", "description": "Data da confermare a breve", "is_published": true}, {"id": "4637dd92-6887-4536-9208-9b6a95b41205", "event_date": "2027-02-13", "event_time": null, "venue": "Bar Aurora", "city": "Peron di Sedico ", "description": "data da confermare", "is_published": true}],done=false,q=new URLSearchParams(location.search);
-  function go(ev){if(done)return;done=true;window.__GAME_DATA={events:ev,evento:q.get('evento')};MATTONCINI();}
-  var timer=setTimeout(function(){go(SNAP);},5000),fail=function(){clearTimeout(timer);go(SNAP);};
-  try{var sb=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY,{db:{schema:'td'}});
-    sb.from('site_events').select('id,event_date,event_time,venue,city,description,is_published').then(function(r){clearTimeout(timer);if(r.error||!r.data)return fail();go(r.data);},fail);}catch(e){fail();}
-})();
-</script>
-</body>
-</html>
