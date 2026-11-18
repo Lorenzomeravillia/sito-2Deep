@@ -9,8 +9,8 @@ const b64=f=>fs.readFileSync(f).toString('base64');
 const CLUE={n:3,img:'brioche',hook:['E A','COLAZIONE?'],hookH:'E A COLAZIONE?',v:['Le brioches','del Cantonet'],h:'Le brioches del Cantonet',sub:'CON CASTAGNE O ZUCCA'};
 const SEED=+(process.env.SEED||7),MAXT=110,AUDT=120;
 (async()=>{
-  execFileSync('python3',[REPO+'mattoncini/build.py','--artifact',D+'build'],{stdio:'ignore'});
-  let html=fs.readFileSync(D+'build/mattoncini_page.html','utf8');
+  execFileSync('python3',[REPO+'skanoid/build.py','--artifact',D+'build'],{stdio:'ignore'});
+  let html=fs.readFileSync(D+'build/skanoid_page.html','utf8');
   const rep=(a,b)=>{if(!html.includes(a))throw new Error('patch not found: '+a.slice(0,60));html=html.replace(a,b);};
   rep('AC=new (window.AudioContext||window.webkitAudioContext)();','AC=window.__OFF||new (window.AudioContext||window.webkitAudioContext)();');
   /* offline rendering: hold the value the voice really has at T instead of reading .value (not computed before rendering) */

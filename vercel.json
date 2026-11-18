@@ -12,6 +12,11 @@
       "source": "/locandina",
       "destination": "/libera",
       "permanent": true
+    },
+    {
+      "source": "/mattoncini",
+      "destination": "/skanoid",
+      "permanent": true
     }
   ]
 }
