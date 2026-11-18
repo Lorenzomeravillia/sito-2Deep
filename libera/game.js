@@ -240,7 +240,8 @@ function draw(){ensureHD();ctx=OUT;ctx.setTransform(K,0,0,K,0,0);ctx.imageSmooth
     ctx.save();ctx.globalAlpha=Math.max(0,a);ctx.translate(b.x,y+3.5*p.sc);ctx.scale(s,s);ctx.translate(-b.x,-(y+3.5*p.sc));
     ctx.fillStyle='rgba(7,5,15,0.82)';ctx.fillRect(b.x0,b.y0,b.x1-b.x0,b.y1-b.y0);ctext(p.txt,b.x,y,p.sc,p.col);ctx.restore();}
   ctx.restore();hud();
-  if(G.state==='intro')intro();else if(G.state==='win')ending(true);else if(G.state==='over')ending(false);}
+  if(G.state==='intro')intro();else if(G.state==='win')ending(true);else if(G.state==='over')ending(false);
+  if(paused){card(196,74);ctext('PAUSA',TW/2,208,2,C.yel);ctext('TOCCA PER RIPRENDERE',TW/2,236,1,C.white,{outline:null});ctext('INDIETRO ANCORA PER USCIRE',TW/2,250,1,C.cyan,{outline:null});}}
 /* cells not yet reached by the wave are painted as sea again; the front shines gold */
 function drawWave(){if(!WAVE)return;const u=(G.t-WAVE.t0)/WAVE.dur;if(u>=1.25){WAVE=null;return;}const front=u*WAVE.max,g=COVER.getContext('2d'),id=g.createImageData(COLS,ROWS),d=id.data;
   WAVE.cells.forEach((i,k)=>{const dd=WAVE.dist[k],j=i*4;if(dd>front){d[j]=13;d[j+1]=16;d[j+2]=48;d[j+3]=255;}else if(front-dd<5){const a=1-(front-dd)/5;d[j]=255;d[j+1]=230;d[j+2]=150;d[j+3]=Math.round(200*a);}});
@@ -288,13 +289,18 @@ function audioOn(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioCo
 
 /* ---- input: swipe sets the direction, a tap stops; arrows / WASD and space on a keyboard ---- */
 function setDir(dx,dy){if(G.state!=='play')return;if(G.draw&&dx===-G.dx&&dy===-G.dy&&(dx||dy))return;G.dx=dx;G.dy=dy;}
-let sw=null;
-cv.addEventListener('pointerdown',e=>{audioOn();e.preventDefault();if(G.state==='intro'){G.state='play';return;}sw={x:e.clientX,y:e.clientY,moved:false,id:e.pointerId};try{cv.setPointerCapture(e.pointerId);}catch(_){}});
+let sw=null,paused=false,guard=false;
+/* a back swipe pauses instead of leaving: one history entry of our own, added on a release while playing.
+   In apps like Facebook the back gesture walks the page history first, so the first swipe lands here */
+function arm(){if(guard||G.state!=='play')return;try{history.pushState({libera:1},'',location.href);guard=true;}catch(_){}}
+addEventListener('popstate',()=>{if(!guard)return;guard=false;if(G.state==='play'){paused=true;sw=null;}else history.back();});
+cv.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});cv.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+cv.addEventListener('pointerdown',e=>{audioOn();e.preventDefault();if(paused){paused=false;return;}if(G.state==='intro'){G.state='play';return;}sw={x:e.clientX,y:e.clientY,moved:false,id:e.pointerId};try{cv.setPointerCapture(e.pointerId);}catch(_){}});
 cv.addEventListener('pointermove',e=>{if(!sw||e.pointerId!==sw.id)return;const dx=e.clientX-sw.x,dy=e.clientY-sw.y,d=Math.max(Math.abs(dx),Math.abs(dy));
   if(d>=10){if(Math.abs(dx)>Math.abs(dy))setDir(Math.sign(dx),0);else setDir(0,Math.sign(dy));sw.x=e.clientX;sw.y=e.clientY;sw.moved=true;}});
-const endSw=e=>{if(!sw||e.pointerId!==sw.id)return;if(!sw.moved&&G.state==='play'){G.dx=G.dy=0;}sw=null;};
+const endSw=e=>{arm();if(!sw||e.pointerId!==sw.id)return;if(!sw.moved&&G.state==='play'){G.dx=G.dy=0;}sw=null;};
 cv.addEventListener('pointerup',endSw);cv.addEventListener('pointercancel',()=>{sw=null;});
-addEventListener('keydown',e=>{const k=e.key;audioOn();if(G.state==='intro'&&(k===' '||k==='Enter'||k.startsWith('Arrow'))){G.state='play';e.preventDefault();return;}
+addEventListener('keydown',e=>{const k=e.key;audioOn();if(paused){paused=false;e.preventDefault();return;}if(G.state==='intro'&&(k===' '||k==='Enter'||k.startsWith('Arrow'))){G.state='play';e.preventDefault();return;}
   const m={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1],a:[-1,0],d:[1,0],w:[0,-1],s:[0,1]}[k];if(m){setDir(m[0],m[1]);e.preventDefault();}else if(k===' '){G.dx=G.dy=0;e.preventDefault();}});
 
 /* ---- end panel ---- */
@@ -319,7 +325,7 @@ let gx=null;GAL.addEventListener('pointerdown',e=>{gx=e.clientX;});GAL.addEventL
 addEventListener('resize',()=>{if(!GAL.hidden)galPlace();});
 
 /* ---- loop ---- */
-let last=0;function loop(ts){const dt=Math.min(0.05,(ts-(last||ts))/1000);last=ts;let a=dt;while(a>0){const s=Math.min(a,1/120);update(s);a-=s;}draw();requestAnimationFrame(loop);}
+let last=0;function loop(ts){const dt=Math.min(0.05,(ts-(last||ts))/1000);last=ts;let a=paused?0:dt;while(a>0){const s=Math.min(a,1/120);update(s);a-=s;}draw();requestAnimationFrame(loop);}
 addEventListener('resize',()=>{fit();placeSongBtn();});newGame();fit();requestAnimationFrame(loop);
 rebuildReveal();
 window.__X={G,grid,update,draw,closeArea,setDir,mus:()=>({buf:!!SONGBUF,midi:!!(SONG&&SONG.midi),name:SONG&&SONG.name,layers:MLG.length,on:MLG.map(g=>+g.gain.value.toFixed(2)),lay:LAYERS}),best:()=>BEST};

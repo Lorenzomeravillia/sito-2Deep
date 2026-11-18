@@ -16,7 +16,10 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);overfl
 #wrap{position:relative;height:calc(100% - 44px - env(safe-area-inset-top,0px) - max(12px, env(safe-area-inset-bottom,0px)));display:flex;align-items:center;justify-content:center;touch-action:none}
 canvas{display:block;touch-action:none}
 #opt{position:absolute;font:600 12px var(--ui);letter-spacing:.04em;color:var(--dim);background:rgba(18,10,38,.75);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
-#opt:focus-visible,.seg button:focus-visible,#close:focus-visible,.btns button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+#mood{position:absolute;font:600 12px var(--ui);letter-spacing:.04em;color:var(--cyan);background:rgba(18,10,38,.75);border:1px solid rgba(79,227,255,.45);border-radius:999px;padding:7px 13px;cursor:pointer;touch-action:none;box-shadow:0 0 12px rgba(79,227,255,.18)}
+#mood .ic{color:var(--gold)}
+#pauseNote{color:var(--gold)}
+#opt:focus-visible,#mood:focus-visible,.seg button:focus-visible,#close:focus-visible,.btns button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 #sheet{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(5,3,12,.72)}
 #sheet[hidden],[hidden]{display:none!important}
 #sheet .box{width:min(360px,100%);max-height:calc(100% - 24px);overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 0 40px rgba(255,95,210,.18);box-sizing:border-box}
@@ -55,10 +58,12 @@ canvas{display:block;touch-action:none}
 <!--SITEBAR-->
 <div id="wrap">
   <canvas id="c" role="img" aria-label="Gioco: rompi i mattoncini con la pallina, accendi l'insegna e scopri la prossima serata dei 2Deep"></canvas>
+  <button id="mood" type="button" aria-label="Cambia atmosfera musicale"><span class="ic" aria-hidden="true">♫</span> Atmosfera: <span id="moodName">2Deep</span></button>
   <button id="opt" type="button">Opzioni</button>
   <div id="sheet" hidden>
     <div class="box" role="dialog" aria-label="Opzioni">
       <h2>Opzioni</h2>
+      <p id="pauseNote" hidden>Gioco in pausa: è arrivato un gesto "indietro". Tocca Gioca per riprendere da dove eri, oppure torna indietro un'altra volta per uscire.</p>
       <p>Trascina il dito in qualsiasi punto per muovere la racchetta, tocca per lanciare. Ogni mattoncino suona una nota: tra un rimbalzo e l'altro la pallina compone una frase che si chiude con l'ultimo colpo.</p>
       <div class="row"><span>VELOCITÀ PALLINA</span><div class="seg" data-k="speed"><button id="sp1" type="button" data-v="lenta">Lenta</button><button id="sp2" type="button" data-v="normale">Normale</button><button id="sp3" type="button" data-v="veloce">Veloce</button></div></div>
       <div class="row"><span>RACCHETTA</span><div class="seg" data-k="pad"><button id="pd1" type="button" data-v="S">Corta</button><button id="pd2" type="button" data-v="M">Media</button><button id="pd3" type="button" data-v="L">Lunga</button></div></div>
@@ -120,7 +125,7 @@ canvas{display:block;touch-action:none}
         <div class="btns"><button id="mCopy" type="button">Copia le impostazioni</button></div>
         <textarea id="mCopyTxt" readonly hidden aria-label="Impostazioni della musica"></textarea>
       </details>
-      <p>Capsule: L racchetta larga, S pallina lenta, M tre palline, V vita in più.</p>
+      <p>Capsule: M tre palline (la più frequente), L racchetta larga (fino a due insieme), S pallina lenta, V vita in più. Il pulsante Atmosfera cambia l'accompagnamento a ogni tocco.</p>
       <button id="close" type="button">Gioca</button>
     </div>
   </div>
