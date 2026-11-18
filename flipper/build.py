@@ -36,6 +36,8 @@ def game_js(store):
 
 
 head = H('head.html')
+# fonts: served by the site itself (no call to Google); the claude.ai artifact cannot reach /assets, so it keeps Google Fonts
+head = head.replace('<!--FONTS-->', '<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&display=swap">' if '--artifact' in sys.argv else "<style>@font-face{font-family:'Silkscreen';font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/silkscreen-400.woff2) format('woff2')}</style>")
 # the way back to the site (shared with Libera), first thing in the body
 SITEBAR = H('sitebar.html') + H('nozoom.html')  # the bar back to the site, and no page zoom
 cut = head.index('<!--SITEBAR-->')

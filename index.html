@@ -9,7 +9,11 @@
   <meta name="description" content="2Deep è un duo acustico che reinterpreta canzoni con carattere — pop, rock, soul, reggae, italiana — per pub, enoteche, sagre ed eventi tra Belluno, Treviso nord e Pordenone. Setup minimo, energia vera.">
   <meta name="keywords" content="duo acustico Belluno, cover acustiche, musica live carattere, duo ska reggae acustico, musica dal vivo Belluno, musica live Treviso, band acustica Pordenone, duo musicale Veneto, duo musicale Friuli, musica pub birrerie, live music eventi privati, ska reggae acustico Belluno, 2Deep duo">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://sito-2-deep.vercel.app/">
+  <link rel="canonical" href="https://www.2deep.it/">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0c1810">
   <meta name="theme-color" content="#0c1810">
 
   <!-- Geo meta -->
@@ -18,10 +22,11 @@
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://sito-2-deep.vercel.app/">
+  <meta property="og:url" content="https://www.2deep.it/">
   <meta property="og:title" content="2Deep — Acustico che graffia">
   <meta property="og:description" content="Duo acustico che reinterpreta canzoni con carattere. Live per locali, sagre ed eventi tra Belluno, Treviso nord e Pordenone.">
-  <meta property="og:image" content="https://jvcvxzampxopvihahwbh.supabase.co/storage/v1/object/public/td-site/hero/img_3378.jpeg">
+  <meta property="og:image" content="https://jvcvxzampxopvihahwbh.supabase.co/storage/v1/object/public/td-site/hero/dd765530-ca9c-4af0-9fb8-1c2bca60dcee.jpeg">
+  <meta property="og:image:alt" content="Katia e Lorenzo, i 2Deep, dal vivo">
   <meta property="og:locale" content="it_IT">
 
   <!-- Structured data: MusicGroup locale -->
@@ -31,6 +36,8 @@
     "@type": "MusicGroup",
     "name": "2Deep",
     "description": "Duo acustico ska-reggae per locali, pub, enoteche, sagre ed eventi privati.",
+    "url": "https://www.2deep.it/",
+    "sameAs": ["https://www.instagram.com/2deeplivemusic/"],
     "genre": ["Ska", "Reggae", "Acoustic"],
     "url": "https://sito-2-deep.vercel.app/",
     "areaServed": [
@@ -49,8 +56,10 @@
     ]
   }
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <!-- fonts served by the site itself: no call to Google -->
+  <link rel="preload" href="/assets/fonts/playfair-display-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/dm-sans-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <style>@font-face{font-family:'Playfair Display';font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/playfair-display-latin-400-normal.woff2) format('woff2')}@font-face{font-family:'Playfair Display';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/playfair-display-latin-700-normal.woff2) format('woff2')}@font-face{font-family:'Playfair Display';font-style:italic;font-weight:400;font-display:swap;src:url(/assets/fonts/playfair-display-latin-400-italic.woff2) format('woff2')}@font-face{font-family:'DM Sans';font-style:normal;font-weight:300;font-display:swap;src:url(/assets/fonts/dm-sans-latin-300-normal.woff2) format('woff2')}@font-face{font-family:'DM Sans';font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/dm-sans-latin-400-normal.woff2) format('woff2')}@font-face{font-family:'DM Sans';font-style:normal;font-weight:500;font-display:swap;src:url(/assets/fonts/dm-sans-latin-500-normal.woff2) format('woff2')}</style>
   <style>
     :root {
       --bg:#0c1810;--bg2:#101d12;--green:#1e4020;--amber:#c8922a;
@@ -73,7 +82,8 @@
     .nav-links a:hover{color:var(--amber)}
     .nav-cta{background:var(--amber)!important;color:var(--bg)!important;padding:.45rem 1.1rem;border-radius:2px}
     .nav-cta:hover{background:#b07d20!important}
-    .nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;z-index:102;position:relative}
+    .nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;z-index:102;position:relative;background:none;border:0;-webkit-appearance:none;appearance:none}
+    .nav-hamburger:focus-visible,.mobile-menu-close:focus-visible{outline:2px solid var(--amber);outline-offset:4px}
     .nav-hamburger span{width:24px;height:2px;background:var(--amber);transition:transform .3s,opacity .3s}
     .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
     .nav-hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
@@ -229,6 +239,13 @@
     .video-card:hover{border-color:rgba(200,146,42,.25)}
     .video-thumb{position:relative;padding-bottom:56.25%;overflow:hidden}
     .video-thumb iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+    /* the video loads only when tapped: lighter page, no YouTube cookies before play */
+    .yt-facade{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;cursor:pointer;background:#000 center/cover no-repeat}
+    .yt-facade::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(0,0,0,.45))}
+    .yt-facade span{position:absolute;left:50%;top:50%;width:68px;height:48px;margin:-24px 0 0 -34px;border-radius:12px;background:rgba(200,146,42,.92);transition:transform .2s}
+    .yt-facade span::after{content:"";position:absolute;left:27px;top:14px;border-style:solid;border-width:10px 0 10px 17px;border-color:transparent transparent transparent #0c1810}
+    .yt-facade:hover span{transform:scale(1.08)}
+    .yt-facade:focus-visible{outline:2px solid var(--amber);outline-offset:-4px}
     .video-info{padding:1rem 1.2rem}
     .video-info h3{font-family:var(--serif);font-weight:400;font-size:1.05rem;color:var(--white);margin-bottom:.3rem}
     .video-info p{font-size:.82rem;color:var(--gray);line-height:1.6}
@@ -314,9 +331,9 @@
     <li><a href="#repertorio" onclick="closeNav()">Repertorio</a></li>
     <li><a href="#contatti" class="nav-cta" onclick="closeNav()">Contattaci</a></li>
   </ul>
-  <div class="nav-hamburger" id="hamburger" onclick="toggleNav()">
+  <button type="button" class="nav-hamburger" id="hamburger" onclick="toggleNav()" aria-label="Apri il menu" aria-expanded="false" aria-controls="mobileMenu">
     <span></span><span></span><span></span>
-  </div>
+  </button>
 </nav>
 
 <!-- Mobile menu drawer — fuori dalla nav per evitare stacking context issues -->
@@ -633,7 +650,7 @@
 
 <footer>
   <img id="footer-logo-img" class="footer-logo" src="" alt="2Deep" style="display:none">
-  <p data-content="footer.copy">© 2025 2Deep — Ska Reggae Acustico · Tutti i diritti riservati</p>
+  <p data-content="footer.copy">© 2026 2Deep — Ska Reggae Acustico · Tutti i diritti riservati</p>
 </footer>
 
 <a class="wa-float" href="https://wa.me/393488414630?text=Ciao%202Deep!%20Vorrei%20info%20per%20una%20serata%20nel%20mio%20locale." target="_blank" rel="noopener noreferrer" aria-label="Contattaci su WhatsApp" data-href="contact.whatsapp_float">
@@ -650,12 +667,14 @@
     const isOpen = menu.classList.toggle('open');
     overlay.classList.toggle('open', isOpen);
     burger.classList.toggle('open', isOpen);
+    burger.setAttribute('aria-expanded', String(isOpen));
     document.body.style.overflow = isOpen ? 'hidden' : '';
   }
   function closeNav(){
     document.getElementById('mobileMenu').classList.remove('open');
     document.getElementById('menuOverlay').classList.remove('open');
     document.getElementById('hamburger').classList.remove('open');
+    document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
   }
 
@@ -695,7 +714,6 @@
     }, { rootMargin: '-40% 0px -55% 0px' });
     Object.keys(sectionMap).forEach(id => { const el = document.getElementById(id); if (el) spy.observe(el); });
   })();
-  function handleForm(e){e.preventDefault();const btn=e.target.querySelector('button');btn.textContent='Richiesta inviata ✓';btn.style.background='#1e4020';setTimeout(()=>{e.target.reset();btn.textContent='Invia richiesta';btn.style.background=''},3500)}
   document.querySelectorAll('.member-card').forEach(card=>{
     card.addEventListener('click',()=>card.classList.toggle('flipped'));
     card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();card.classList.toggle('flipped');}});
@@ -743,7 +761,7 @@
     }).observe(body,{childList:true,subtree:true});
   })();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js" defer></script>
 <script src="config.js" defer></script>
 <script src="contentLoader.js" defer></script>
 </body>

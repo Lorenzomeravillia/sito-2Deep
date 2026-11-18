@@ -18,8 +18,11 @@
   (content || []).forEach(item => {
     const key = `${item.section}.${item.content_key}`;
     document.querySelectorAll(`[data-content="${key}"]`).forEach(el => {
-      if (item.content_type === 'html') el.innerHTML = item.content_value;
-      else el.textContent = item.content_value;
+      let val = item.content_value;
+      /* the copyright year follows the calendar */
+      if (key === 'footer.copy') val = val.replace(/©\s*\d{4}/, '© ' + new Date().getFullYear());
+      if (item.content_type === 'html') el.innerHTML = val;
+      else el.textContent = val;
     });
 
     // Href handling
@@ -43,18 +46,20 @@
   });
 
   // ── Images ──
+  /* a description for every photo even when the panel leaves it empty: screen readers and Google Images */
+  const ALT = { hero: 'Katia e Lorenzo, i 2Deep, dal vivo', katia: 'Katia dei 2Deep', lorenzo: 'Lorenzo dei 2Deep', sound: 'I 2Deep, accordati a 432 Hz', logo: '2Deep' };
   (images || []).forEach(img => {
     const url = `${BUCKET_URL}/${img.filename}`;
     // Hero photo (split layout)
     if (img.role === 'hero') {
       const heroImg = document.getElementById('hero-photo');
       const heroPlaceholder = document.getElementById('hero-photo-placeholder');
-      if (heroImg) { heroImg.src = url; heroImg.style.display = 'block'; }
+      if (heroImg) { heroImg.src = url; heroImg.alt = img.alt_text || ALT.hero; heroImg.style.display = 'block'; }
       if (heroPlaceholder) heroPlaceholder.style.display = 'none';
     }
     // Member avatar
     document.querySelectorAll(`[data-img-role="${img.role}"]`).forEach(el => {
-      el.innerHTML = `<img src="${url}" alt="${img.alt_text || ''}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      el.innerHTML = `<img src="${url}" alt="${img.alt_text || ALT[img.role] || ''}" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
     });
     // Logo (navbar + footer)
     if (img.role === 'logo') {
@@ -69,7 +74,7 @@
     if (img.role === 'sound') {
       const imgEl = document.getElementById('sound-circle-img');
       const fallback = document.getElementById('sound-circle-fallback');
-      if (imgEl) { imgEl.src = url; imgEl.style.display = 'block'; }
+      if (imgEl) { imgEl.src = url; imgEl.alt = img.alt_text || ALT.sound; imgEl.style.display = 'block'; }
       if (fallback) fallback.style.display = 'none';
     }
   });
@@ -97,8 +102,16 @@
       const card = document.createElement('div');
       card.className = 'video-card';
       card.innerHTML = `
-        <div class="video-thumb"><iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen loading="lazy"></iframe></div>
+        <div class="video-thumb"><button type="button" class="yt-facade" style="background-image:url(https://i.ytimg.com/vi/${ytId}/hqdefault.jpg)" aria-label="Guarda il video${v.title ? ': ' + v.title.replace(/"/g, '') : ''}"><span></span></button></div>
         <div class="video-info">${v.title ? `<h3>${v.title}</h3>` : ''}${v.description ? `<p>${v.description}</p>` : ''}</div>`;
+      card.querySelector('.yt-facade').addEventListener('click', e => {
+        const f = document.createElement('iframe');
+        f.src = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0`;
+        f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+        f.allowFullscreen = true;
+        f.title = v.title || 'Video dei 2Deep';
+        e.currentTarget.replaceWith(f);
+      });
       vidGrid.appendChild(card);
     });
     document.getElementById('video').style.display = '';
@@ -108,6 +121,20 @@
   if (events && events.length) {
     const today = new Date(); today.setHours(0,0,0,0);
     const future = events.filter(ev => new Date(ev.event_date) >= today);
+    /* the upcoming dates also as structured data, so search engines can show them */
+    try {
+      const ld = future.filter(ev => ev.venue && ev.city && !/misterios/i.test(ev.venue)).map(ev => ({
+        '@context': 'https://schema.org', '@type': 'MusicEvent',
+        name: '2Deep live · ' + ev.venue,
+        startDate: ev.event_date + (ev.event_time ? 'T' + ev.event_time.slice(0, 5) : ''),
+        eventStatus: 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        location: { '@type': 'Place', name: ev.venue, address: ev.city.trim() },
+        performer: { '@type': 'MusicGroup', name: '2Deep', url: 'https://www.2deep.it/' },
+        url: 'https://www.2deep.it/#events-section'
+      }));
+      if (ld.length) { const s = document.createElement('script'); s.type = 'application/ld+json'; s.textContent = JSON.stringify(ld); document.head.appendChild(s); }
+    } catch (e) {}
     const past   = events.filter(ev => new Date(ev.event_date) <  today).reverse();
 
     function buildEventItem(ev, isPast) {
