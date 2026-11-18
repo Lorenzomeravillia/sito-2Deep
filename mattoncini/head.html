@@ -1,0 +1,91 @@
+<title>Mattoncini · 2Deep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Tilt+Neon&display=swap">
+<style>
+/* One game screen under the site bar: 9:16 canvas centred, options in a sheet over it. Single dark look by choice: a neon sign in a night bar. */
+:root{
+  --bg:#05030c; --panel:#120a26; --line:#33245c; --ink:#f6f0ff; --dim:#a99cc8;
+  --pink:#ff5fd2; --cyan:#4fe3ff; --gold:#ffd36b;
+  --ui:'Fredoka', 'Trebuchet MS', system-ui, sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);overflow:hidden;overscroll-behavior:none;padding:0 max(16px,env(safe-area-inset-left,0px)) 0 max(16px,env(safe-area-inset-right,0px));-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#sitebar{margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#wrap{position:relative;height:calc(100% - 44px - env(safe-area-inset-top,0px) - max(12px, env(safe-area-inset-bottom,0px)));display:flex;align-items:center;justify-content:center;touch-action:none}
+canvas{display:block;touch-action:none}
+#opt{position:absolute;font:600 12px var(--ui);letter-spacing:.04em;color:var(--dim);background:rgba(18,10,38,.75);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
+#opt:focus-visible,.seg button:focus-visible,#close:focus-visible,.btns button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+#sheet{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(5,3,12,.72)}
+#sheet[hidden],[hidden]{display:none!important}
+#sheet .box{width:min(360px,100%);max-height:calc(100% - 24px);overflow-y:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 0 40px rgba(255,95,210,.18);box-sizing:border-box}
+#sheet h2{margin:0;font:700 18px var(--ui);color:var(--pink)}
+#sheet p{margin:0;font:500 13px/1.5 var(--ui);color:var(--dim)}
+.row{display:flex;flex-direction:column;gap:6px}
+.row span{font:600 11px var(--ui);letter-spacing:.08em;color:var(--dim)}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;min-width:0;font:600 13px var(--ui);color:var(--ink);background:#0b0619;border:1px solid var(--line);border-radius:10px;padding:9px 4px;cursor:pointer}
+.seg button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan);background:#0c1a2b}
+#close{font:700 15px var(--ui);color:#1a0f00;background:var(--gold);border:0;border-radius:12px;padding:12px;cursor:pointer}
+.lab{display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);padding-top:14px}
+.lab h3{margin:0;font:700 15px var(--ui);color:var(--cyan)}
+.rng{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;font:500 13px var(--ui);color:var(--ink)}
+.rng input{grid-column:1 / -1;width:100%;accent-color:var(--cyan)}
+.rng output{font:600 12px var(--ui);color:var(--cyan);font-variant-numeric:tabular-nums}
+.chk{display:flex;gap:8px;align-items:center;font:500 13px var(--ui);color:var(--ink)}
+.chk input{width:18px;height:18px;accent-color:var(--cyan)}
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btns button{flex:1;min-width:0;font:600 13px var(--ui);color:var(--ink);background:#0b0619;border:1px solid var(--line);border-radius:10px;padding:9px 6px;cursor:pointer}
+#sheet .box{touch-action:pan-y}
+#mCopyTxt{width:100%;min-height:60px;font:12px ui-monospace,monospace;background:#0b0619;color:var(--dim);border:1px solid var(--line);border-radius:8px;box-sizing:border-box}
+</style>
+<!--SITEBAR-->
+<div id="wrap">
+  <canvas id="c" role="img" aria-label="Gioco: rompi i mattoncini con la pallina, accendi l'insegna e scopri la prossima serata dei 2Deep"></canvas>
+  <button id="opt" type="button">Opzioni</button>
+  <div id="sheet" hidden>
+    <div class="box" role="dialog" aria-label="Opzioni">
+      <h2>Opzioni</h2>
+      <p>Trascina il dito in qualsiasi punto per muovere la racchetta, tocca per lanciare. Ogni mattoncino suona una nota: tra un rimbalzo e l'altro la pallina compone una frase che si chiude con l'ultimo colpo.</p>
+      <div class="row"><span>VELOCITÀ PALLINA</span><div class="seg" data-k="speed"><button id="sp1" type="button" data-v="lenta">Lenta</button><button id="sp2" type="button" data-v="normale">Normale</button><button id="sp3" type="button" data-v="veloce">Veloce</button></div></div>
+      <div class="row"><span>RACCHETTA</span><div class="seg" data-k="pad"><button id="pd1" type="button" data-v="S">Corta</button><button id="pd2" type="button" data-v="M">Media</button><button id="pd3" type="button" data-v="L">Lunga</button></div></div>
+      <div class="row"><span>ACCORDATURA</span><div class="seg" data-k="tune"><button id="tn1" type="button" data-v="432">La a 432 Hz</button><button id="tn2" type="button" data-v="440">La a 440 Hz</button></div></div>
+      <p>Noi suoniamo a 432 Hz. Prova a passare dall'una all'altra mentre la musica va, e ascolta.</p>
+      <div class="lab lab-only" hidden>
+        <h3>Laboratorio musica</h3>
+        <p>La musica continua mentre sei qui, il gioco è in pausa: le modifiche si sentono subito.</p>
+        <div class="row"><span>NOTE DEI MATTONCINI</span><div class="seg" data-k="quant"><button id="qt1" type="button" data-v="tempo">A tempo</button><button id="qt2" type="button" data-v="libero">Libere</button></div></div>
+        <label class="rng" for="mTransT">Durata della dissolvenza tra accordi<output id="mTransTV"></output><input id="mTransT" type="range" min="0.3" max="8" step="0.1"></label>
+        <label class="rng" for="mAuto">Cambio automatico ogni<output id="mAutoV"></output><input id="mAuto" type="range" min="2" max="40" step="1"></label>
+        <label class="chk" for="mPaddle"><input id="mPaddle" type="checkbox">La racchetta cambia accordo</label>
+        <label class="rng" for="mGap">Con la racchetta, non prima di<output id="mGapV"></output><input id="mGap" type="range" min="0" max="30" step="1"></label>
+        <div class="row"><span>GIRO DI ACCORDI</span><div class="seg" data-mk="prog"><button id="mpg1" type="button" data-v="spa">Spa, senza dominante</button><button id="mpg2" type="button" data-v="tappeto">Tappeto Semplice</button></div></div>
+        <div class="btns"><button id="mNow" type="button">Cambia accordo adesso</button><button id="mReset" type="button">Valori iniziali</button></div>
+        <div class="row"><span>VOCI DEL TAPPETO</span>
+          <div class="vgrid">
+            <label class="chk" for="mv_sub"><input id="mv_sub" type="checkbox" data-v="sub">Basso</label>
+            <label class="chk" for="mv_drone"><input id="mv_drone" type="checkbox" data-v="drone">Bordone</label>
+            <label class="chk" for="mv_root"><input id="mv_root" type="checkbox" data-v="root">Fondamentale</label>
+            <label class="chk" for="mv_third"><input id="mv_third" type="checkbox" data-v="third">Terza</label>
+            <label class="chk" for="mv_fifth"><input id="mv_fifth" type="checkbox" data-v="fifth">Quinta</label>
+            <label class="chk" for="mv_ninth"><input id="mv_ninth" type="checkbox" data-v="ninth">Nona</label>
+            <label class="chk" for="mv_sixth"><input id="mv_sixth" type="checkbox" data-v="sixth">Sesta</label>
+            <label class="chk" for="mv_seventh"><input id="mv_seventh" type="checkbox" data-v="seventh">Settima</label>
+            <label class="chk" for="mv_high"><input id="mv_high" type="checkbox" data-v="high">Ottava alta</label>
+          </div></div>
+        <label class="chk" for="mEnrich"><input id="mEnrich" type="checkbox">Le voci entrano man mano che si accende l'insegna</label>
+        <label class="rng" for="mBpm">Tempo di partenza<output id="mBpmV"></output><input id="mBpm" type="range" min="60" max="120" step="1"></label>
+        <label class="chk" for="mAccel"><input id="mAccel" type="checkbox">Il tempo accelera con la pallina</label>
+        <label class="rng" for="mVolPad">Volume tappeto<output id="mVolPadV"></output><input id="mVolPad" type="range" min="0" max="1.5" step="0.05"></label>
+        <label class="rng" for="mVolDrum">Volume percussioni<output id="mVolDrumV"></output><input id="mVolDrum" type="range" min="0" max="1.5" step="0.05"></label>
+        <label class="rng" for="mVolNote">Volume note della pallina<output id="mVolNoteV"></output><input id="mVolNote" type="range" min="0" max="1.5" step="0.05"></label>
+        <div class="btns"><button id="mCopy" type="button">Copia le impostazioni</button></div>
+        <textarea id="mCopyTxt" readonly hidden aria-label="Impostazioni della musica"></textarea>
+      </div>
+      <p>Capsule: L racchetta larga, S pallina lenta, M tre palline, V vita in più.</p>
+      <button id="close" type="button">Gioca</button>
+    </div>
+  </div>
+</div>
