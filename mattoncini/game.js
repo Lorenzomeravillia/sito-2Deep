@@ -221,7 +221,7 @@ function waitMusic(i,T){if(waitStart<0){waitStart=i;waitRest=6;}const k=i-waitSt
   waitQ=plan.map((o,j)=>{let m=cand[clamp(b0+o,0,cand.length-1)];if(j===n-1){let r=null;for(let x=m-7;x<=m+7;x++)if(((x%12)+12)%12===end.root&&(r==null||Math.abs(x-m)<Math.abs(r-m)))r=x;if(r!=null)m=r;}return m;});
   if(n>4&&Math.random()<0.5)waitQ.splice(2,0,null);
   waitRest=4+Math.floor(Math.random()*5);const m=waitQ.shift();voice('bell',m,T,0.4,1.6);}
-function schedule(i,T){if(ending&&st==='win'){waitMusic(i,T);return;}
+function schedule(i,T){if(moodPending&&i%16===0)applyMoodAt(T);if(ending&&st==='win'){waitMusic(i,T);return;}
   if(i%4===0&&!ending){const since=T-lastChangeT,hold=cadence&&curChord().d===preD();
     if(!hold&&((chordReq&&MS.paddle)||since>=MS.auto)){const c=nextChord();if(c.name!==curChord().name){chords.push({t:T,c});if(chords.length>16)chords.shift();setPad(c,T);}lastChangeT=T;chordReq=false;}}
   drums(i,T);}
@@ -337,13 +337,13 @@ function spawnBoss(){const hp=6+2*(lvl-1);boss={x:-40,y:BY+ROWS*BH+44,w:56,h:42,
 let down=null;
 cv.addEventListener('pointerdown',e=>{audio();if(AC&&AC.state==='suspended')AC.resume();startGroove();down={id:e.pointerId,t:performance.now(),moved:0,lx:e.clientX};cv.setPointerCapture(e.pointerId);e.preventDefault();});
 cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&!down){const r=cv.getBoundingClientRect();paddle.x=(e.clientX-r.left)/scale;clampPaddle();return;}
-  if(!down||e.pointerId!==down.id)return;paddle.x+=(e.clientX-down.lx)/scale*1.15;down.moved+=Math.abs(e.clientX-down.lx);down.lx=e.clientX;clampPaddle();e.preventDefault();});
-moodB.addEventListener('pointerdown',e=>{down={id:e.pointerId,t:performance.now(),moved:0,lx:e.clientX,mood:true};try{cv.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();});
+  if(!down||e.pointerId!==down.id)return;if(down.mood){down.my+=Math.abs(e.clientY-down.ly);down.ly=e.clientY;}paddle.x+=(e.clientX-down.lx)/scale*1.15;down.moved+=Math.abs(e.clientX-down.lx);down.lx=e.clientX;clampPaddle();e.preventDefault();});
+moodB.addEventListener('pointerdown',e=>{down={id:e.pointerId,t:performance.now(),moved:0,lx:e.clientX,mood:true,my:0,ly:e.clientY};try{cv.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();});
 moodB.addEventListener('click',e=>{if(e.detail===0)nextMood();});
 /* touch defaults off on the game surface: no browser gesture starts from a drag on the canvas */
 for(const el of [cv,moodB]){el.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});el.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});}
-cv.addEventListener('pointerup',e=>{if(!down)return;const tap=down.moved<10&&performance.now()-down.t<350,fromMood=down.mood;down=null;arm();
-  if(fromMood){if(tap)nextMood();return;}
+cv.addEventListener('pointerup',e=>{if(!down)return;const tap=down.moved<10&&performance.now()-down.t<350,fromMood=down.mood,still=down.moved+(down.my||0)<14;down=null;arm();
+  if(fromMood){if(still)nextMood();return;}/* on the Atmosfera button: a touch that stays put changes the mood, however long; a swipe only moves the paddle */
   if(st==='ready'&&(tap||e.pointerType==='mouse'))launch();else if(st==='over'&&t-stT>1.2)newGame();else if(st==='win'&&t-stT>1.6)nextLevel();});
 cv.addEventListener('pointercancel',()=>{down=null;});
 function clampPaddle(){paddle.x=clamp(paddle.x,paddle.w/2+4,W-paddle.w/2-4);}
@@ -575,12 +575,28 @@ function syncMusic(){for(const [id,k,f] of RNG){$(id).value=MS[k];$(id+'V').text
   document.querySelectorAll('#mScenes button').forEach(b=>b.setAttribute('aria-pressed',String(MS.scene===b.dataset.scene)));}
 function musicChanged(repad){saveMS();syncMusic();applyVolumes();showMood();if(repad&&AC&&started)setPad(curChord(),AC.currentTime+0.02);}
 /* the Atmosfera button: one tap, the next atmosphere from a shuffled bag, so every one comes round before any repeats */
-const SCENE_NAMES={'2deep':'2Deep',quiete:'Quiete',brezza:'Brezza',groove:'Groove',bossa:'Bossa',viaggio:'Viaggio',spazio:'Spazio'};let moodBag=[];
-function showMood(){$('moodName').textContent=SCENE_NAMES[MS.scene]||'su misura';}
-function applyScene(id){const sc=SCENES[id];if(!sc)return;Object.assign(MS,JSON.parse(JSON.stringify(sc)));MS.scene=id;pend=null;musicChanged(false);repad(true);}
+const SCENE_NAMES={'2deep':'2Deep',quiete:'Quiete',brezza:'Brezza',groove:'Groove',bossa:'Bossa',viaggio:'Viaggio',spazio:'Spazio'};let moodBag=[],moodPending=null,riserBar=-1;
+/* the label follows the touch at once and blinks while the new atmosphere waits for the next bar; it settles when the music changes */
+function showMood(){const id=moodPending||MS.scene;$('moodName').textContent=SCENE_NAMES[id]||'su misura';moodB.classList.toggle('wait',!!moodPending);}
+function applyScene(id,T){const sc=SCENES[id];if(!sc)return;Object.assign(MS,JSON.parse(JSON.stringify(sc)));MS.scene=id;pend=null;
+  if(AC&&started&&T!=null){/* on the bar: the old pad fades, a chord of the new harmony comes in, the drums switch on the downbeat */
+    for(const v of VOICES)if(!v.dead)killVoice(v,T,0.7);
+    if(!ending){const c=nextChord();chords.push({t:T,c});if(chords.length>16)chords.shift();lastChangeT=T;setPad(c,T,0.7);}else setPad(curChord(),T,0.7);
+    PADF.frequency.setTargetAtTime(padHz(mlevel)+700,T,0.05);PADF.frequency.setTargetAtTime(padHz(ending?4:mlevel),T+0.3,0.8);}
+  else repad(true);
+  musicChanged(false);}
+function applyMoodAt(T){const id=moodPending;moodPending=null;applyScene(id,T);banner('ATMOSFERA '+SCENE_NAMES[id].toUpperCase());}
+function queueMood(id){const live=AC&&started&&AC.state==='running';
+  if(!live){applyScene(id);banner('ATMOSFERA '+SCENE_NAMES[id].toUpperCase());return;}
+  moodPending=id;showMood();
+  /* a short noise swell up to the bar where the change lands, so the wait sounds like a lead-in */
+  const six=60/bpm()/4,nb=stepN+((16-stepN%16)%16),T1=nextStep+(nb-stepN)*six;
+  if(nb!==riserBar&&T1-AC.currentTime>0.35){riserBar=nb;const T0=AC.currentTime+0.02,src=AC.createBufferSource(),f=AC.createBiquadFilter(),gn=AC.createGain();src.buffer=NOISE;src.loop=true;
+    f.type='bandpass';f.Q.value=1.4;f.frequency.setValueAtTime(700,T0);f.frequency.exponentialRampToValueAtTime(6500,T1);gn.gain.setValueAtTime(0.0001,T0);gn.gain.exponentialRampToValueAtTime(0.045,T1);gn.gain.exponentialRampToValueAtTime(0.0001,T1+0.09);
+    src.connect(f);f.connect(gn);gn.connect(BUS);src.start(T0);src.stop(T1+0.12);}}
 function nextMood(){audio();if(AC&&AC.state==='suspended')AC.resume();startGroove();
-  let id;do{if(!moodBag.length)moodBag=Object.keys(SCENES).filter(k=>k!==MS.scene).sort(()=>Math.random()-0.5);id=moodBag.shift();}while(id===MS.scene);
-  applyScene(id);banner('ATMOSFERA '+SCENE_NAMES[id].toUpperCase());}
+  const cur=moodPending||MS.scene;let id;do{if(!moodBag.length)moodBag=Object.keys(SCENES).filter(k=>k!==cur).sort(()=>Math.random()-0.5);id=moodBag.shift();}while(id===cur);
+  queueMood(id);}
 /* a back swipe pauses instead of leaving: one history entry of our own, added on a release (a real user gesture).
    In apps like Facebook the back gesture walks the page history first, so the first swipe lands here */
 let guard=false;
@@ -590,7 +606,7 @@ addEventListener('popstate',()=>{if(!guard)return;guard=false;if(st==='over'){hi
 {for(const [id,k,,acc,re] of RNG){$(id).addEventListener('input',e=>{MS[k]=+e.target.value;if(acc)MS.scene='';musicChanged(false);if(re==='pad')repad(false);});
     if(re==='full')$(id).addEventListener('change',()=>repad(true));}
   for(const [id,k] of SEL)$(id).addEventListener('change',e=>{MS[k]=e.target.value;MS.scene='';musicChanged(false);if(k!=='drum')repad(true);});
-  document.querySelectorAll('#mScenes button').forEach(b=>b.addEventListener('click',()=>applyScene(b.dataset.scene)));
+  document.querySelectorAll('#mScenes button').forEach(b=>b.addEventListener('click',()=>{moodPending=null;applyScene(b.dataset.scene,AC&&started?nextStep:null);}));
   $('mPaddle').addEventListener('change',e=>{MS.paddle=e.target.checked;musicChanged(false);});
   $('mEnrich').addEventListener('change',e=>{MS.enrich=e.target.checked;musicChanged(true);});
   $('mAccel').addEventListener('change',e=>{MS.accel=e.target.checked;musicChanged(false);});

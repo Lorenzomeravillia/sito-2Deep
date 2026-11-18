@@ -204,8 +204,12 @@ function update(dt){G.t+=dt;if(G.shake>0)G.shake-=dt;if(G.inv>0)G.inv-=dt;G.pops
 
 /* ---- drawing ---- */
 const OUT=cv.getContext('2d');let K=1;
-function fit(){const st=document.getElementById('stage'),aw=st.clientWidth,ah=st.clientHeight,dpr=window.devicePixelRatio||1,s=Math.min(aw/TW,ah/TH);K=Math.max(1,Math.ceil(s*dpr));
-  cv.width=TW*K;cv.height=TH*K;cv.style.width=Math.floor(TW*s)+'px';cv.style.height=Math.floor(TH*s)+'px';rebuildEdge();placePanel();}
+/* the arrows sit in a strip under the field: the canvas leaves them PADH pixels and the flex centring keeps both in view */
+const PADH=66;
+function fit(){const st=document.getElementById('stage'),aw=st.clientWidth,ah=st.clientHeight,dpr=window.devicePixelRatio||1,s=Math.min(aw/TW,(ah-PADH)/TH);K=Math.max(1,Math.ceil(s*dpr));
+  cv.width=TW*K;cv.height=TH*K;cv.style.width=Math.floor(TW*s)+'px';cv.style.height=Math.floor(TH*s)+'px';cv.style.marginBottom=PADH+'px';rebuildEdge();placePanel();placePad();}
+function placePad(){const r=cv.getBoundingClientRect(),s=document.getElementById('stage').getBoundingClientRect(),d=document.getElementById('dpad');
+  d.style.left=(r.left-s.left)+'px';d.style.width=r.width+'px';d.style.top=(r.bottom-s.top+10)+'px';d.style.height=(PADH-14)+'px';}
 function draw(){ensureHD();ctx=OUT;ctx.setTransform(K,0,0,K,0,0);ctx.imageSmoothingEnabled=false;ctx.fillStyle='#07050f';ctx.fillRect(0,0,TW,TH);
   const sh=G.shake>0?Math.round(Math.sin(G.t*90)*2):0;ctx.save();ctx.translate(sh,0);
   /* the field still to uncover: deep blue, a faint grid of dots and the gig written in large, barely visible letters */
@@ -261,7 +265,7 @@ function card(y,h){ctx.fillStyle='rgba(10,7,22,0.88)';ctx.fillRect(14,y,TW-28,h)
 const HELP=(()=>{const L=CFG.items.map(i=>i.label),a='CHIUDI DENTRO '+L[0]+', '+L[1],b='E '+L[2]+': TI DANNO UNA MANO.';
   return CFG.venueSet&&tw(a)<=TW-40&&tw(b)<=TW-40?[a,b]:['CHIUDI DENTRO I PREMI CHE COMPAIONO:','TI DANNO UNA MANO.'];})();
 function intro(){card(110,246);ctext(CFG.title,TW/2,122,tw(CFG.title)*2<=TW-40?2:1,C.yel);
-  const L=['QUI SOTTO SI NASCONDE LA LOCANDINA','DELLA PROSSIMA SERATA DEI 2DEEP.','','SCORRI IL DITO PER MUOVERE LA NOTA.','CHIUDI LE AREE PER SCOPRIRLA.','','RE DIVANO NON DEVE TOCCARE','LA TUA LINEA. SUL BORDO E SULLE','PARTI SCOPERTE SEI AL SICURO.','',...HELP,'','SCOPRI IL 75% E LA SERATA E TUA.'];
+  const L=['QUI SOTTO SI NASCONDE LA LOCANDINA','DELLA PROSSIMA SERATA DEI 2DEEP.','','USA LE FRECCE PER MUOVERE LA NOTA.','CHIUDI LE AREE PER SCOPRIRLA.','','RE DIVANO NON DEVE TOCCARE','LA TUA LINEA. SUL BORDO E SULLE','PARTI SCOPERTE SEI AL SICURO.','',...HELP,'','SCOPRI IL 75% E LA SERATA E TUA.'];
   L.forEach((s,i)=>ctext(s,TW/2,148+i*12,1,i>=6&&i<=8?C.pink:i>=10&&i<=11?C.yel:C.white,{outline:null}));
   if(Math.floor(G.t*2)%2)ctext('TOCCA PER INIZIARE',TW/2,330,1,C.cyan,{outline:null});
   if(BEST)ctext('IL TUO RECORD: '+fmt(BEST)+' · BATTILO',TW/2,366,1,C.yel,{outline:null});}
@@ -298,6 +302,14 @@ cv.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});cv.addEv
 cv.addEventListener('pointerdown',e=>{audioOn();e.preventDefault();if(paused){paused=false;return;}if(G.state==='intro'){G.state='play';return;}sw={x:e.clientX,y:e.clientY,moved:false,id:e.pointerId};try{cv.setPointerCapture(e.pointerId);}catch(_){}});
 cv.addEventListener('pointermove',e=>{if(!sw||e.pointerId!==sw.id)return;const dx=e.clientX-sw.x,dy=e.clientY-sw.y,d=Math.max(Math.abs(dx),Math.abs(dy));
   if(d>=10){if(Math.abs(dx)>Math.abs(dy))setDir(Math.sign(dx),0);else setDir(0,Math.sign(dy));sw.x=e.clientX;sw.y=e.clientY;sw.moved=true;}});
+/* arrows: the direction changes on the press, no swipe needed (swipes from the screen edges are the phone's back gesture) */
+const DIRS={L:[-1,0],R:[1,0],U:[0,-1],D:[0,1]},DPAD=document.getElementById('dpad');
+DPAD.querySelectorAll('button').forEach(b=>{const [dx,dy]=DIRS[b.dataset.d];
+  b.addEventListener('pointerdown',e=>{e.preventDefault();audioOn();if(paused)paused=false;if(G.state==='intro')G.state='play';setDir(dx,dy);b.classList.add('on');setTimeout(()=>b.classList.remove('on'),140);});
+  b.addEventListener('pointerup',()=>arm());
+  b.addEventListener('click',e=>{if(e.detail===0){audioOn();if(G.state==='intro')G.state='play';setDir(dx,dy);}});
+  b.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});b.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});});
+let curDir='';function markDir(){const k=G.dx<0?'L':G.dx>0?'R':G.dy<0?'U':G.dy>0?'D':'';if(k===curDir)return;curDir=k;DPAD.querySelectorAll('button').forEach(b=>b.classList.toggle('cur',b.dataset.d===k));}
 const endSw=e=>{arm();if(!sw||e.pointerId!==sw.id)return;if(!sw.moved&&G.state==='play'){G.dx=G.dy=0;}sw=null;};
 cv.addEventListener('pointerup',endSw);cv.addEventListener('pointercancel',()=>{sw=null;});
 addEventListener('keydown',e=>{const k=e.key;audioOn();if(paused){paused=false;e.preventDefault();return;}if(G.state==='intro'&&(k===' '||k==='Enter'||k.startsWith('Arrow'))){G.state='play';e.preventDefault();return;}
@@ -325,7 +337,7 @@ let gx=null;GAL.addEventListener('pointerdown',e=>{gx=e.clientX;});GAL.addEventL
 addEventListener('resize',()=>{if(!GAL.hidden)galPlace();});
 
 /* ---- loop ---- */
-let last=0;function loop(ts){const dt=Math.min(0.05,(ts-(last||ts))/1000);last=ts;let a=paused?0:dt;while(a>0){const s=Math.min(a,1/120);update(s);a-=s;}draw();requestAnimationFrame(loop);}
-addEventListener('resize',()=>{fit();placeSongBtn();});newGame();fit();requestAnimationFrame(loop);
+let last=0;function loop(ts){const dt=Math.min(0.05,(ts-(last||ts))/1000);last=ts;let a=paused?0:dt;while(a>0){const s=Math.min(a,1/120);update(s);a-=s;}draw();markDir();requestAnimationFrame(loop);}
+addEventListener('resize',()=>{fit();placeSongBtn();placePad();});newGame();fit();requestAnimationFrame(loop);
 rebuildReveal();
 window.__X={G,grid,update,draw,closeArea,setDir,mus:()=>({buf:!!SONGBUF,midi:!!(SONG&&SONG.midi),name:SONG&&SONG.name,layers:MLG.length,on:MLG.map(g=>+g.gain.value.toFixed(2)),lay:LAYERS}),best:()=>BEST};
