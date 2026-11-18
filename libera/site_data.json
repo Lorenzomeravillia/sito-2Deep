@@ -31,16 +31,6 @@
    "game_venue_id": null
   },
   {
-   "id": "625e0ab4-0b86-483e-8811-07aec1ceeb89",
-   "event_date": "2026-12-12",
-   "event_time": null,
-   "venue": "Osteria Oltrerai",
-   "city": "Soccher",
-   "description": null,
-   "is_published": true,
-   "game_venue_id": null
-  },
-  {
    "id": "a2d7f94c-5278-4003-b309-91f9f4fee539",
    "event_date": "2027-01-16",
    "event_time": null,
