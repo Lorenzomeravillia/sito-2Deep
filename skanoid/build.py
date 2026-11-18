@@ -19,6 +19,8 @@ sofa = re.search(r'^function paintSofa\(.*?^  g\.restore\(\);\}$', hd, re.S | re
 SNAP = json.loads((ROOT / 'libera' / 'site_data.json').read_text())
 events = [{k: e.get(k) for k in ('id', 'event_date', 'event_time', 'venue', 'city', 'description', 'is_published')} for e in SNAP['events']]
 head = H('head.html')
+# fonts: served by the site itself (no call to Google); the claude.ai artifact cannot reach /assets, so it keeps Google Fonts
+head = head.replace('<!--FONTS-->', '<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Tilt+Neon&display=swap">' if '--artifact' in sys.argv else "<style>@font-face{font-family:'Fredoka';font-style:normal;font-weight:500;font-display:swap;src:url(/assets/fonts/fredoka-latin-500-normal.woff2) format('woff2')}@font-face{font-family:'Fredoka';font-style:normal;font-weight:600;font-display:swap;src:url(/assets/fonts/fredoka-latin-600-normal.woff2) format('woff2')}@font-face{font-family:'Fredoka';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/fredoka-latin-700-normal.woff2) format('woff2')}@font-face{font-family:'Tilt Neon';font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/tilt-neon-latin-400-normal.woff2) format('woff2')}</style>")
 SITEBAR = FL('sitebar.html') + FL('nozoom.html')
 
 
