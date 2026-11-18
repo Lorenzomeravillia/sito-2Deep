@@ -97,7 +97,7 @@
   if (vidGrid && videos && videos.length) {
     vidGrid.innerHTML = '';
     videos.forEach(v => {
-      const ytId = (v.youtube_url || '').match(/(?:youtu\.be\/|v=|embed\/)([^#&?]{11})/)?.[1];
+      const ytId = (v.youtube_url || '').match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([^#&?]{11})/)?.[1];
       if (!ytId) return;
       const card = document.createElement('div');
       card.className = 'video-card';

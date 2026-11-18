@@ -17,7 +17,7 @@ const BUCKET    = 'td-site';
 const BUCKET_URL = () => `${_SB_URL}/storage/v1/object/public/${BUCKET}`;
 
 function extractYouTubeId(url) {
-    const m = (url || '').match(/(?:youtu\.be\/|v=|embed\/)([^#&?]{11})/);
+    const m = (url || '').match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([^#&?]{11})/);
     return m ? m[1] : null;
 }
 
