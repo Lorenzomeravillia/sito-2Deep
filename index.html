@@ -69,7 +69,7 @@
     .nav-logo-text{display:block}
     .footer-logo{height:48px;width:auto;opacity:.8;margin-bottom:.8rem}
     .nav-links{display:flex;gap:2.2rem;list-style:none}
-    .nav-links a{color:var(--gray);text-decoration:none;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;transition:color .3s}
+    .nav-links a{color:var(--gray);text-decoration:none;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;transition:color .3s;white-space:nowrap}
     .nav-links a:hover{color:var(--amber)}
     .nav-cta{background:var(--amber)!important;color:var(--bg)!important;padding:.45rem 1.1rem;border-radius:2px}
     .nav-cta:hover{background:#b07d20!important}
@@ -236,6 +236,8 @@
     .wa-float{position:fixed;bottom:2rem;right:2rem;width:54px;height:54px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 18px rgba(37,211,102,.3);transition:transform .3s,box-shadow .3s;text-decoration:none}
     .wa-float:hover{transform:scale(1.1);box-shadow:0 6px 26px rgba(37,211,102,.45)}
     .wa-float svg{width:26px;height:26px;fill:#fff}
+    /* eight entries: below this width they no longer fit on one line, the drawer takes over */
+    @media(max-width:1180px){.nav-links{display:none}.nav-hamburger{display:flex}.nav-section-label{display:inline}}
     @media(max-width:900px){
       nav{padding:1rem 1.5rem}
       .nav-links{display:none}
@@ -308,6 +310,7 @@
     <li><a href="#venues" onclick="closeNav()">Per i Locali</a></li>
     <li><a href="#members" onclick="closeNav()">Il Duo</a></li>
     <li><a href="#events-section" onclick="closeNav()">Date</a></li>
+    <li><a href="#giochi" onclick="closeNav()">Giochi</a></li>
     <li><a href="#repertorio" onclick="closeNav()">Repertorio</a></li>
     <li><a href="#contatti" class="nav-cta" onclick="closeNav()">Contattaci</a></li>
   </ul>
@@ -325,6 +328,7 @@
     <li><a href="#venues" onclick="closeNav()">Per i Locali</a></li>
     <li><a href="#members" onclick="closeNav()">Il Duo</a></li>
     <li><a href="#events-section" onclick="closeNav()">Date</a></li>
+    <li><a href="#giochi" onclick="closeNav()">Giochi</a></li>
     <li><a href="#repertorio" onclick="closeNav()">Repertorio</a></li>
     <li><a href="#contatti" onclick="closeNav()">Contattaci</a></li>
   </ul>
@@ -545,13 +549,13 @@
   <div class="container">
     <a class="games-card reveal" href="/giochi">
       <div class="games-thumbs" aria-hidden="true">
+        <img src="/assets/giochi/copertina-skanoid.webp" alt="" width="800" height="420" loading="lazy">
         <img src="/assets/giochi/copertina-flipper.webp" alt="" width="800" height="420" loading="lazy">
-        <img src="/assets/giochi/copertina-libera.webp" alt="" width="800" height="420" loading="lazy">
       </div>
       <div class="games-text">
         <span class="section-label">Sala giochi</span>
         <h2 class="games-title" id="giochi-title">Gioca e scopri dove suoniamo</h2>
-        <p>Tre minigiochi in stile arcade: il flipper, Libera e Skanoid. Ogni partita ti porta alle prossime serate.</p>
+        <p>Tre minigiochi in stile arcade: Skanoid, il flipper e Libera. Ogni partita ti porta alle prossime serate.</p>
         <span class="btn-outline">Entra in sala giochi →</span>
       </div>
     </a>
@@ -665,6 +669,7 @@
       'sound':          'Il Sound',
       'members':        'Il Duo',
       'events-section': 'Date',
+      'giochi':         'Giochi',
       'repertorio':     'Repertorio',
       'faq':            'Info',
       'contatti':       'Contatti'
