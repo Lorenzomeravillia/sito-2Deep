@@ -450,21 +450,20 @@ function draw(){const be=beatEnv();g.setTransform(K,0,0,K,0,0);spr(SPR.bg,0,0,W,
     if(score>=best&&score>0&&u>1)txt('Nuovo record',W/2,st==='win'?BY+ROWS*BH+86:H/2+26,11,'#4fe3ff',{});
     if(u>(st==='win'?1.6:1.2))txt(st==='win'?'Tocca per il livello '+(lvl+1):'Tocca per rigiocare',W/2,H-80,13,'#ffd36b',{a:blink});}}
 
-/* ---- options; the music lab only with ?lab=1 (or on the claude.ai prototype) ---- */
+/* ---- options and the music lab, open to everyone (settings stay in this browser); ?lab=1 also shows the forecast check ---- */
 const LAB=!!window.__LAB||/[?&]lab=1/.test(location.search);
 const sheet=document.getElementById('sheet'),$=id=>document.getElementById(id);
-document.querySelectorAll('.lab-only').forEach(e=>e.hidden=!LAB);
 function syncSeg(){document.querySelectorAll('.seg[data-k]').forEach(s=>s.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(String(S[s.dataset.k])===b.dataset.v))));}
 document.querySelectorAll('.seg[data-k]').forEach(s=>s.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const k=s.dataset.k;S[k]=k==='tune'?+b.dataset.v:b.dataset.v;save();syncSeg();
   if(k==='pad')paddle.base=PADW[S.pad];if(k==='tune')retune();}));
 const RNG=[['mTransT','transT',v=>v.toFixed(1).replace('.',',')+' s'],['mAuto','auto',v=>v+' s'],['mGap','minGap',v=>v+' s'],['mBpm','bpm',v=>v+' bpm'],
   ['mVolPad','volPad',v=>Math.round(v*100)+'%'],['mVolDrum','volDrum',v=>Math.round(v*100)+'%'],['mVolNote','volNote',v=>Math.round(v*100)+'%']];
-function syncMusic(){if(!LAB)return;for(const [id,k,f] of RNG){$(id).value=MS[k];$(id+'V').textContent=f(+MS[k]);}
+function syncMusic(){for(const [id,k,f] of RNG){$(id).value=MS[k];$(id+'V').textContent=f(+MS[k]);}
   $('mPaddle').checked=MS.paddle;$('mEnrich').checked=MS.enrich;$('mAccel').checked=MS.accel;$('mGap').disabled=!MS.paddle;
   document.querySelectorAll('.vgrid input').forEach(c=>c.checked=!!MS.v[c.dataset.v]);
   document.querySelectorAll('[data-mk]').forEach(s=>s.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(MS[s.dataset.mk]===b.dataset.v))));}
 function musicChanged(repad){saveMS();syncMusic();applyVolumes();if(repad&&AC&&started)setPad(curChord(),AC.currentTime+0.02);}
-if(LAB){for(const [id,k] of RNG)$(id).addEventListener('input',e=>{MS[k]=+e.target.value;musicChanged(false);});
+{for(const [id,k] of RNG)$(id).addEventListener('input',e=>{MS[k]=+e.target.value;musicChanged(false);});
   $('mPaddle').addEventListener('change',e=>{MS.paddle=e.target.checked;musicChanged(false);});
   $('mEnrich').addEventListener('change',e=>{MS.enrich=e.target.checked;musicChanged(true);});
   $('mAccel').addEventListener('change',e=>{MS.accel=e.target.checked;musicChanged(false);});
