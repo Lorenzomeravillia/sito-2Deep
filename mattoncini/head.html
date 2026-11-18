@@ -18,6 +18,9 @@ canvas{display:block;touch-action:none}
 #opt{position:absolute;font:600 12px var(--ui);letter-spacing:.04em;color:var(--dim);background:rgba(18,10,38,.75);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer}
 #mood{position:absolute;font:600 12px var(--ui);letter-spacing:.04em;color:var(--cyan);background:rgba(18,10,38,.75);border:1px solid rgba(79,227,255,.45);border-radius:999px;padding:7px 13px;cursor:pointer;touch-action:none;box-shadow:0 0 12px rgba(79,227,255,.18)}
 #mood .ic{color:var(--gold)}
+#mood.wait{border-color:var(--gold)}#mood.wait #moodName{animation:mb .5s ease-in-out infinite;color:var(--gold)}
+@keyframes mb{50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){#mood.wait #moodName{animation:none}}
 #pauseNote{color:var(--gold)}
 #opt:focus-visible,#mood:focus-visible,.seg button:focus-visible,#close:focus-visible,.btns button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 #sheet{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(5,3,12,.72)}

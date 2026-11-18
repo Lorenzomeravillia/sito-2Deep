@@ -28,6 +28,12 @@ body{background:var(--bg);color:var(--ink);margin:0;overflow:hidden;padding:0 ma
 #c{display:block;image-rendering:pixelated;box-shadow:0 0 0 1px var(--edge),0 0 40px rgba(255,122,216,.12)}
 #panel{position:absolute;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1.25fr 1fr 0.9fr;gap:6px}#panel #spec,#panel #again{grid-column:1/-1}
 #panel[hidden],#panel [hidden]{display:none!important}
+#dpad{position:absolute;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;touch-action:none}
+#dpad button{display:flex;align-items:center;justify-content:center;padding:0;color:var(--cyan);background:linear-gradient(180deg,#221a3a,#150f27);border:1px solid rgba(101,219,239,.55);border-radius:12px;box-shadow:0 4px 0 #0b0618;cursor:pointer;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#dpad button svg{width:22px;height:22px}
+#dpad button.cur{color:var(--neon);border-color:var(--neon)}
+#dpad button.on{transform:translateY(3px);box-shadow:0 1px 0 #0b0618;color:#fff;border-color:#fff}
+#dpad button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 #panel a,#panel button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:0;padding:4px 8px;border-radius:9px;text-align:center;font:600 11.5px/1.2 system-ui,sans-serif;letter-spacing:.04em;text-decoration:none;color:var(--ink);cursor:pointer;
   border:1px solid rgba(255,122,216,.6);background:linear-gradient(180deg,#3a1d52,#1e1035);box-shadow:0 4px 0 #0b0618}
 #panel #cal{border-color:rgba(101,219,239,.65);background:linear-gradient(180deg,#14394d,#0e1f34)}
@@ -138,8 +144,9 @@ html,body{touch-action:none;overscroll-behavior:none}
   vv.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(reset,600);});setTimeout(reset,1000);})();
 </script>
 
-<div id="stage" aria-label="Gioco: muovi la nota con lo scorrimento del dito, chiudi le aree per scoprire la locandina">
+<div id="stage" aria-label="Gioco: muovi la nota con le frecce sotto il campo o scorrendo il dito, chiudi le aree per scoprire la locandina">
   <canvas id="c" width="270" height="480" role="img" aria-label="Campo di gioco"></canvas>
+  <div id="dpad" role="group" aria-label="Frecce per muovere la nota"><button type="button" data-d="L" aria-label="Sinistra"><svg viewBox="0 0 10 10" aria-hidden="true" style="transform:rotate(0deg)"><path d="M7 1.2 2.2 5 7 8.8Z" fill="currentColor"/></svg></button><button type="button" data-d="U" aria-label="Su"><svg viewBox="0 0 10 10" aria-hidden="true" style="transform:rotate(90deg)"><path d="M7 1.2 2.2 5 7 8.8Z" fill="currentColor"/></svg></button><button type="button" data-d="D" aria-label="Giù"><svg viewBox="0 0 10 10" aria-hidden="true" style="transform:rotate(270deg)"><path d="M7 1.2 2.2 5 7 8.8Z" fill="currentColor"/></svg></button><button type="button" data-d="R" aria-label="Destra"><svg viewBox="0 0 10 10" aria-hidden="true" style="transform:rotate(180deg)"><path d="M7 1.2 2.2 5 7 8.8Z" fill="currentColor"/></svg></button></div>
   <div id="panel" hidden>
     <button id="spec" type="button"><span class="gift" aria-hidden="true">🎁</span><span class="st"><b id="spec1">APRI IL TUO PREMIO</b><small id="spec2">I 4 SEGRETI DEL CANTONET</small></span></button>
     <a id="cal" href="#" target="_blank" rel="noopener">AGGIUNGI AL<br>CALENDARIO</a>
@@ -1288,8 +1295,12 @@ function update(dt){G.t+=dt;if(G.shake>0)G.shake-=dt;if(G.inv>0)G.inv-=dt;G.pops
 
 /* ---- drawing ---- */
 const OUT=cv.getContext('2d');let K=1;
-function fit(){const st=document.getElementById('stage'),aw=st.clientWidth,ah=st.clientHeight,dpr=window.devicePixelRatio||1,s=Math.min(aw/TW,ah/TH);K=Math.max(1,Math.ceil(s*dpr));
-  cv.width=TW*K;cv.height=TH*K;cv.style.width=Math.floor(TW*s)+'px';cv.style.height=Math.floor(TH*s)+'px';rebuildEdge();placePanel();}
+/* the arrows sit in a strip under the field: the canvas leaves them PADH pixels and the flex centring keeps both in view */
+const PADH=66;
+function fit(){const st=document.getElementById('stage'),aw=st.clientWidth,ah=st.clientHeight,dpr=window.devicePixelRatio||1,s=Math.min(aw/TW,(ah-PADH)/TH);K=Math.max(1,Math.ceil(s*dpr));
+  cv.width=TW*K;cv.height=TH*K;cv.style.width=Math.floor(TW*s)+'px';cv.style.height=Math.floor(TH*s)+'px';cv.style.marginBottom=PADH+'px';rebuildEdge();placePanel();placePad();}
+function placePad(){const r=cv.getBoundingClientRect(),s=document.getElementById('stage').getBoundingClientRect(),d=document.getElementById('dpad');
+  d.style.left=(r.left-s.left)+'px';d.style.width=r.width+'px';d.style.top=(r.bottom-s.top+10)+'px';d.style.height=(PADH-14)+'px';}
 function draw(){ensureHD();ctx=OUT;ctx.setTransform(K,0,0,K,0,0);ctx.imageSmoothingEnabled=false;ctx.fillStyle='#07050f';ctx.fillRect(0,0,TW,TH);
   const sh=G.shake>0?Math.round(Math.sin(G.t*90)*2):0;ctx.save();ctx.translate(sh,0);
   /* the field still to uncover: deep blue, a faint grid of dots and the gig written in large, barely visible letters */
@@ -1345,7 +1356,7 @@ function card(y,h){ctx.fillStyle='rgba(10,7,22,0.88)';ctx.fillRect(14,y,TW-28,h)
 const HELP=(()=>{const L=CFG.items.map(i=>i.label),a='CHIUDI DENTRO '+L[0]+', '+L[1],b='E '+L[2]+': TI DANNO UNA MANO.';
   return CFG.venueSet&&tw(a)<=TW-40&&tw(b)<=TW-40?[a,b]:['CHIUDI DENTRO I PREMI CHE COMPAIONO:','TI DANNO UNA MANO.'];})();
 function intro(){card(110,246);ctext(CFG.title,TW/2,122,tw(CFG.title)*2<=TW-40?2:1,C.yel);
-  const L=['QUI SOTTO SI NASCONDE LA LOCANDINA','DELLA PROSSIMA SERATA DEI 2DEEP.','','SCORRI IL DITO PER MUOVERE LA NOTA.','CHIUDI LE AREE PER SCOPRIRLA.','','RE DIVANO NON DEVE TOCCARE','LA TUA LINEA. SUL BORDO E SULLE','PARTI SCOPERTE SEI AL SICURO.','',...HELP,'','SCOPRI IL 75% E LA SERATA E TUA.'];
+  const L=['QUI SOTTO SI NASCONDE LA LOCANDINA','DELLA PROSSIMA SERATA DEI 2DEEP.','','USA LE FRECCE PER MUOVERE LA NOTA.','CHIUDI LE AREE PER SCOPRIRLA.','','RE DIVANO NON DEVE TOCCARE','LA TUA LINEA. SUL BORDO E SULLE','PARTI SCOPERTE SEI AL SICURO.','',...HELP,'','SCOPRI IL 75% E LA SERATA E TUA.'];
   L.forEach((s,i)=>ctext(s,TW/2,148+i*12,1,i>=6&&i<=8?C.pink:i>=10&&i<=11?C.yel:C.white,{outline:null}));
   if(Math.floor(G.t*2)%2)ctext('TOCCA PER INIZIARE',TW/2,330,1,C.cyan,{outline:null});
   if(BEST)ctext('IL TUO RECORD: '+fmt(BEST)+' · BATTILO',TW/2,366,1,C.yel,{outline:null});}
@@ -1382,6 +1393,14 @@ cv.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});cv.addEv
 cv.addEventListener('pointerdown',e=>{audioOn();e.preventDefault();if(paused){paused=false;return;}if(G.state==='intro'){G.state='play';return;}sw={x:e.clientX,y:e.clientY,moved:false,id:e.pointerId};try{cv.setPointerCapture(e.pointerId);}catch(_){}});
 cv.addEventListener('pointermove',e=>{if(!sw||e.pointerId!==sw.id)return;const dx=e.clientX-sw.x,dy=e.clientY-sw.y,d=Math.max(Math.abs(dx),Math.abs(dy));
   if(d>=10){if(Math.abs(dx)>Math.abs(dy))setDir(Math.sign(dx),0);else setDir(0,Math.sign(dy));sw.x=e.clientX;sw.y=e.clientY;sw.moved=true;}});
+/* arrows: the direction changes on the press, no swipe needed (swipes from the screen edges are the phone's back gesture) */
+const DIRS={L:[-1,0],R:[1,0],U:[0,-1],D:[0,1]},DPAD=document.getElementById('dpad');
+DPAD.querySelectorAll('button').forEach(b=>{const [dx,dy]=DIRS[b.dataset.d];
+  b.addEventListener('pointerdown',e=>{e.preventDefault();audioOn();if(paused)paused=false;if(G.state==='intro')G.state='play';setDir(dx,dy);b.classList.add('on');setTimeout(()=>b.classList.remove('on'),140);});
+  b.addEventListener('pointerup',()=>arm());
+  b.addEventListener('click',e=>{if(e.detail===0){audioOn();if(G.state==='intro')G.state='play';setDir(dx,dy);}});
+  b.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});b.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});});
+let curDir='';function markDir(){const k=G.dx<0?'L':G.dx>0?'R':G.dy<0?'U':G.dy>0?'D':'';if(k===curDir)return;curDir=k;DPAD.querySelectorAll('button').forEach(b=>b.classList.toggle('cur',b.dataset.d===k));}
 const endSw=e=>{arm();if(!sw||e.pointerId!==sw.id)return;if(!sw.moved&&G.state==='play'){G.dx=G.dy=0;}sw=null;};
 cv.addEventListener('pointerup',endSw);cv.addEventListener('pointercancel',()=>{sw=null;});
 addEventListener('keydown',e=>{const k=e.key;audioOn();if(paused){paused=false;e.preventDefault();return;}if(G.state==='intro'&&(k===' '||k==='Enter'||k.startsWith('Arrow'))){G.state='play';e.preventDefault();return;}
@@ -1409,8 +1428,8 @@ let gx=null;GAL.addEventListener('pointerdown',e=>{gx=e.clientX;});GAL.addEventL
 addEventListener('resize',()=>{if(!GAL.hidden)galPlace();});
 
 /* ---- loop ---- */
-let last=0;function loop(ts){const dt=Math.min(0.05,(ts-(last||ts))/1000);last=ts;let a=paused?0:dt;while(a>0){const s=Math.min(a,1/120);update(s);a-=s;}draw();requestAnimationFrame(loop);}
-addEventListener('resize',()=>{fit();placeSongBtn();});newGame();fit();requestAnimationFrame(loop);
+let last=0;function loop(ts){const dt=Math.min(0.05,(ts-(last||ts))/1000);last=ts;let a=paused?0:dt;while(a>0){const s=Math.min(a,1/120);update(s);a-=s;}draw();markDir();requestAnimationFrame(loop);}
+addEventListener('resize',()=>{fit();placeSongBtn();placePad();});newGame();fit();requestAnimationFrame(loop);
 rebuildReveal();
 window.__X={G,grid,update,draw,closeArea,setDir,mus:()=>({buf:!!SONGBUF,midi:!!(SONG&&SONG.midi),name:SONG&&SONG.name,layers:MLG.length,on:MLG.map(g=>+g.gain.value.toFixed(2)),lay:LAYERS}),best:()=>BEST};
 
