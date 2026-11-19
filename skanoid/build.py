@@ -139,15 +139,15 @@ else:
 <meta property="og:url" content="https://www.2deep.it/skanoid">
 <meta property="og:title" content="Skanoid · il gioco dei 2Deep">
 <meta property="og:description" content="Spacca il muro e accendi l'insegna della prossima serata, con lo ska-reggae in 8 bit dei 2Deep o con il muro che suona a 432 Hz.">
-<meta property="og:image" content="https://www.2deep.it/assets/giochi/og-skanoid-2.jpg">
-<meta property="og:image:secure_url" content="https://www.2deep.it/assets/giochi/og-skanoid-2.jpg">
+<meta property="og:image" content="https://www.2deep.it/assets/giochi/og-skanoid-3.jpg">
+<meta property="og:image:secure_url" content="https://www.2deep.it/assets/giochi/og-skanoid-3.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Skanoid: il gioco dei 2Deep, un muro al neon sopra l'insegna della serata">
 <meta property="og:locale" content="it_IT">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://www.2deep.it/assets/giochi/og-skanoid-2.jpg">
+<meta name="twitter:image" content="https://www.2deep.it/assets/giochi/og-skanoid-3.jpg">
 <meta name="theme-color" content="#05030c">
 <link rel="canonical" href="https://www.2deep.it/skanoid">
 """
@@ -169,7 +169,7 @@ else:
                       '<meta property="og:description" content="Il muro diventa uno strumento: atmosfere, armonia, timbri e melodia della pallina, a 432 Hz. Per musicisti e curiosi.">'),
                      ('<meta property="og:image:alt" content="Skanoid: il gioco dei 2Deep, un muro al neon sopra l\'insegna della serata">',
                       '<meta property="og:image:alt" content="Il laboratorio musicale di Skanoid: i comandi della musica sopra il muro al neon">'),
-                     ('og-skanoid-2.jpg', 'og-laboratorio.jpg'), ('<script src="/config.js"></script>\n<script>\n', '<script src="/config.js"></script>\n<script>\nwindow.__SKANOID_LAB_PAGE=true;\n')]:
+                     ('og-skanoid-3.jpg', 'og-laboratorio-2.jpg'), ('<script src="/config.js"></script>\n<script>\n', '<script src="/config.js"></script>\n<script>\nwindow.__SKANOID_LAB_PAGE=true;\n')]:
         assert old in lab, old[:60]
         lab = lab.replace(old, new)
     (ROOT / 'skanoid-lab.html').write_text(lab)
