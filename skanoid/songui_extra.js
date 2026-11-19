@@ -1,7 +1,7 @@
 /* Skanoid's first guess for a new MIDI: the generated ska drums from the start, the chop with the first group, the bass with
    the second, the melody with the third, the other single lines with the last. The song's own drums and the chords played on
    the beat are left out (they would fight the levare); the band can bring them back */
-function autoCfg(info,name){const c=autoCfgBase(info,name),T=c.tracks;
+function autoCfg(info,name){const c=autoCfgBase(info,name),T=c.tracks;c.levare='auto';
   info.list.forEach(g=>{const x=T[trackKey(g)];if(!x)return;
     if(g.gen==='skank'){x.label='SKANK';x.inst='skank';x.step=1;}
     else if(g.gen==='ska'){x.label='BATTERIA SKA';x.inst='drums';x.step=0;}
@@ -17,3 +17,9 @@ function autoCfg(info,name){const c=autoCfgBase(info,name),T=c.tracks;
 function tick(){const v=songBtnVisible();if(SBTN.hidden===v)SBTN.hidden=!v;
   if(v){const r=cv.getBoundingClientRect(),w=wrap.getBoundingClientRect();SBTN.style.left=(r.left-w.left+8)+'px';SBTN.style.top=(r.bottom-w.top-SBTN.offsetHeight-8)+'px';}}
 SONGUI={tick};
+/* the reading of the levare (the select under the loop settings): changing it computes the three tracks again */
+const LEVSEL=document.getElementById('sLev');
+function renderPanel(){renderPanelBase();if(!PINFO)return;LEVSEL.value=PCFG.levare||'auto';const a=PINFO.levareAuto;
+  LEVSEL.options[0].textContent='Automatico'+(a?' ('+LEV_WHY[a.why]+')':'');}
+LEVSEL.addEventListener('change',()=>{if(!PINFO||!PMIDI)return;PCFG.levare=LEVSEL.value;PINFO=analyzeMidi(parseMidi(b64d(PMIDI)),PCFG.levare);PV.key='';renderPanel();changed();
+  setS('Skank e batteria ricalcolati: '+LEVSEL.selectedOptions[0].textContent.toLowerCase()+'. Ascolta e confronta.');});

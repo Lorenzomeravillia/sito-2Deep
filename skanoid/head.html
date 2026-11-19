@@ -187,7 +187,7 @@ canvas{display:block;touch-action:none}
     <div class="sbox">
       <div class="shead"><h2 id="songT">BRANO DI SKANOID</h2><button id="sClose" type="button">CHIUDI</button></div>
       <p>È la colonna sonora della versione ska-reggae di Skanoid, separata da quella del flipper. All'inizio suona il primo gruppo di strumenti, poi ne entra uno al 15%, al 35%, al 55% e al 75% del muro; alla vittoria suonano tutti.</p>
-      <p>Il gioco aggiunge a ogni brano tre tracce in levare calcolate dal brano stesso: lo SKANK (gli accordi del brano, brevi, sul levare), la BATTERIA SKA e il ONE DROP reggae (spento all'inizio). La batteria e gli accordi suonati sul battere del MIDI partono esclusi: rimettili se servono. Va meglio con i brani in 4/4; in 6/8 il levare diventa uno shuffle, in 3/4 un valzer in levare.</p>
+      <p>Il gioco aggiunge a ogni brano tre tracce in levare calcolate dal brano stesso: lo SKANK (gli accordi del brano, brevi, sul levare), la BATTERIA SKA e il ONE DROP reggae (spento all'inizio). La batteria del MIDI e le sue tracce di accordi partono escluse: rimettile se servono. Va meglio con i brani in 4/4; in 6/8 il levare diventa uno shuffle, in 3/4 un valzer in levare. Se il brano è già in levare, il gioco prova a capirlo da solo (lo vedi accanto al titolo del file); se sbaglia, scegli tu nella voce «Levare».</p>
       <label class="sfile"><input id="sFile" type="file" accept=".mid,.midi,audio/midi,audio/x-midi"><span>SCEGLI FILE .MID</span></label>
       <div id="sInfo" class="smeta"></div>
       <div id="sBody" hidden>
@@ -197,6 +197,7 @@ canvas{display:block;touch-action:none}
           <label class="sl"><b>Giro <span id="sBarsV"></span></b><input id="sBars" type="range" min="2" max="32" step="1" value="16"></label>
           <label class="sl"><b>Velocità <span id="sSpeedV"></span></b><input id="sSpeed" type="range" min="70" max="130" step="1" value="100"></label>
           <label class="sl"><b>Trasporto (semitoni)</b><select id="sTransp"></select></label>
+          <label class="sl"><b>Levare</b><select id="sLev"><option value="auto">Automatico</option><option value="normale">Normale: skank sugli ottavi in levare</option><option value="inverti">Invertito: scambia battere e levare</option><option value="reggae">Metà tempo: skank sul 2 e sul 4 (reggae)</option><option value="doppio">Doppio tempo: skank sui sedicesimi in levare</option></select></label>
           <label class="sl"><b>Eco: intensità <span id="sEchoMixV"></span></b><input id="sEchoMix" type="range" min="0" max="60" step="1" value="28"></label>
           <label class="sl"><b>Eco: <span id="sEchoRepV"></span></b><input id="sEchoRep" type="range" min="0" max="6" step="1" value="1"></label>
           <p class="shint">L'eco si sente sulle tracce con il suono «Lead»: una ripetizione ogni 0,3 secondi, ognuna più piano della precedente.</p>
