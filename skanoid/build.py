@@ -57,6 +57,8 @@ def ska_parts():
     music, n = BARS.subn(lambda m: 'barSec(%s)' % m.group(1), music)
     assert n == 1, n
     ui = patched(FL('songui.js'), [('function autoCfg(info,name){', 'function autoCfgBase(info,name){'),
+        ('function renderPanel(){', 'function renderPanelBase(){'),
+        ('const info=analyzeMidi(parseMidi(b64d(cfg.midi)));', 'const info=analyzeMidi(parseMidi(b64d(cfg.midi)),cfg.levare);'),
         ('const bl=beatLen(info)*4,span=bars*bl;let best=info.first,bs=-1;', 'const bl=barSec(info),span=bars*bl;let best=Math.floor(info.first/bl+1e-6)*bl,bs=-1;'),
         ('for(let off=info.first;off+span<=info.end+0.01;off+=bl)', 'for(let off=Math.floor(info.first/bl+1e-6)*bl;off+span<=info.end+0.01;off+=bl)'),
         ("' · battuta '+(Math.floor(b/4)+1)+(b%4?', tempo '+(b%4+1):'')", "' · battuta '+(Math.floor(b/barQ(PINFO))+1)+(b%barQ(PINFO)?', tempo '+(b%barQ(PINFO)+1):'')"),
@@ -64,7 +66,7 @@ def ska_parts():
         ("+info.tempo+' bpm';renderPanel();", "+info.tempo+' bpm · '+meterText(info);renderPanel();"),
         ("+PINFO.tempo+' bpm';}", "+PINFO.tempo+' bpm · '+meterText(PINFO);}"),
         ('Ho proposto un ordine: batteria, basso, le altre parti, la melodia per ultima. Cambialo quando vuoi e ascolta.',
-         'Ho aggiunto le tracce in levare e proposto un ordine: batteria ska, skank, basso, melodia, il resto alla fine. La batteria del brano e gli accordi suonati sul battere partono esclusi. Cambia quando vuoi e ascolta.'),
+         'Ho aggiunto le tracce in levare e proposto un ordine: batteria ska, skank, basso, melodia, il resto alla fine. La batteria del brano e le sue tracce di accordi partono escluse, perché il gioco usa le sue: rimettile se servono. Cambia quando vuoi e ascolta.'),
         ('Salvato: chi apre il flipper o Libera ora sente «', 'Salvato: chi apre Skanoid in versione ska-reggae ora sente «')], 'songui')
     ui, n = BARS.subn(lambda m: 'barSec(%s)' % m.group(1), ui)
     assert n == 4, n

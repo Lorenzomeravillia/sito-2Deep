@@ -23,15 +23,38 @@ const pickW=a=>{let s=0;for(const x of a)s+=x[1];let r=Math.random()*s;for(const
    margin, so the chop does not flicker between two readings of the same harmony. */
 function meterOf(m){for(const tr of m.tracks)for(const e of tr.ev)if(e.type==='ts'&&e.num>0&&e.den>0)return{num:e.num,den:e.den};return{num:4,den:4};}
 const barQ=info=>info.barQ||4,barSec=info=>barQ(info)*60/(info.tempo||120);
-const meterText=info=>{const m=info.meter||{num:4,den:4};return m.num+'/'+m.den+(info.compound?', levare in shuffle':m.num===3&&m.den===4?', valzer in levare':'');};
-function analyzeMidi(m){const info=analyzeMidiBase(m);try{addLevare(info,meterOf(m));}catch(e){}return info;}
+const meterText=info=>{const m=info.meter||{num:4,den:4};return m.num+'/'+m.den+(info.compound?', levare in shuffle':m.num===3&&m.den===4?', valzer in levare':'')+(info.levareAuto?' · rilevato: '+LEV_WHY[info.levareAuto.why]:'');};
+/* songs already in levare: the beat of the file is not always the beat you feel. Four readings, the band can pick one in the panel:
+   normale  the chop on the second eighth of every beat (a song in battere is turned into levare, a ska song already chopping on
+            the eighths keeps its place);
+   inverti  the file is half a beat off (kick, snare and bass fall on its off-beats): beat and off-beat swap;
+   reggae   half time, the chop on 2 and 4 (a reggae written with the chop on the quarter notes);
+   doppio   double time, the chop on the off-beat sixteenths (a ska written at half its speed).
+   Automatic: where the kick, the snare and the bass fall, and where the chords of the other parts start, decide. */
+const LEV_WHY={battere:'in battere: lo porto in levare',levare:'già in levare sugli ottavi',spostato:'battere e levare scambiati nel file',reggae:'reggae a metà tempo, accordi sul 2 e sul 4',doppio:'levare sui sedicesimi',shuffle:'6/8: levare in shuffle'};
+function detectLevare(info,ts){const q=60/(info.tempo||120);if(ts.den===8&&ts.num%3===0&&ts.num>=6)return{mode:'normale',why:'shuffle'};
+  const bq=Math.max(1,Math.round(ts.num*4/ts.den)),bin=t=>{const x=((t/q)%1+1)%1;return Math.round(x*4)%4;};/* 0 beat, 2 eighth off-beat, 1 and 3 sixteenths */
+  const mk=[0,0,0,0],ch=[0,0,0,0],qp=[0,0,0,0],bass=info.list.filter(g=>!g.drum&&!g.gen&&(g.inst==='bass'||(g.prog>=32&&g.prog<=39)));
+  for(const g of info.list){if(g.gen||!g.drum)continue;for(const x of g.notes)if([35,36,38,40].includes(x.n))mk[bin(x.t0)]++;}
+  for(const g of bass)for(const x of g.notes)mk[bin(x.t0)]+=0.7;
+  for(const g of info.list){if(g.gen||g.drum||bass.includes(g))continue;const ns=g.notes;
+    for(let i=0;i<ns.length;i++){let j=i;while(j+1<ns.length&&ns[j+1].t0-ns[i].t0<0.03)j++;if(j>i){const b=bin(ns[i].t0);ch[b]++;if(b===0)qp[Math.round(ns[i].t0/q)%bq%4]++;}i=j;}}
+  const tm=mk[0]+mk[2],tc=ch[0]+ch[1]+ch[2]+ch[3];
+  if(tm>=8&&mk[2]>mk[0]*1.5)return{mode:'inverti',why:'spostato'};
+  if(tc>=8&&ch[1]+ch[3]>(ch[0]+ch[2])*1.5)return{mode:'doppio',why:'doppio'};
+  if(tc>=8&&ch[2]>ch[0]*1.5)return{mode:'normale',why:'levare'};
+  if(bq===4&&qp[1]+qp[3]>=6&&qp[1]+qp[3]>3*(qp[0]+qp[2]))return{mode:'reggae',why:'reggae'};
+  return{mode:'normale',why:'battere'};}
+function analyzeMidi(m,mode){const info=analyzeMidiBase(m),ts=meterOf(m);
+  try{info.levareAuto=detectLevare(info,ts);info.levareMode=mode&&mode!=='auto'?mode:info.levareAuto.mode;addLevare(info,ts,info.levareMode);}catch(e){}return info;}
 const TRI={maj:[0,4,7],min:[0,3,7]};
 function triadScore(w,low,tot,r,ty){let sc=0;for(let pc=0;pc<12;pc++){const d=(pc-r+12)%12;sc+=TRI[ty].includes(d)?w[pc]*(d===0?1.2:1):-0.55*w[pc];}return sc+(low!=null&&low%12===r?0.25*tot:0);}
-function addLevare(info,ts){const q=60/(info.tempo||120),comp=ts.den===8&&ts.num%3===0&&ts.num>=6;
+function addLevare(info,ts,mode){const q=60/(info.tempo||120),comp=ts.den===8&&ts.num%3===0&&ts.num>=6;
   info.meter=ts;info.compound=comp;info.barQ=ts.num*4/ts.den;
-  const beat=comp?q*1.5:q,off=comp?beat*2/3:beat/2,bpb=comp?ts.num/3:Math.max(1,Math.round(ts.num*4/ts.den)),nb=Math.ceil(info.end/beat)+1;
+  let bq=comp?ts.num/3:Math.max(1,Math.round(ts.num*4/ts.den));if(mode==='reggae'&&(comp||bq%2))mode='normale';
+  const beat=(comp?q*1.5:q)*(mode==='reggae'?2:mode==='doppio'?0.5:1),off=comp?beat*2/3:beat/2,shift=mode==='inverti'?off:0,bpb=mode==='reggae'?bq/2:mode==='doppio'?4:bq,nb=Math.ceil(info.end/beat)+1;
   const parts=info.list.filter(g=>!g.drum),sk=[],ska=[],od=[];let prev=null,prevV=null;
-  for(let k=0;k<nb;k++){const b0=k*beat,b1=b0+beat,w=new Array(12).fill(0);let low=null,tot=0;
+  for(let k=0;k<nb;k++){const b0=k*beat+shift,b1=b0+beat,w=new Array(12).fill(0);let low=null,tot=0;
     for(const g of parts)for(const x of g.notes){if(x.t0>=b1)break;if(x.t1<=b0)continue;const o=(Math.min(x.t1,b1)-Math.max(x.t0,b0))/beat*(0.5+(x.v||100)/254)*(x.n<55?1.4:1);w[x.n%12]+=o;tot+=o;if(low==null||x.n<low)low=x.n;}
     let chord=prev;
     if(tot>0.05){let best=null;for(let r=0;r<12;r++)for(const ty of ['maj','min']){const sc=triadScore(w,low,tot,r,ty);if(!best||sc>best.sc)best={r,ty,sc};}
