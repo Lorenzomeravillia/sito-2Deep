@@ -93,8 +93,9 @@ MODES = [ONLY] if ONLY else ['ska', 'relax']
 # so the sound starts at once
 CHOOSE = """function SKANOID_START(m,touch){(m==='relax'?window.SKANOID_RELAX:window.SKANOID_SKA)();if(touch&&window.__SKANOID)window.__SKANOID.startAudio();}
 /* the music lab (relaxing version): options open, lab unfolded and in view, the game paused; the first touch inside starts the sound */
-function SKANOID_LAB(){var o=document.getElementById('opt'),l=document.getElementById('labBox'),sh=document.getElementById('sheet');if(o)o.click();
-  if(l){l.open=true;setTimeout(function(){l.scrollIntoView({block:'start'});},80);}
+function SKANOID_LAB(){var o=document.getElementById('opt'),l=document.getElementById('labBox'),sh=document.getElementById('sheet'),it=document.getElementById('labIntro'),t=document.getElementById('optT');if(o)o.click();
+  /* opened as the lab: a title and a line that say where you are, the lab first and open, the other options below it */
+  if(t)t.textContent='Laboratorio musicale';if(it){it.hidden=false;if(l)it.after(l);}if(l)l.open=true;var bx=sh&&sh.querySelector('.box');if(bx)bx.scrollTop=0;
   if(sh)sh.addEventListener('pointerdown',function(){if(window.__SKANOID)window.__SKANOID.startAudio();},{once:true});}
 function SKANOID_CHOOSE(ready,only){var q=new URLSearchParams(location.search),m=only||q.get('musica');
   /* 2deep.it/skanoid?laboratorio (or #laboratorio): straight into the music lab, the link to share with musicians */

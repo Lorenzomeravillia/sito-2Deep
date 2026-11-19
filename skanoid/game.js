@@ -300,6 +300,7 @@ document.querySelectorAll('#musicSeg button').forEach(b=>{b.setAttribute('aria-p
   b.addEventListener('click',()=>{if(b.dataset.mode===MODE)return;try{localStorage.setItem('skanoid_musica',b.dataset.mode);}catch(e){}const u=new URL(location.href);u.searchParams.set('musica',b.dataset.mode);location.replace(u.toString());});});
 optB.addEventListener('click',()=>{$('pauseNote').hidden=true;sheet.hidden=false;syncSeg();syncMusic();});
 $('close').addEventListener('click',()=>{sheet.hidden=true;$('pauseNote').hidden=true;arm();audio();if(AC&&AC.state==='suspended')AC.resume();startGroove();});
+$('close2').addEventListener('click',()=>$('close').click());/* the same Play, always at the top of the sheet */
 document.addEventListener('visibilitychange',()=>{if(!AC)return;if(document.hidden)AC.suspend();else AC.resume();});
 for(let i=0;i<9;i++)orbs.push({x:Math.random()*W,y:Math.random()*H,v:4+Math.random()*7,s:14+Math.random()*22,p:Math.random()*6});
 paddle={x:W/2,y:H-46,h:10,base:PADW[S.pad],w:PADW[S.pad],sq:0,hitT:-9};
