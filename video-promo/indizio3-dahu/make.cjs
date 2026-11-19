@@ -70,7 +70,7 @@ async function openPage(b,seed,setup){
   const pass1=async seed=>{const p=await openPage(b,seed,{seed});const r=await p.evaluate(()=>VID.pass1());r.errs=p.errs.slice(0,4);await p.close();return r;};
   if(MODE==='search'){const [a,z]=ARG.split('-').map(Number);for(let s=a;s<=z;s++){const r=await pass1(s);console.log(s,JSON.stringify(r));}await b.close();return;}
   const SEED=+(process.env.SEED||1);const r1=await pass1(SEED);console.log('pass1',JSON.stringify(r1));if(r1.winTick==null)throw new Error('no win');
-  const PREVIEW=MODE==='preview'?ARG.split(',').map(Number):null;
+  const PREVIEW=MODE==='preview'||MODE==='still'?ARG.split(',').map(Number):null,STILL=MODE==='still';
   const p=await openPage(b,SEED,{seed:SEED,winTick:r1.winTick,lastXY:r1.lastXY});
   await p.evaluate(([AUDT,OFF])=>{const oac=new OfflineAudioContext(2,44100*AUDT,44100);window.__OAC=oac;window.__vt=0;window.__SONGOFF=OFF;
     window.__OFF=new Proxy(oac,{get(o,q){if(q==='currentTime')return window.__vt;if(q==='state')return 'running';if(q==='resume'||q==='suspend'||q==='close')return ()=>Promise.resolve();const v=o[q];return typeof v==='function'?v.bind(o):v;}});
@@ -80,9 +80,10 @@ async function openPage(b,seed,setup){
   let fv=null,fh=null;if(!PREVIEW){fv=enc('v');fh=enc('h');}
   const write=(f,buf)=>new Promise(r=>{if(!f.stdin.write(buf))f.stdin.once('drain',r);else r();});
   let n=0,done=false,t=0;
-  while(!done&&n<30*25){const tt=n/30,grab=!PREVIEW||PREVIEW.some(x=>Math.abs(x-tt)<1/60+1e-6);
+  while(!done&&n<30*25){const tt=n/30,grab=!STILL&&(!PREVIEW||PREVIEW.some(x=>Math.abs(x-tt)<1/60+1e-6));
     const [jv,jh,t1,fin]=await p.evaluate(g=>VID.step(g),grab);t=t1;done=fin;n++;
-    if(PREVIEW){if(jv){fs.writeFileSync(OUT+'pv_v_'+tt.toFixed(2)+'.jpg',Buffer.from(jv,'base64'));fs.writeFileSync(OUT+'pv_h_'+tt.toFixed(2)+'.jpg',Buffer.from(jh,'base64'));}
+    if(STILL){if(PREVIEW.some(x=>Math.abs(x-tt)<1/60+1e-6))fs.writeFileSync(OUT+'still_'+tt.toFixed(2)+'.png',Buffer.from(await p.evaluate(x=>VID.still(x),tt),'base64'));if(tt>Math.max(...PREVIEW)+0.05)break;}
+    else if(PREVIEW){if(jv){fs.writeFileSync(OUT+'pv_v_'+tt.toFixed(2)+'.jpg',Buffer.from(jv,'base64'));fs.writeFileSync(OUT+'pv_h_'+tt.toFixed(2)+'.jpg',Buffer.from(jh,'base64'));}
       if(tt>Math.max(...PREVIEW)+0.05)break;}
     else{await write(fv,Buffer.from(jv,'base64'));await write(fh,Buffer.from(jh,'base64'));}}
   const info=await p.evaluate(()=>VID.info());info.frames=n;fs.writeFileSync(OUT+'events.json',JSON.stringify(info));

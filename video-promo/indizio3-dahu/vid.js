@@ -183,4 +183,18 @@ function start(){setup();M.audio();}
 function step(grab){const k=ticksFor();for(let j=0;j<k;j++)tickOnce((frame+j/k)/FPS);
   const vt=frame/FPS;let r=[null,null];if(grab){drawGame();drawV(vt);drawH(vt);r=[VC.toDataURL('image/jpeg',0.92).slice(23),HC.toDataURL('image/jpeg',0.92).slice(23)];}
   frame++;return [r[0],r[1],frame/FPS,ev.tWin!=null&&frame/FPS>=ev.tWin+END];}
-return{pass1,start,step,info:()=>({ev,tick,frame,minBalls,lostBalls,winT:SET.winTick*TICK,songoff:window.__SONGOFF})};})();
+/* ---- a still for a photo post (4:5): the lit sign with the confetti, the clue and the like/send box underneath ---- */
+const SC=mk(1080,1350),sg=SC.getContext('2d');
+function viewR(x,y,w,h,z,cx,cy){const k=cv.width/270,sw=cv.width/z,sh=sw*h/w;const sx=clamp(cx*k-sw/2,0,cv.width-sw),sy=clamp(cy*k-sh/2,0,cv.height-sh);return{x,y,w,h,sx,sy,sw,sh,k,s:k*w/sw};}
+function still(vt){drawGame();const g=sg;g.fillStyle='#05030c';g.fillRect(0,0,1080,1350);const v=viewR(0,0,1080,1350,1.0,135,172);
+  blit(g,v,0);bloom(g,v,0.55);effects(g,v);confetti(g,v,vt,1);
+  const gr=g.createLinearGradient(0,800,0,1350);gr.addColorStop(0,'rgba(5,3,12,0)');gr.addColorStop(0.22,'rgba(5,3,12,0.82)');gr.addColorStop(1,'rgba(5,3,12,0.92)');g.fillStyle=gr;g.fillRect(0,800,1080,550);
+  dahu(g,265,985,1.32,1,2);
+  T(g,'3° INDIZIO',715,880,36,'#65dbef');T(g,'MA TU LO CONOSCI',715,945,42,'#ffffff',{maxW:560});T(g,'IL DAHU?',715,1025,92,'#ff7ad8',{glow:'rgba(255,122,216,0.6)',maxW:560});
+  T(g,'piccolo aiuto: si beve',715,1105,58,'#ffd23f',{hand:1,maxW:560});
+  const p=new Path2D();p.roundRect(70,1160,940,145,26);g.save();g.globalAlpha=0.55;g.fillStyle='rgba(20,8,36,0.75)';g.fill(p);g.restore();g.lineJoin='round';tube(g,p,'#ff5fd2',3.6,1);
+  const s1='METTI MI PIACE',s2='E MANDALO A CHI PORTI CON TE',w1=wOf(g,s1,44),w2=wOf(g,s2,34);
+  icon(g,HEART,540-w1/2-26,1212+20,40/22,'#ff2e88',1);T(g,s1,540+18,1210,44,'#ffffff');
+  icon(g,PLANE,540-w2/2-30,1266,32/24,'#4fe3ff',1);T(g,s2,540+18,1265,34,'#4fe3ff');
+  return SC.toDataURL('image/png').slice(22);}
+return{pass1,start,step,still,info:()=>({ev,tick,frame,minBalls,lostBalls,winT:SET.winTick*TICK,songoff:window.__SONGOFF})};})();
