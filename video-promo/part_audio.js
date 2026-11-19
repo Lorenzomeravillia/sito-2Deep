@@ -84,7 +84,7 @@ function parseMidi(ab){
     if(id!=='MTrk'){p=end;continue;}
     let tick=0,rs=0,name='';const ev=[];
     while(p<end){tick+=vlq();let st=d.getUint8(p);
-      if(st===0xFF){p++;const ty=d.getUint8(p++),l=vlq();if(ty===0x51&&l===3)ev.push({tick,type:'tempo',v:(d.getUint8(p)<<16)|(d.getUint8(p+1)<<8)|d.getUint8(p+2)});else if(ty===0x03&&!name){let s='';for(let i=0;i<l;i++)s+=String.fromCharCode(d.getUint8(p+i));name=s.replace(/[^\x20-\x7e -ÿ]/g,'').trim();}p+=l;continue;}
+      if(st===0xFF){p++;const ty=d.getUint8(p++),l=vlq();if(ty===0x51&&l===3)ev.push({tick,type:'tempo',v:(d.getUint8(p)<<16)|(d.getUint8(p+1)<<8)|d.getUint8(p+2)});else if(ty===0x58&&l>=2)ev.push({tick,type:'ts',num:d.getUint8(p),den:Math.pow(2,d.getUint8(p+1))});else if(ty===0x03&&!name){let s='';for(let i=0;i<l;i++)s+=String.fromCharCode(d.getUint8(p+i));name=s.replace(/[^\x20-\x7e -ÿ]/g,'').trim();}p+=l;continue;}
       if(st===0xF0||st===0xF7){p++;p+=vlq();continue;}
       if(st&0x80){rs=st;p++;}else st=rs;
       const ty=st&0xF0,ch=st&0x0F;
