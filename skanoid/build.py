@@ -98,7 +98,7 @@ function SKANOID_LAB(){var o=document.getElementById('opt'),l=document.getElemen
   if(sh)sh.addEventListener('pointerdown',function(){if(window.__SKANOID)window.__SKANOID.startAudio();},{once:true});}
 function SKANOID_CHOOSE(ready,only){var q=new URLSearchParams(location.search),m=only||q.get('musica');
   /* 2deep.it/skanoid?laboratorio (or #laboratorio): straight into the music lab, the link to share with musicians */
-  if((q.has('laboratorio')||location.hash==='#laboratorio')&&only!=='ska'){ready(function(){SKANOID_START('relax',false);SKANOID_LAB();});return;}
+  if((q.has('laboratorio')||location.hash==='#laboratorio'||window.__SKANOID_LAB_PAGE)&&only!=='ska'){ready(function(){SKANOID_START('relax',false);SKANOID_LAB();});return;}
   if(m==='ska'||m==='relax'){ready(function(){SKANOID_START(m,false);});return;}
   var ch=document.getElementById('chooser'),last=null;try{last=localStorage.getItem('skanoid_musica');}catch(e){}ch.hidden=false;
   var bs=ch.querySelectorAll('button[data-m]');Array.prototype.forEach.call(bs,function(b){var mm=b.getAttribute('data-m');if(mm===last)b.classList.add('last');
@@ -157,3 +157,20 @@ else:
             '\n'.join(game('/assets/giochi/icone/corona.webp', m) for m in MODES) + '\n' + CHOOSE + '\n' + boot + '\n</script>\n</body>\n</html>\n')
     (ROOT / 'skanoid.html').write_text(page)
     print('skanoid.html', len(page))
+    # the same game at 2deep.it/laboratorio, opening straight into the music lab, with its own title and link preview
+    lab = page
+    for old, new in [('<title>Skanoid · 2Deep</title>', '<title>Laboratorio musicale di Skanoid · 2Deep</title>'),
+                     ('<meta name="description" content="Skanoid, il gioco dei 2Deep: spacca il muro al neon e accendi l\'insegna con la prossima serata. Con una colonna sonora ska-reggae in 8 bit o con il muro che suona a 432 Hz.">',
+                      '<meta name="description" content="Il laboratorio musicale di Skanoid, il gioco dei 2Deep: il muro diventa uno strumento. Cambia atmosfera, armonia, timbri, percussioni e la melodia della pallina, a 432 Hz.">'),
+                     ('<meta property="og:url" content="https://www.2deep.it/skanoid">', '<meta property="og:url" content="https://www.2deep.it/laboratorio">'),
+                     ('<link rel="canonical" href="https://www.2deep.it/skanoid">', '<link rel="canonical" href="https://www.2deep.it/laboratorio">'),
+                     ('<meta property="og:title" content="Skanoid · il gioco dei 2Deep">', '<meta property="og:title" content="Il laboratorio musicale di Skanoid · 2Deep">'),
+                     ('<meta property="og:description" content="Spacca il muro e accendi l\'insegna della prossima serata, con lo ska-reggae in 8 bit dei 2Deep o con il muro che suona a 432 Hz.">',
+                      '<meta property="og:description" content="Il muro diventa uno strumento: atmosfere, armonia, timbri e melodia della pallina, a 432 Hz. Per musicisti e curiosi.">'),
+                     ('<meta property="og:image:alt" content="Skanoid: il gioco dei 2Deep, un muro al neon sopra l\'insegna della serata">',
+                      '<meta property="og:image:alt" content="Il laboratorio musicale di Skanoid: i comandi della musica sopra il muro al neon">'),
+                     ('og-skanoid-2.jpg', 'og-laboratorio.jpg'), ('<script src="/config.js"></script>\n<script>\n', '<script src="/config.js"></script>\n<script>\nwindow.__SKANOID_LAB_PAGE=true;\n')]:
+        assert old in lab, old[:60]
+        lab = lab.replace(old, new)
+    (ROOT / 'laboratorio.html').write_text(lab)
+    print('laboratorio.html', len(lab))
