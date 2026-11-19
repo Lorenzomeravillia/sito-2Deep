@@ -54,7 +54,7 @@ canvas{display:block;touch-action:none}
     <div class="box" role="dialog" aria-label="Opzioni">
       <h2>Opzioni</h2>
       <p id="pauseNote" hidden>Gioco in pausa: è arrivato un gesto "indietro". Tocca Gioca per riprendere da dove eri, oppure torna indietro un'altra volta per uscire.</p>
-      <p>Trascina il dito in qualsiasi punto per muovere la racchetta, tocca per lanciare. Ogni mattoncino suona qualche nota sulla tastierina. La musica parte reggae e, man mano che il muro cade, accelera e diventa ska.</p>
+      <p>Trascina il dito in qualsiasi punto per muovere la racchetta, tocca per lanciare. I mattoncini fanno partire le frasi della tastierina, a tempo con la musica. La musica parte reggae e, man mano che il muro cade, diventa ska e accelera. Lo schermo pulsa sul levare, il tempo che conta nel reggae e nello ska.</p>
       <div class="row"><span>VELOCITÀ PALLINA</span><div class="seg" data-k="speed"><button id="sp1" type="button" data-v="lenta">Lenta</button><button id="sp2" type="button" data-v="normale">Normale</button><button id="sp3" type="button" data-v="veloce">Veloce</button></div></div>
       <div class="row"><span>RACCHETTA</span><div class="seg" data-k="pad"><button id="pd1" type="button" data-v="S">Corta</button><button id="pd2" type="button" data-v="M">Media</button><button id="pd3" type="button" data-v="L">Lunga</button></div></div>
       <div class="row"><span>ACCORDATURA</span><div class="seg" data-k="tune"><button id="tn1" type="button" data-v="432">La a 432 Hz</button><button id="tn2" type="button" data-v="440">La a 440 Hz</button></div></div>
@@ -63,15 +63,14 @@ canvas{display:block;touch-action:none}
         <summary>Laboratorio musica · per musicisti e curiosi</summary>
         <p>Qui puoi cambiare come suona il muro. La musica continua mentre sei qui e il gioco è in pausa: le modifiche si sentono subito. Valgono solo sul tuo telefono.</p>
         <div class="row"><span>STILE</span><div class="seg" data-mk="style"><button type="button" data-v="gioco">Segue il muro</button><button type="button" data-v="reggae">Sempre reggae</button><button type="button" data-v="ska">Sempre ska</button></div></div>
-        <p>Seguendo il muro, il brano parte reggae, a metà tempo, con cassa e rullante insieme sul terzo tempo, e gli strumenti entrano man mano che si accende l'insegna. Quando è giù più di metà muro il ritmo raddoppia e diventa ska.</p>
-        <div class="row"><span>NOTE DEI MATTONCINI</span><div class="seg" data-k="quant"><button id="qt1" type="button" data-v="tempo">A tempo</button><button id="qt2" type="button" data-v="libero">Libere</button></div></div>
+        <p>Seguendo il muro, il brano parte reggae, a metà tempo, con cassa e rullante insieme sul terzo tempo, e gli strumenti entrano man mano che si accende l'insegna. Quando è giù più di metà muro il ritmo raddoppia e diventa ska, e da lì il tempo accelera fino alla fine del muro.</p>
         <h3>MELODIA DEI MATTONCINI</h3>
         <div class="sel"><label for="mTone">SUONO DELLA TASTIERINA<select id="mTone"><option value="organo">Organo</option><option value="piano">Piano</option><option value="ottoni">Ottoni</option><option value="flauto">Flauto</option><option value="chip">8 bit</option></select></label></div>
         <label class="rng" for="mCx">Complessità della melodia<output id="mCxV"></output><input id="mCx" type="range" min="0" max="1" step="0.05"></label>
-        <p>Ogni mattoncino suona un piccolo motivo: parte con il colpo e riempie il tempo fino al colpo successivo, che il gioco conosce in anticipo. A zero le note salgono e scendono ad arco sui cinque suoni più sicuri dell'accordo; salendo arrivano salti, altre forme e la scala completa. L'ultimo mattoncino prima che la pallina torni alla racchetta chiude sempre sulla nota che dà il nome all'accordo.</p>
+        <p>Un mattoncino fa partire una frase sul primo tempo utile; la frase va fino in fondo a tempo, e i mattoncini colpiti nel frattempo chiedono la frase successiva. Ogni frase ripete a metà il suo ritmo, si muove quasi sempre per note vicine sulla scala pentatonica, mette le note dell'accordo sui tempi forti e chiude alternando una domanda e una risposta. Salendo con la complessità arrivano ritmi più fitti, qualche salto e la scala completa.</p>
         <h3>TEMPO</h3>
         <label class="rng" for="mBpm">Tempo di partenza<output id="mBpmV"></output><input id="mBpm" type="range" min="110" max="150" step="1"></label>
-        <label class="rng" for="mAccel">Accelerazione fino alla fine del muro<output id="mAccelV"></output><input id="mAccel" type="range" min="0" max="0.5" step="0.05"></label>
+        <label class="rng" for="mAccel">Accelerazione dello ska fino alla fine del muro<output id="mAccelV"></output><input id="mAccel" type="range" min="0" max="0.5" step="0.05"></label>
         <h3>MISSAGGIO</h3>
         <label class="rng" for="mVolDrum">Batteria<output id="mVolDrumV"></output><input id="mVolDrum" type="range" min="0" max="1.5" step="0.05"></label>
         <label class="rng" for="mVolBass">Basso<output id="mVolBassV"></output><input id="mVolBass" type="range" min="0" max="1.5" step="0.05"></label>

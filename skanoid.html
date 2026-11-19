@@ -111,7 +111,7 @@ html,body{touch-action:none;overscroll-behavior:none}
     <div class="box" role="dialog" aria-label="Opzioni">
       <h2>Opzioni</h2>
       <p id="pauseNote" hidden>Gioco in pausa: è arrivato un gesto "indietro". Tocca Gioca per riprendere da dove eri, oppure torna indietro un'altra volta per uscire.</p>
-      <p>Trascina il dito in qualsiasi punto per muovere la racchetta, tocca per lanciare. Ogni mattoncino suona qualche nota sulla tastierina. La musica parte reggae e, man mano che il muro cade, accelera e diventa ska.</p>
+      <p>Trascina il dito in qualsiasi punto per muovere la racchetta, tocca per lanciare. I mattoncini fanno partire le frasi della tastierina, a tempo con la musica. La musica parte reggae e, man mano che il muro cade, diventa ska e accelera. Lo schermo pulsa sul levare, il tempo che conta nel reggae e nello ska.</p>
       <div class="row"><span>VELOCITÀ PALLINA</span><div class="seg" data-k="speed"><button id="sp1" type="button" data-v="lenta">Lenta</button><button id="sp2" type="button" data-v="normale">Normale</button><button id="sp3" type="button" data-v="veloce">Veloce</button></div></div>
       <div class="row"><span>RACCHETTA</span><div class="seg" data-k="pad"><button id="pd1" type="button" data-v="S">Corta</button><button id="pd2" type="button" data-v="M">Media</button><button id="pd3" type="button" data-v="L">Lunga</button></div></div>
       <div class="row"><span>ACCORDATURA</span><div class="seg" data-k="tune"><button id="tn1" type="button" data-v="432">La a 432 Hz</button><button id="tn2" type="button" data-v="440">La a 440 Hz</button></div></div>
@@ -120,15 +120,14 @@ html,body{touch-action:none;overscroll-behavior:none}
         <summary>Laboratorio musica · per musicisti e curiosi</summary>
         <p>Qui puoi cambiare come suona il muro. La musica continua mentre sei qui e il gioco è in pausa: le modifiche si sentono subito. Valgono solo sul tuo telefono.</p>
         <div class="row"><span>STILE</span><div class="seg" data-mk="style"><button type="button" data-v="gioco">Segue il muro</button><button type="button" data-v="reggae">Sempre reggae</button><button type="button" data-v="ska">Sempre ska</button></div></div>
-        <p>Seguendo il muro, il brano parte reggae, a metà tempo, con cassa e rullante insieme sul terzo tempo, e gli strumenti entrano man mano che si accende l'insegna. Quando è giù più di metà muro il ritmo raddoppia e diventa ska.</p>
-        <div class="row"><span>NOTE DEI MATTONCINI</span><div class="seg" data-k="quant"><button id="qt1" type="button" data-v="tempo">A tempo</button><button id="qt2" type="button" data-v="libero">Libere</button></div></div>
+        <p>Seguendo il muro, il brano parte reggae, a metà tempo, con cassa e rullante insieme sul terzo tempo, e gli strumenti entrano man mano che si accende l'insegna. Quando è giù più di metà muro il ritmo raddoppia e diventa ska, e da lì il tempo accelera fino alla fine del muro.</p>
         <h3>MELODIA DEI MATTONCINI</h3>
         <div class="sel"><label for="mTone">SUONO DELLA TASTIERINA<select id="mTone"><option value="organo">Organo</option><option value="piano">Piano</option><option value="ottoni">Ottoni</option><option value="flauto">Flauto</option><option value="chip">8 bit</option></select></label></div>
         <label class="rng" for="mCx">Complessità della melodia<output id="mCxV"></output><input id="mCx" type="range" min="0" max="1" step="0.05"></label>
-        <p>Ogni mattoncino suona un piccolo motivo: parte con il colpo e riempie il tempo fino al colpo successivo, che il gioco conosce in anticipo. A zero le note salgono e scendono ad arco sui cinque suoni più sicuri dell'accordo; salendo arrivano salti, altre forme e la scala completa. L'ultimo mattoncino prima che la pallina torni alla racchetta chiude sempre sulla nota che dà il nome all'accordo.</p>
+        <p>Un mattoncino fa partire una frase sul primo tempo utile; la frase va fino in fondo a tempo, e i mattoncini colpiti nel frattempo chiedono la frase successiva. Ogni frase ripete a metà il suo ritmo, si muove quasi sempre per note vicine sulla scala pentatonica, mette le note dell'accordo sui tempi forti e chiude alternando una domanda e una risposta. Salendo con la complessità arrivano ritmi più fitti, qualche salto e la scala completa.</p>
         <h3>TEMPO</h3>
         <label class="rng" for="mBpm">Tempo di partenza<output id="mBpmV"></output><input id="mBpm" type="range" min="110" max="150" step="1"></label>
-        <label class="rng" for="mAccel">Accelerazione fino alla fine del muro<output id="mAccelV"></output><input id="mAccel" type="range" min="0" max="0.5" step="0.05"></label>
+        <label class="rng" for="mAccel">Accelerazione dello ska fino alla fine del muro<output id="mAccelV"></output><input id="mAccel" type="range" min="0" max="0.5" step="0.05"></label>
         <h3>MISSAGGIO</h3>
         <label class="rng" for="mVolDrum">Batteria<output id="mVolDrumV"></output><input id="mVolDrum" type="range" min="0" max="1.5" step="0.05"></label>
         <label class="rng" for="mVolBass">Basso<output id="mVolBassV"></output><input id="mVolBass" type="range" min="0" max="1.5" step="0.05"></label>
@@ -190,17 +189,14 @@ const SIGNS=[
 /* =====================================================================================================
    MUSIC: a small song on an 80s home keyboard with 8-bit drums, tuned to A=432 Hz. It is born reggae (half time, the
    one drop: kick and rim together on the third beat) and becomes ska as the wall comes down: at the third threshold
-   the groove doubles (the chop on every off-beat, kick and snare taking turns, walking bass), and over the level the
-   tempo rises by about a quarter. The chords are the flipper's progression (I V vi IV I V IV V), a fourth higher at
+   the groove doubles (the chop on every off-beat, kick and snare taking turns, walking bass). The chords are the flipper's progression (I V vi IV I V IV V), a fourth higher at
    every level. The instruments come in with the sign, each on a bar line after a short drum fill:
    start: drums and the bricks' keyboard / RITMO IN LEVARE: the organ chop / SKA & REGGAE: the bass, and the chop doubles /
    DUE VOCI, DUE STRUMENTI: the switch to ska, the melody in thirds / UN'UNICA PROFONDITÀ: 8-bit arpeggios and dub echo.
-   The melody is the ball's. At every bounce on the paddle the game knows which bricks the ball will break and when
-   (the physics runs on a fixed step, so the forecast is exact). Every brick plays a small motif that starts on the hit
-   and fills the time until the next forecast hit; the motifs follow one contour that lands on the chord's root with
-   the last brick. One note at a time, like an 8-bit channel: a new hit cuts the motif in progress.
+   The melody is the bricks': a hit starts a phrase on the next beat, and hits during a phrase ask for the next one (below).
+   The tempo holds in the reggae and rises by a fifth from the start of the ska to the end of the wall.
    ===================================================================================================== */
-const MDEF={bpm:132,accel:0.25,style:'gioco',melCx:0.3,tone:'organo',volDrum:0.85,volBass:0.6,volKeys:0.9,volLead:1,echo:0.4,rev:0.22};
+const MDEF={bpm:132,accel:0.2,style:'gioco',melCx:0.3,tone:'organo',volDrum:0.85,volBass:0.6,volKeys:0.9,volLead:1,echo:0.4,rev:0.22};
 let MS=JSON.parse(JSON.stringify(MDEF));
 try{const o=JSON.parse(LS('music2')||'null');if(o)for(const k in MDEF)if(o[k]!=null&&typeof o[k]===typeof MDEF[k])MS[k]=o[k];}catch(e){}
 const saveMS=()=>{try{localStorage.setItem('skanoid_music2',JSON.stringify(MS));}catch(e){}};
@@ -225,11 +221,11 @@ function mkChord(root,scale,o){o=o||{};const rel=scale.map(p=>(p-root+12)%12).so
 const chordOf=d=>mkChord(deg(d,0),keyScale(),{d});
 /* the flipper's progression: one chord per bar of ska, one per bar of half-time reggae (twice as long) */
 const GIRO=[0,4,5,3,0,4,3,4],giroChord=k=>chordOf(GIRO[((k%8)+8)%8]);
-const NLOG=[];let chords=[{t:0,c:chordOf(0)}],ending=false,lastMel=72,lastStart=null;
+const NLOG=[];let chords=[{t:0,c:chordOf(0)}],ending=false,skaP=null;
 const chordAt=T=>{let c=chords[0].c;for(const x of chords)if(x.t<=T+1e-4)c=x.c;return c;};
 const curChord=()=>chords[chords.length-1].c;
 const wallP=()=>bricks.length?1-alive()/bricks.length:0;
-/* the tempo: the start of the level, a quarter faster when the wall is down (smoothed), and a little faster level by level */
+/* the tempo: the start of the level, up to a fifth faster from the start of the ska to the end of the wall (smoothed), a little faster level by level */
 const speedFactor=h=>1+Math.min(0.55,(h==null?hits:h)*0.005);/* the ball speeds up with the hits */
 const bpm=()=>MS.bpm*(1+MS.accel*tempoP)*(1+0.03*Math.min(4,lvl-1));
 function pulseWave(d){const N=40,re=new Float32Array(N+1),im=new Float32Array(N+1);for(let n=1;n<=N;n++)re[n]=Math.sin(Math.PI*n*d)/n;return AC.createPeriodicWave(re,im);}
@@ -326,23 +322,27 @@ function schedule(i,T){
   if(changeAt>=0&&changeAt<i)changeAt=-1;
   if(songStep>=cycleLen()){songStep=0;chordIdx=(chordIdx+1)%8;}
   if(songStep===0){
-    if(changeAt===i){changeAt=-1;if(wantStage>stage){if(MS.style==='gioco'){stage++;banner(LAYERN[stage-1]);}else stage=wantStage;crash(T);}else if(wantStage<stage)stage=wantStage;}
+    if(changeAt===i){changeAt=-1;if(wantStage>stage){if(MS.style==='gioco'){stage++;banner(LAYERN[stage-1]);}else stage=wantStage;crash(T);if(stage>=3&&skaP==null)skaP=wallP();}else if(wantStage<stage)stage=wantStage;}
     chords.push({t:T,c:giroChord(chordIdx)});if(chords.length>24)chords.shift();}
   const es=effStage();if(es!==lastES){lastES=es;applyVolumes();}
-  playStep(i,T);
+  playStep(i,T);phraseStep(i,T);
   while(leadQ.length&&leadQ[0].i<=i){const x=leadQ.shift();if(x.i===i)playLeadAt(x,T,true);}
+  const lev=effStage()>=3?songStep%4===2:songStep===8||songStep===24;/* the off-beat: where the chop falls, and the screen pulses */
   songStep++;if(songStep>=cycleLen()){songStep=0;chordIdx=(chordIdx+1)%8;}
   /* the wall asks for a change: it lands on a bar line, with room for the fill */
-  if(changeAt<0&&!ending&&st!=='over'&&wantStage!==stage){const L=cycleLen(),left=(L-songStep)%L;changeAt=i+1+left+(left<8&&wantStage>stage?L:0);}}
+  if(changeAt<0&&!ending&&st!=='over'&&wantStage!==stage){const L=cycleLen(),left=(L-songStep)%L;changeAt=i+1+left+(left<8&&wantStage>stage?L:0);}
+  return lev;}
 function musicTick(){if(!AC||!started||AC.state!=='running')return;const now=AC.currentTime,dt=Math.min(0.5,Math.max(0,now-lastTickT));lastTickT=now;
-  tempoP+=((st==='over'?0:ending?1:wallP())-tempoP)*Math.min(1,dt*0.35);
-  while(nextStep<now+0.12){schedule(stepN,nextStep);ring.push({i:stepN,T:nextStep});if(ring.length>64)ring.shift();nextStep+=60/bpm()/4;stepN++;}
+  /* the tempo holds in the reggae and rises from the start of the ska to the end of the wall */
+  const tg=st==='over'?0:ending?1:stage>=3&&skaP!=null?clamp((wallP()-skaP)/Math.max(0.05,1-skaP),0,1):0;tempoP+=(tg-tempoP)*Math.min(1,dt*0.35);
+  while(nextStep<now+0.12){const lev=schedule(stepN,nextStep);ring.push({i:stepN,T:nextStep,lev});if(ring.length>64)ring.shift();nextStep+=60/bpm()/4;stepN++;}
   DL.delayTime.setTargetAtTime(60/bpm()*0.75,now,0.5);}
 function startGroove(){if(!AC||started)return;started=true;nextStep=AC.currentTime+0.06;stepN=0;songStep=0;chordIdx=0;changeAt=-1;restartNext=null;lastTickT=AC.currentTime;chords=[{t:nextStep,c:giroChord(0)}];}
-function restartSong(){ending=false;leadQ=[];changeAt=-1;tempoP=0;musicLevel(0);stage=MS.style==='gioco'?0:wantStage;restartNext='level';}
+function restartSong(){ending=false;leadQ=[];changeAt=-1;tempoP=0;phrase=null;phraseReq=false;musicLevel(0);stage=MS.style==='gioco'?0:wantStage;skaP=stage>=3?0:null;restartNext='level';}
 function newKey(){/* each level moves up a fourth and starts again from reggae */KEY=(2+5*(lvl-1))%12;restartSong();}
 function slot(){const now=AC.currentTime+0.012;if(S.quant==='libero'||!started)return{T:now,i:-1};for(const r of ring)if(r.T>=now)return{T:r.T,i:r.i};return{T:nextStep,i:stepN};}
-function beatEnv(){if(!AC||!started)return 0;const now=AC.currentTime;let lb=null;for(const r of ring)if(r.i%4===0&&r.T<=now)lb=r.T;return lb==null?0:Math.exp(-(now-lb)*5);}
+/* the visual pulse follows the off-beat */
+function beatEnv(){if(!AC||!started)return 0;const now=AC.currentTime;let lb=null;for(const r of ring)if(r.lev&&r.T<=now)lb=r.T;return lb==null?0:Math.exp(-(now-lb)*5);}
 
 /* ---- the bricks' keyboard ---- */
 let leadQ=[],leadLive=[];
@@ -379,60 +379,48 @@ function playMotif(mo,i0,T0){const six=60/bpm()/4;
     if(k<stepN){const r=ring.find(q=>q.i===k);playLeadAt(x,r?r.T:T0+x.d*six,true);}else leadQ.push(Object.assign({i:k},x));}
   leadQ.sort((a,b)=>a.i-b.i);}
 function thirdBelow(m){const sc=keyScale();for(let x=m-3;x>=m-4;x--)if(sc.includes(((x%12)+12)%12))return x;return m-3;}
-/* ---- the phrase of a volley: one note per brick, the contour that rises, turns and lands on the root ---- */
-/* melodic complexity (lab): 0 is the plain arch in the pentatonic; going up, the phrase picks other shapes (valley, rise, fall,
-   wave, sequence), leaps of a third or a fourth and the full scale of the key. The landing on the root stays */
-function planPhrase(n,cx){cx=cx||0;if(n<=0)return[];if(n===1)return[0];
-  if(n===2)return cx<0.05?[2,0]:pickW([[[2,0],1],[[1,0],cx],[[-1,0],cx],[[-2,0],0.8*cx],[[3,0],0.7*cx],[[4,0],0.5*cx],[[-3,0],0.4*cx]]);
-  const R=Math.random,shape=cx<0.05?'arch':pickW([['arch',1.2],['valley',cx],['rise',0.5*cx],['fall',0.6*cx],['wave',cx],['seq',n>=5?1.2*cx:0]]);
-  let x=0,lp=false;const out=[0],mv=()=>{const big=!lp&&R()<0.1+0.45*cx;lp=big;return big?(R()<0.6?2:3):1;};
-  if(shape==='arch'||shape==='valley'){const sg=shape==='arch'?1:-1,pk=Math.max(1,Math.round((n-1)*(cx<0.05?0.62:0.4+0.35*R())));
-    for(let i=1;i<n;i++){if(cx<0.05){if(i<=pk)x+=(n>7&&R()<0.35)?2:1;else x-=(i===n-1)?0:((x>1&&R()<0.3)?2:1);}else x+=i<=pk?sg*mv():-sg*mv();out.push(x);}}
-  else if(shape==='rise'||shape==='fall'){const sg=shape==='rise'?1:-1;for(let i=1;i<n;i++){x+=sg*mv();out.push(x);}}
-  else if(shape==='wave'){const sg=R()<0.5?1:-1;for(let i=1;i<n;i++){x+=i%2?sg*(1+(R()<cx?1:0)):-sg;out.push(x);}}
-  else{const cell=[0,pickW([[1,1],[2,1],[-1,0.7],[-2,0.5]])],t=R()<0.65?-1:1;if(R()<0.5)cell.push(cell[1]+pickW([[-1,1],[1,0.6],[-2,0.4]]));
-    for(let i=1;i<n;i++)out.push(cell[i%cell.length]+Math.floor(i/cell.length)*t);}
+/* ---- the bricks' keyboard: phrases on the beat ----
+   A hit asks for a phrase: it starts on the next beat and plays to its end on the grid (two bars of ska, one bar of half-time
+   reggae), whatever the ball does meanwhile; every hit still clicks at once. Hits during a phrase ask for the next one, so
+   while the wall is falling the melody goes on, question and answer; when the ball is quiet the melody rests.
+   A phrase is a rhythm whose second half repeats the first, notes that move mostly by step on the major pentatonic, chord
+   tones on the beats, about an octave of range, and an ending on the chord's root (the answer) or on its third or fifth (the
+   question). Rhythms: one character per eighth of ska (a sixteenth of half-time reggae), x a note, - held, . silent */
+const RHY={calm:['x-x-x---x-x-x---','x---x.x.x---x---','..x.x.x-..x.x-x-','.x.x.x--.x.x.x--','x-.x--x-x-.x----'],
+  busy:['x.x.x-x-x.x.x---','x-.xx-x-x-.xx---','x.xxx.x-x.xxx---','xx.x.x.xxx.x.x--','..xx.xx-..xx.x--']};
+let phrase=null,phraseReq=false,phraseN=0,hitsRecent=[],melPrev=74;
+function contour(n,cx){const shape=pickW([['arch',2],['down',1.2],['up',0.8],['wave',1]]),out=[];let back=0;
+  for(let k=1;k<n;k++){let sg=shape==='up'?1:shape==='down'?-1:shape==='wave'?(k%2?1:-1):(k<n/2?1:-1),d=pickW([[1,6],[0,0.6],[2,1+2*cx],[3,0.4*cx]]);
+    if(back){sg=back;d=1;}/* after a leap, a step back the other way */back=d>=2?-sg:0;out.push(sg*d);}
   return out;}
-function startVolley(b,events,ret){const ev=events.filter(e=>e.k!=='tough');b.vol={plan:planPhrase(ev.length,MS.melCx),times:ev.map(e=>e.t),ret,t0:sim,k:0,n:ev.length,base:null};}
-const center=()=>66+9*clamp(1-alive()/bricks.length,0,1)+[0,2,4][(lvl-1)%3];
-/* the notes of one brick: its note on the hit, then, when there is time before the next hit (or, after the last brick, before the
-   ball is back on the paddle), a few notes that lead into it. room is that time in sixteenths. The last brick of a volley of two
-   or more lands on the root and adds the octave, like a final "ta-daa" */
-function motif(m,j,nj,cand,room,last){
-  if(last){const o=[{d:0,m,len:Math.min(4,Math.max(2,room)),v:1.25}];if(room>=6)o.push({d:4,m:m+12,len:Math.min(6,room-4),v:0.7});return o;}
-  const out=[{d:0,m,len:Math.max(1,Math.min(room,room>=8?3:2)),v:1}];if(room<4)return out;
-  const tg=nj==null?j:nj,dir=tg>j?1:tg<j?-1:0,at=k=>cand[clamp(k,0,cand.length-1)];
-  if(room<8){/* one or two notes on the next eighths, a step at a time toward the next brick's note */
-    const n=room>=6?2:1,path=[];if(dir)for(let k=j+dir;k!==tg;k+=dir)path.push(k);
-    while(path.length<n)path.push(path.length%2?j:(dir>0?j-1:j+1));
-    path.slice(-n).forEach((k,q)=>out.push({d:2*(q+1),m:at(k),len:2,v:0.8}));return out;}
-  /* time to breathe: the note (echoed right after when there is a lot of room), a pause, then two notes into the next hit */
-  if(room>=12)out.push({d:3,m,len:1,v:0.6});
-  const lead=dir?[tg-2*dir,tg-dir]:[j+1,j-1];
-  out.push({d:room-4,m:at(lead[0]),len:2,v:0.75},{d:room-2,m:at(lead[1]),len:2,v:0.85});return out;}
-function ballNote(b,brick){if(!AC)return;tick(AC.currentTime,0.6);
-  const {T,i}=slot(),c=chordAt(T),cx=MS.melCx,cen=center()+(brick&&cx>0?(ROWS/2-brick.r)*0.7*cx:0),span=13+5*cx,pool=cx>=0.35?c.scale:c.penta,cand=[];
-  for(let m=Math.round(cen-span);m<=Math.round(cen+span+2);m++)if(pool.includes(((m%12)+12)%12))cand.push(m);
-  const V=b&&b.vol;let j,m,last=false,nj=null,gap=null;
-  if(V&&V.k<V.plan.length){if(V.base==null){const tones=[];cand.forEach((x,jj)=>{if(c.pcs.includes(x%12))tones.push(jj);});
-      if(cx<0.05){let bi=tones[0];for(const jj of tones)if(Math.abs(cand[jj]-cen)<Math.abs(cand[bi]-cen))bi=jj;V.base=bi;}
-      else{/* where the phrase starts: near the register of the moment and of the brick's row, not far from the last note, rarely where the last phrase started */
-        const sc=3+5*cx,sl=3+4*cx;V.base=pickW(tones.map(jj=>{const dc=cand[jj]-cen,dl=cand[jj]-lastMel;return[jj,Math.exp(-dc*dc/(2*sc*sc)-dl*dl/(2*sl*sl))*(cand[jj]===lastStart?0.15:1)+1e-6];}));}
-      lastStart=cand[V.base];}
-    j=clamp(V.base+V.plan[V.k],0,cand.length-1);m=cand[j];last=V.k===V.plan.length-1&&V.n>=2;
-    if(V.k+1<V.plan.length){nj=clamp(V.base+V.plan[V.k+1],0,cand.length-1);gap=V.t0+V.times[V.k+1]-sim;}
-    else if(V.ret!=null)gap=V.t0+V.ret-sim;/* the last brick: its motif lasts until the ball is back on the paddle */
-    V.k++;
-    if(last){/* the landing: the chord's root closest to where the phrase arrived */let r=null;for(let x=m-7;x<=m+7;x++)if(((x%12)+12)%12===c.root&&(r==null||Math.abs(x-m)<Math.abs(r-m)))r=x;if(r!=null)m=r;}}
-  else{/* off the forecast (another ball got there first): a step near the last note, wider with more complexity */j=cand.reduce((bi,x,jj)=>Math.abs(x-lastMel)<Math.abs(cand[bi]-lastMel)?jj:bi,0);
-    j=clamp(j+pickW([[1,2],[-1,2.5],[0,0.4],[2,2*cx],[-2,2*cx],[3,cx],[-3,cx]]),0,cand.length-1);m=cand[j];}
-  if(i>=0&&i%4===0&&!last&&!c.pcs.includes(((m%12)+12)%12)){for(const d of [1,-1,2,-2])if(c.pcs.includes(((m+d)%12+12)%12)){m+=d;break;}const jm=cand.indexOf(m);if(jm>=0)j=jm;}
-  lastMel=m;
-  const six=60/bpm()/4,room=gap==null?2:Math.max(1,Math.floor(gap/six+0.2)),mo=motif(m,j,nj,cand,room,last);
-  /* two voices: in thirds from the ska on, and always on the top rows */
-  if(GROOVE[effStage()].two||(brick&&brick.r<=2))for(const x of mo)x.h=thirdBelow(x.m);
-  if(brick&&brick.gift)mo[0].v*=1.15;
-  cutLead(T);playMotif(mo,i,T);if(last)flashSign=1;}
+function makePhrase(i){const busy=effStage()>=3||hitsRecent.length>=4||MS.melCx>0.6,set=RHY[busy&&Math.random()<0.75?'busy':'calm'],r=set[Math.floor(Math.random()*set.length)],notes=[];
+  for(let k=0;k<16;k++)if(r[k]==='x'){let len=1;while(k+len<16&&r[k+len]==='-')len++;notes.push({d:k*2,len:len*2,half:k<8?0:1});}
+  const h1=notes.filter(x=>!x.half),h2=notes.filter(x=>x.half),mv=contour(h1.length,MS.melCx);
+  h1.forEach((x,k)=>{x.dv=k?mv[k-1]:null;});
+  /* the second half repeats the moves of the first, starting where the first started or a step away */
+  const back=-mv.reduce((a,b)=>a+b,0)+pickW([[0,2],[1,1],[-1,1]]);h2.forEach((x,k)=>{x.dv=k?(mv[k-1]==null?pickW([[1,1],[-1,1]]):mv[k-1]):back;});
+  phraseN++;return{i0:i,notes,answer:phraseN%2===0};}
+const melCenter=()=>{const t=72+((KEY-72)%12+12)%12;return t<69?t+12:t;};/* the key's tonic, between A4 and G#5 */
+function nearestPc(pcs,ref,lo,hi,dir){let best=null;for(let m=lo;m<=hi;m++){if(!pcs.includes(((m%12)+12)%12))continue;const s=Math.abs(m-ref)-(dir&&Math.sign(m-ref)===Math.sign(dir)?0.5:0);if(best==null||s<best.s)best={m,s};}return best?best.m:ref;}
+function phraseNote(x,c,strong,last,answer){const ok=new Set([0,2,4,7,9].map(v=>(KEY+v)%12).concat(c.pcs));if(MS.melCx>=0.5)keyScale().forEach(v=>ok.add(v));
+  const A=[];for(let m=55;m<=93;m++)if(ok.has(m%12))A.push(m);const lo=melCenter()-5,hi=melCenter()+7;
+  let m;if(x.dv==null)m=nearestPc(c.pcs,clamp(melPrev,lo,hi),lo,hi);/* the first note: a chord tone near the last one */
+  else{const j=A.reduce((b,v,k)=>Math.abs(v-melPrev)<Math.abs(A[b]-melPrev)?k:b,0);m=A[clamp(j+x.dv,0,A.length-1)];if(m>hi||m<lo)m=A[clamp(j-x.dv,0,A.length-1)];}
+  if(last)m=nearestPc(answer?[c.root]:[c.pcs[1],c.pcs[2]],m,lo-2,hi+2);
+  else if(strong&&!c.pcs.includes(m%12))m=nearestPc(c.pcs,m,lo-2,hi+2,x.dv);
+  if(Math.abs(m-melPrev)>7)m+=m>melPrev?-12:12;/* never a leap wider than a fifth */
+  melPrev=m;return m;}
+/* in the scheduler, step by step: the end of a phrase, the start of the next one on a beat, the notes due now */
+function phraseStep(i,T){if(phrase&&i-phrase.i0>=32)phrase=null;
+  if(ending||st==='over'||st==='win'){phrase=null;phraseReq=false;return;}
+  if(!phrase&&phraseReq&&songStep%4===0){phrase=makePhrase(i);phraseReq=false;}
+  if(!phrase)return;const k=i-phrase.i0,ns=phrase.notes;
+  for(const x of ns)if(x.d===k){const strong=songStep%(cycleLen()>=32?8:4)===0,last=x===ns[ns.length-1],m=phraseNote(x,giroChord(chordIdx),strong,last,phrase.answer);
+    playLeadAt({m,h:GROOVE[effStage()].two?thirdBelow(m):null,len:x.len,v:last?1.05:strong?1:0.85},T,true);if(last)flashSign=1;}}
+function startVolley(b,events){b.vol={k:0,n:events.filter(e=>e.k!=='tough').length};}
+/* a brick: a glassy click at once, and the request for a phrase */
+function ballNote(b,brick){if(!AC)return;const now=AC.currentTime;nz(METAL,now,0.02,'bandpass',5200,2,0.07,DRUMG);if(b&&b.vol)b.vol.k++;
+  phraseReq=true;hitsRecent=hitsRecent.filter(x=>now-x<3);hitsRecent.push(now);}
 function toughNote(){if(!AC)return;const {T}=slot();chip(96,T,0.05,0.6,12);nz(METAL,T,0.06,'bandpass',3200,3,0.15,DRUMG);}
 /* the paddle: a low blip on the chord now playing */
 function paddleNote(){if(!AC)return;const now=AC.currentTime;nz(NOISE8,now,0.05,'lowpass',450,1,0.18,DRUMG);
@@ -444,8 +432,8 @@ function letterBuzz(){if(!AC)return;const T=AC.currentTime;const o=AC.createOsci
 function lineChime(){if(!AC)return;const {T}=slot(),c=chordAt(T);const tones=[];for(let m=74;m<=93;m++)if(c.pcs.includes(m%12))tones.push(m);tones.slice(0,5).forEach((m,i)=>chip(m,T+i*0.05,0.12,0.9,12).connect(DL));}
 function bossThump(){if(!AC)return;const T=AC.currentTime,r=bassReg(curChord().root),k=osc('triangle',mtof(r+12),T,DRUMG,0.5,0.003,0.3);k.o.frequency.exponentialRampToValueAtTime(mtof(r),T+0.2);nz(NOISE8,T,0.22,'lowpass',900,0.7,0.2,DRUMG);}
 /* the sign is lit: a crash, an arpeggio up two octaves, then the whole band plays the flipper's tune until the next level */
-function finaleMusic(){if(!AC)return;restartNext='theme';cutLead(AC.currentTime+0.01);const {T}=slot(),base=KEY+60;crash(T);DR.k(T,1);[0,4,7,12,16,19,24].forEach((x,i)=>chip(base+x,T+0.045*i,0.12,0.9,25));}
-function loseNotes(){if(!AC)return;cutLead(AC.currentTime+0.01);const {T}=slot(),c=chordAt(T),cand=[];for(let x=lastMel-14;x<=lastMel;x++)if(c.penta.includes(((x%12)+12)%12))cand.push(x);
+function finaleMusic(){if(!AC)return;restartNext='theme';phrase=null;phraseReq=false;cutLead(AC.currentTime+0.01);const {T}=slot(),base=KEY+60;crash(T);DR.k(T,1);[0,4,7,12,16,19,24].forEach((x,i)=>chip(base+x,T+0.045*i,0.12,0.9,25));}
+function loseNotes(){if(!AC)return;cutLead(AC.currentTime+0.01);phrase=null;phraseReq=false;const {T}=slot(),c=chordAt(T),cand=[];for(let x=melPrev-14;x<=melPrev;x++)if(c.penta.includes(((x%12)+12)%12))cand.push(x);
   cand.reverse().slice(0,3).forEach((x,i)=>chip(x,T+i*0.2,i===2?0.45:0.16,0.9,50));}
 
 /* =====================================================================================================
@@ -665,8 +653,11 @@ function bakeSofa(){const w=60,h=w*(58+22)/104,c=mk((w+16)*K,(h+16)*K),x=c.getCo
   x.shadowBlur=0;if(CROWN.complete&&CROWN.naturalWidth){const cw=w*0.33;x.drawImage(CROWN,w/2-cw/2,-h*0.02,cw,cw*CROWN.naturalHeight/CROWN.naturalWidth);}return {c,w,h};}
 CROWN.onload=()=>{if(K)SPR.sofa=bakeSofa();};
 function bakeSign(){if(!K)return;for(const L of SIGN)for(const l of L.letters){if(l.space)continue;l.on=bakeLetter(l,L,true);l.off=bakeLetter(l,L,false);}}
+/* the off-beat pulse: a pink glow from the edges of the screen */
+function bakeVignette(){const c=mk(W*K,H*K),x=c.getContext('2d');x.scale(K,K);const gr=x.createRadialGradient(W/2,H/2,H*0.28,W/2,H/2,H*0.62);gr.addColorStop(0,'rgba(255,95,210,0)');gr.addColorStop(1,'rgba(255,95,210,0.55)');x.fillStyle=gr;x.fillRect(0,0,W,H);return c;}
+const RM=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
 function bake(){SPR.glow={};SPR.spark={};for(const col of new Set(ROWCOL.concat(Object.values(CAPS).map(d=>d.col),['#ffffff','#ffd36b'])))SPR.spark[col]=bakeDot(4,col);
-  SPR.ball=bakeDot(9,'#bff6ff');SPR.orb=bakeDot(24,'#7a3cff');SPR.bg=bakeBg();layoutSign();bakeSign();SPR.sofa=bakeSofa();bakeBricks();}
+  SPR.ball=bakeDot(9,'#bff6ff');SPR.orb=bakeDot(24,'#7a3cff');SPR.bg=bakeBg();SPR.vig=bakeVignette();layoutSign();bakeSign();SPR.sofa=bakeSofa();bakeBricks();}
 function flick(d){if(d<0)return 0;for(const [e,v] of [[0.05,1],[0.12,0],[0.16,1],[0.27,0.2],[0.32,1]])if(d<e)return v;return 1;}
 function txt(s,x,y,size,col,o={}){g.save();g.font=(o.w||700)+' '+size+'px '+getComputedStyle(document.body).fontFamily;g.textAlign=o.align||'center';g.textBaseline='middle';
   if(o.maxW){const w=g.measureText(s).width;if(w>o.maxW){g.translate(x,y);g.scale(o.maxW/w,o.maxW/w);g.translate(-x,-y);}}
@@ -677,6 +668,7 @@ function txt(s,x,y,size,col,o={}){g.save();g.font=(o.w||700)+' '+size+'px '+getC
 const spr=(c,x,y,w,h)=>g.drawImage(c,x,y,w,h);
 function draw(){const be=beatEnv();g.setTransform(K,0,0,K,0,0);spr(SPR.bg,0,0,W,H);
   let zk=1;if(st==='win'){const u=t-zoom.t;zk=1+0.16*Math.sin(clamp(u/1.6,0,1)*Math.PI);}
+  if(!RM&&be>0.01){const pz=1+0.006*be;g.translate(W/2,H/2);g.scale(pz,pz);g.translate(-W/2,-H/2);}
   const sx=shake?(Math.random()-0.5)*shake:0,sy=shake?(Math.random()-0.5)*shake:0;g.save();g.translate(sx+zoom.x,sy+zoom.y);g.scale(zk,zk);g.translate(-zoom.x,-zoom.y);
   g.globalCompositeOperation='lighter';for(const o of orbs){g.globalAlpha=0.10+0.10*be;spr(SPR.orb,o.x-o.s,o.y-o.s,o.s*2,o.s*2);}g.globalAlpha=1;
   for(const L of SIGN){const lf=Math.max(L.done?Math.max(0,1-(t-L.doneT)/0.6):0,flashSign*0.5);for(const l of L.letters){if(l.space||!l.on)continue;const off=l.off,on=l.on;
@@ -709,6 +701,7 @@ function draw(){const be=beatEnv();g.setTransform(K,0,0,K,0,0);spr(SPR.bg,0,0,W,
   g.fillStyle='rgba(255,255,255,0.75)';g.beginPath();g.roundRect(p.x-p.w/2+4,p.y+1.2+sq*0.35,p.w-8,2.2,1.1);g.fill();
   for(const q of pops){const u=q.t/1.4,s=q.big?1.6:1.1;txt(q.txt,q.x,q.y-u*18,9*s,q.col,{a:Math.min(1,(1-u)*2.4),sc:1+0.25*Math.max(0,1-q.t*6),stroke:3,glow:q.col,blur:8});}
   g.restore();
+  if(be>0.01&&SPR.vig&&st!=='over'){g.globalCompositeOperation='lighter';g.globalAlpha=0.16*be;spr(SPR.vig,0,0,W,H);g.globalAlpha=1;g.globalCompositeOperation='source-over';}
   if(flash>0){g.fillStyle='rgba(255,255,255,'+flash*0.45+')';g.fillRect(0,0,W,H);}
   if(combo>=3&&st==='play'){const u=t-comboT,k=1+0.35*Math.max(0,1-u*5),hot=Math.min(1,combo/12);
     txt('x'+Math.min(combo,12),14,H-72,13+hot*7,hot>0.6?'#ffd36b':'#ff5fd2',{align:'left',sc:k,glow:hot>0.6?'#ffb347':'#ff5fd2',blur:10+hot*8,stroke:4});txt('combo',15,H-58,8,'#a99cc8',{align:'left',w:600});}
@@ -736,7 +729,7 @@ function syncSeg(){document.querySelectorAll('.seg[data-k]').forEach(s=>s.queryS
 document.querySelectorAll('.seg[data-k]').forEach(s=>s.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const k=s.dataset.k;S[k]=k==='tune'?+b.dataset.v:b.dataset.v;save();syncSeg();
   if(k==='pad')paddle.base=PADW[S.pad];}));
 const pct=v=>Math.round(v*100)+'%';
-const RNG=[['mBpm','bpm',v=>Math.round(v/2)+' bpm in reggae, '+v+' in ska'],['mAccel','accel',v=>'+'+Math.round(v*100)+'%'],['mCx','melCx',v=>(v<0.05?'lineare':v<0.35?'mossa':v<0.65?'ricca':'libera')+' · '+Math.round(v*100)+'%'],
+const RNG=[['mBpm','bpm',v=>Math.round(v/2)+' bpm in reggae, '+v+' allo ska'],['mAccel','accel',v=>'+'+Math.round(v*100)+'%'],['mCx','melCx',v=>(v<0.05?'lineare':v<0.35?'mossa':v<0.65?'ricca':'libera')+' · '+Math.round(v*100)+'%'],
   ['mVolDrum','volDrum',pct],['mVolBass','volBass',pct],['mVolKeys','volKeys',pct],['mVolLead','volLead',pct],['mEcho','echo',pct],['mRev','rev',pct]];
 function syncMusic(){for(const [id,k,f] of RNG){$(id).value=MS[k];$(id+'V').textContent=f(+MS[k]);}
   document.querySelectorAll('[data-mk]').forEach(s=>s.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(MS[s.dataset.mk]===b.dataset.v))));
