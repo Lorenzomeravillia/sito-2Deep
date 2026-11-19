@@ -6,10 +6,10 @@ Due video, verticale 1080×1920 e orizzontale 1920×1080, girati dentro Skanoid 
 cd video-promo/indizio3-dahu
 node make.cjs probe                          # il brano come lo legge il gioco
 node make.cjs search 1-40                    # quando cade l'ultimo mattone, seme per seme
-SEED=8 SONGOFF=20.8 node make.cjs preview 1,8,14   # solo alcuni fotogrammi in out/
-SEED=8 SONGOFF=20.8 node make.cjs            # out/v.mp4, out/h.mp4, out/audio.s16, out/events.json
+SEED=4 SONGOFF=20.8 node make.cjs preview 1,8,14   # solo alcuni fotogrammi in out/
+SEED=4 SONGOFF=20.8 node make.cjs            # out/v.mp4, out/h.mp4, out/audio.s16, out/events.json
 python3 mux.py                               # i due video finali con l'audio
-SEED=8 SONGOFF=20.8 node make.cjs still 8.8   # la foto 4:5 per un post statico: out/still_8.80.png
+SEED=4 SONGOFF=20.8 node make.cjs still 8.8   # la foto 4:5 per un post statico: out/still_8.80.png
 ```
 
 - Il brano non è nel repository: `song_cfg.json` (escluso da git) è la configurazione salvata in td.site_content (skanoid/song), con il MIDI tagliato ai primi 78 secondi, che contengono tutto il tratto suonato in loop. Un altro file si passa con `SONGCFG=percorso`.

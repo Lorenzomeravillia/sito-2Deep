@@ -16,14 +16,14 @@ let tick=0,frame=0,readyT=0,lastBroken=null,prevAlive=[],prevLives=3;const ev={l
 let minBalls=99,lostBalls=0,prevBalls=0;
 
 /* ---- the endgame: a band of bricks over AL CANTONET and SAB 21 NOV, two of them with a three-balls capsule ---- */
-const KEEP=[[3,[1,2,3,4,5,6,7,8]],[4,[2,3,6,7]],[6,[1,2,3,4,5,6,7,8]],[7,[2,3,4,5,6,7]],[9,[3,4,5,6]]];
+/* fewer bricks and three balls (the first version had 30 bricks, 7 balls and two three-balls capsules: too busy) */
+const KEEP=[[3,[3,4,5,6]],[4,[2,7]],[6,[2,3,4,5,6,7]],[7,[3,6]],[9,[4,5]]],NBALLS=3;
 function setup(){Math.random=rng((SET.seed||1)*2654435761+1);M.S.speed='veloce';
   const rowCol={};for(const b of M.bricks)if(!b.gift)rowCol[b.r]=b.col;
   const keep=new Set();for(const [r,cs] of KEEP)for(const c of cs)keep.add(r*COLS+c);
   for(const b of M.bricks){const k=b.r*COLS+b.c;b.alive=keep.has(k);b.hp=1;b.max=1;b.gift=false;b.cap=null;b.col=rowCol[b.r];b.wob=0;b.hitT=-9;}
-  for(const k of [3*COLS+2,6*COLS+7]){const b=M.bricks[k];b.gift=true;b.cap='M';b.col=M.CAPS.M.col;}
   M.bakeBricks();M.bossDone=true;M.boss=null;M.hits=40;M.score=3170;M.lives=3;M.paddle.x=135;M.caps.length=0;
-  const balls=[];for(let i=0;i<7;i++){const up=CR()<0.72,a=(CR()-0.5)*1.5,x=30+CR()*210,y=up?250+CR()*160:200+CR()*120;
+  const balls=[];for(let i=0;i<NBALLS;i++){const up=CR()<0.72,a=(CR()-0.5)*1.5,x=30+CR()*210,y=up?250+CR()*160:200+CR()*120;
     balls.push({x,y,vx:Math.sin(a)*200,vy:(up?-1:1)*Math.cos(a)*200,r:3.2,stuck:false});}
   M.balls=balls;M.st='play';for(const b of balls)M.forecast(b);
   M.checkSign();M.slowT=0;M.flash=0;for(const L of M.SIGN){if(L.done)L.doneT=-9;for(const l of L.letters)if(l.lit)l.litT=-9;}
@@ -43,7 +43,7 @@ function pilot(dt){const p=M.paddle;let best=null,bt=1e9;
 /* ---- one tick of the game (1/120 s of game time) at video time vt ---- */
 function tickOnce(vt){window.__vt=vt;window.__gt=M.t;
   if(M.st==='ready'){readyT+=TICK;if(readyT>0.3){M.launch();readyT=0;}}
-  pilot(TICK);for(const c of M.caps)if(!c.fast){c.fast=1;c.vy=150;}
+  pilot(TICK);for(let i=M.caps.length-1;i>=0;i--)if(M.caps[i].k==='M')M.caps.splice(i,1);for(const c of M.caps)if(!c.fast){c.fast=1;c.vy=150;}
   M.update(TICK);window.__lq=window.__lq.filter(([at,fn])=>{if(M.t>=at){fn();return false;}return true;});M.musicTick();
   M.bricks.forEach((b,i)=>{if(prevAlive[i]&&!b.alive){prevAlive[i]=false;lastBroken=i;onBreak(b,vt);}});
   if(M.lives<prevLives)ev.lose=true;prevLives=M.lives;
