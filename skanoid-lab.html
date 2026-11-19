@@ -52,10 +52,20 @@ canvas{display:block;touch-action:none}
 .seg{display:flex;gap:6px}
 .seg button{flex:1;min-width:0;font:600 13px var(--ui);color:var(--ink);background:#0b0619;border:1px solid var(--line);border-radius:10px;padding:9px 4px;cursor:pointer}
 .seg button[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan);background:#0c1a2b}
+.shead2{position:sticky;top:-20px;z-index:3;margin:-20px -18px 0;padding:14px 18px 12px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;border-radius:18px 18px 0 0}
+#close2{font:700 14px var(--ui);color:#1a0f00;background:var(--gold);border:0;border-radius:999px;padding:9px 16px;cursor:pointer;white-space:nowrap}
+#close2:focus-visible,.sub>summary:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+#labIntro{color:var(--ink)!important;background:rgba(79,227,255,.08);border:1px solid rgba(79,227,255,.35);border-radius:12px;padding:10px 12px}
+.sub{display:flex;flex-direction:column;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.sub:not([open]){gap:0}
+.sub>summary{cursor:pointer;font:700 13px var(--ui);letter-spacing:.06em;text-transform:uppercase;color:var(--pink);list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:28px}
+.sub>summary::-webkit-details-marker{display:none}
+.sub>summary::after{content:'+';font:700 18px var(--ui);color:var(--cyan)}
+.sub[open]>summary::after{content:'–'}
 #close{font:700 15px var(--ui);color:#1a0f00;background:var(--gold);border:0;border-radius:12px;padding:12px;cursor:pointer}
 .lab{display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);padding-top:14px}
-.lab summary{cursor:pointer;font:700 15px var(--ui);color:var(--cyan);list-style-position:inside;padding:4px 0}
-.lab summary:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px}
+.lab>summary{cursor:pointer;font:700 15px var(--ui);color:var(--cyan);list-style-position:inside;padding:4px 0}
+.lab>summary:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px}
 .lab:not([open]){gap:0}
 .rng{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;font:500 13px var(--ui);color:var(--ink)}
 .rng input{grid-column:1 / -1;width:100%;accent-color:var(--cyan)}
@@ -175,7 +185,8 @@ html,body{touch-action:none;overscroll-behavior:none}
   <button id="opt" type="button">Opzioni</button>
   <div id="sheet" hidden>
     <div class="box" role="dialog" aria-label="Opzioni">
-      <h2>Opzioni</h2>
+      <div class="shead2"><h2 id="optT">Opzioni</h2><button id="close2" type="button">▶ Gioca</button></div>
+      <p id="labIntro" hidden>Sei nel <b>laboratorio musicale di Skanoid</b>: qui cambi come suona il muro. Scegli un'atmosfera e ascoltala, poi tocca <b>Gioca</b> e senti la musica mentre spacchi i mattoncini.</p>
       <p id="pauseNote" hidden>Gioco in pausa: è arrivato un gesto "indietro". Tocca Gioca per riprendere da dove eri, oppure torna indietro un'altra volta per uscire.</p>
       <p>Trascina il dito in qualsiasi punto per muovere la racchetta, tocca per lanciare.</p>
       <p id="musicNote"></p>
@@ -188,15 +199,18 @@ html,body{touch-action:none;overscroll-behavior:none}
         <summary>Laboratorio musica · per musicisti e curiosi</summary>
         <p>Qui puoi cambiare come suona il muro. La musica continua mentre sei qui e il gioco è in pausa: le modifiche si sentono subito. Valgono solo sul tuo telefono.</p>
         <div class="row"><span>NOTE DEL MURO</span><div class="seg" data-k="quant"><button id="qt1" type="button" data-v="tempo">A tempo</button><button id="qt2" type="button" data-v="libero">Libere</button></div></div>
-        <h3>MELODIA DELLA PALLINA</h3>
-        <label class="rng" for="mCx">Complessità della melodia<output id="mCxV"></output><input id="mCx" type="range" min="0" max="1" step="0.05"></label>
-        <p>A zero ogni frase sale e scende ad arco sui cinque suoni più sicuri dell'accordo. Salendo cambiano la nota di partenza e il registro (le file alte suonano più acute), arrivano salti di terza e di quarta, frasi a valle, a onda e in progressione, la scala completa dell'accordo e, verso il massimo, acciaccature cromatiche che risolvono di semitono. L'ultima nota della frase atterra sempre sulla fondamentale.</p>
-        <h3>ACCOMPAGNAMENTO</h3>
+        <details class="sub" open><summary>Atmosfera</summary>
         <div class="row"><span>ATMOSFERE DALL'APP TAPPETO ARMONICO</span><div id="mScenes">
           <button type="button" data-scene="2deep">2Deep</button><button type="button" data-scene="quiete">Quiete</button><button type="button" data-scene="brezza">Brezza</button>
           <button type="button" data-scene="groove">Groove</button><button type="button" data-scene="bossa">Bossa</button><button type="button" data-scene="viaggio">Viaggio</button>
           <button type="button" data-scene="spazio">Spazio</button></div></div>
         <p>Un'atmosfera cambia armonia, timbri, percussioni e spazio. Tempo e melodia restano i tuoi.</p>
+        </details>
+        <details class="sub"><summary>Melodia della pallina</summary>
+        <label class="rng" for="mCx">Complessità della melodia<output id="mCxV"></output><input id="mCx" type="range" min="0" max="1" step="0.05"></label>
+        <p>A zero ogni frase sale e scende ad arco sui cinque suoni più sicuri dell'accordo. Salendo cambiano la nota di partenza e il registro (le file alte suonano più acute), arrivano salti di terza e di quarta, frasi a valle, a onda e in progressione, la scala completa dell'accordo e, verso il massimo, acciaccature cromatiche che risolvono di semitono. L'ultima nota della frase atterra sempre sulla fondamentale.</p>
+        </details>
+        <details class="sub"><summary>Armonia, timbri ed effetti</summary>
         <div class="row"><span>ARMONIA</span><div class="seg g3" data-mk="prog">
           <button type="button" data-v="spa">Spa</button><button type="button" data-v="tappeto">Semplice</button><button type="button" data-v="colore">Colore</button>
           <button type="button" data-v="ricco">Ricco</button><button type="button" data-v="modale">Modale</button><button type="button" data-v="libero">Libero</button></div></div>
@@ -213,12 +227,15 @@ html,body{touch-action:none;overscroll-behavior:none}
         <label class="rng" for="mRev">Riverbero<output id="mRevV"></output><input id="mRev" type="range" min="0" max="1" step="0.02"></label>
         <label class="rng" for="mDly">Eco sul tappeto<output id="mDlyV"></output><input id="mDly" type="range" min="0" max="1" step="0.05"></label>
         <label class="rng" for="mChorus">Ampiezza (chorus)<output id="mChorusV"></output><input id="mChorus" type="range" min="0" max="1" step="0.05"></label>
-        <h3>ACCORDI E TEMPO</h3>
+        </details>
+        <details class="sub"><summary>Accordi</summary>
         <label class="rng" for="mTransT">Durata della dissolvenza tra accordi<output id="mTransTV"></output><input id="mTransT" type="range" min="0.3" max="8" step="0.1"></label>
         <label class="rng" for="mAuto">Cambio automatico ogni<output id="mAutoV"></output><input id="mAuto" type="range" min="2" max="40" step="1"></label>
         <label class="chk" for="mPaddle"><input id="mPaddle" type="checkbox">La racchetta cambia accordo</label>
         <label class="rng" for="mGap">Con la racchetta, non prima di<output id="mGapV"></output><input id="mGap" type="range" min="0" max="30" step="1"></label>
         <div class="btns"><button id="mNow" type="button">Cambia accordo adesso</button><button id="mReset" type="button">Valori iniziali</button></div>
+        </details>
+        <details class="sub"><summary>Voci, tempo e volumi</summary>
         <div class="row"><span>VOCI DEL TAPPETO</span>
           <div class="vgrid">
             <label class="chk" for="mv_sub"><input id="mv_sub" type="checkbox" data-v="sub">Basso</label>
@@ -237,6 +254,7 @@ html,body{touch-action:none;overscroll-behavior:none}
         <label class="rng" for="mVolPad">Volume tappeto<output id="mVolPadV"></output><input id="mVolPad" type="range" min="0" max="1.5" step="0.05"></label>
         <label class="rng" for="mVolDrum">Volume percussioni<output id="mVolDrumV"></output><input id="mVolDrum" type="range" min="0" max="1.5" step="0.05"></label>
         <label class="rng" for="mVolNote">Volume note della pallina<output id="mVolNoteV"></output><input id="mVolNote" type="range" min="0" max="1.5" step="0.05"></label>
+        </details>
         <div class="btns"><button id="mCopy" type="button">Copia le impostazioni</button></div>
         <textarea id="mCopyTxt" readonly hidden aria-label="Impostazioni della musica"></textarea>
       </details>
@@ -1187,6 +1205,7 @@ document.querySelectorAll('#musicSeg button').forEach(b=>{b.setAttribute('aria-p
   b.addEventListener('click',()=>{if(b.dataset.mode===MODE)return;try{localStorage.setItem('skanoid_musica',b.dataset.mode);}catch(e){}const u=new URL(location.href);u.searchParams.set('musica',b.dataset.mode);location.replace(u.toString());});});
 optB.addEventListener('click',()=>{$('pauseNote').hidden=true;sheet.hidden=false;syncSeg();syncMusic();});
 $('close').addEventListener('click',()=>{sheet.hidden=true;$('pauseNote').hidden=true;arm();audio();if(AC&&AC.state==='suspended')AC.resume();startGroove();});
+$('close2').addEventListener('click',()=>$('close').click());/* the same Play, always at the top of the sheet */
 document.addEventListener('visibilitychange',()=>{if(!AC)return;if(document.hidden)AC.suspend();else AC.resume();});
 for(let i=0;i<9;i++)orbs.push({x:Math.random()*W,y:Math.random()*H,v:4+Math.random()*7,s:14+Math.random()*22,p:Math.random()*6});
 paddle={x:W/2,y:H-46,h:10,base:PADW[S.pad],w:PADW[S.pad],sq:0,hitT:-9};
@@ -1867,6 +1886,7 @@ document.querySelectorAll('#musicSeg button').forEach(b=>{b.setAttribute('aria-p
   b.addEventListener('click',()=>{if(b.dataset.mode===MODE)return;try{localStorage.setItem('skanoid_musica',b.dataset.mode);}catch(e){}const u=new URL(location.href);u.searchParams.set('musica',b.dataset.mode);location.replace(u.toString());});});
 optB.addEventListener('click',()=>{$('pauseNote').hidden=true;sheet.hidden=false;syncSeg();syncMusic();});
 $('close').addEventListener('click',()=>{sheet.hidden=true;$('pauseNote').hidden=true;arm();audio();if(AC&&AC.state==='suspended')AC.resume();startGroove();});
+$('close2').addEventListener('click',()=>$('close').click());/* the same Play, always at the top of the sheet */
 document.addEventListener('visibilitychange',()=>{if(!AC)return;if(document.hidden)AC.suspend();else AC.resume();});
 for(let i=0;i<9;i++)orbs.push({x:Math.random()*W,y:Math.random()*H,v:4+Math.random()*7,s:14+Math.random()*22,p:Math.random()*6});
 paddle={x:W/2,y:H-46,h:10,base:PADW[S.pad],w:PADW[S.pad],sq:0,hitT:-9};
@@ -1880,8 +1900,9 @@ requestAnimationFrame(frame);
 
 function SKANOID_START(m,touch){(m==='relax'?window.SKANOID_RELAX:window.SKANOID_SKA)();if(touch&&window.__SKANOID)window.__SKANOID.startAudio();}
 /* the music lab (relaxing version): options open, lab unfolded and in view, the game paused; the first touch inside starts the sound */
-function SKANOID_LAB(){var o=document.getElementById('opt'),l=document.getElementById('labBox'),sh=document.getElementById('sheet');if(o)o.click();
-  if(l){l.open=true;setTimeout(function(){l.scrollIntoView({block:'start'});},80);}
+function SKANOID_LAB(){var o=document.getElementById('opt'),l=document.getElementById('labBox'),sh=document.getElementById('sheet'),it=document.getElementById('labIntro'),t=document.getElementById('optT');if(o)o.click();
+  /* opened as the lab: a title and a line that say where you are, the lab first and open, the other options below it */
+  if(t)t.textContent='Laboratorio musicale';if(it){it.hidden=false;if(l)it.after(l);}if(l)l.open=true;var bx=sh&&sh.querySelector('.box');if(bx)bx.scrollTop=0;
   if(sh)sh.addEventListener('pointerdown',function(){if(window.__SKANOID)window.__SKANOID.startAudio();},{once:true});}
 function SKANOID_CHOOSE(ready,only){var q=new URLSearchParams(location.search),m=only||q.get('musica');
   /* 2deep.it/skanoid?laboratorio (or #laboratorio): straight into the music lab, the link to share with musicians */
