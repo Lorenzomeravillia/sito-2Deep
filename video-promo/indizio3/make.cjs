@@ -13,11 +13,8 @@ const SEED=+(process.env.SEED||7),MAXT=110,AUDT=120;
   let html=fs.readFileSync(D+'build/skanoid_page.html','utf8');
   const rep=(a,b)=>{if(!html.includes(a))throw new Error('patch not found: '+a.slice(0,60));html=html.replace(a,b);};
   rep('AC=new (window.AudioContext||window.webkitAudioContext)();','AC=window.__OFF||new (window.AudioContext||window.webkitAudioContext)();');
-  /* offline rendering: hold the value the voice really has at T instead of reading .value (not computed before rendering) */
-  rep('v.g.gain.cancelScheduledValues(T);v.g.gain.setValueAtTime(Math.max(0.0001,v.g.gain.value),T);','v.g.gain.cancelAndHoldAtTime(T);');
   rep('for(let i=0;i<5;i++)setTimeout(()=>{','for(let i=0;i<5;i++)window.__later(()=>{');
   rep('if(LAB&&balls[0]&&balls[0].vol)','if(false&&balls[0]&&balls[0].vol)');
-  rep('ogni mattoncino è una nota','ogni colpo è una nota');
   rep('function schedule(i,T){','function schedule(i,T){if(i%16===0&&window.__bars)window.__bars.push(T);');
   rep('function frame(now){','window.__MV={update,draw,musicTick,launch,catchCap,clampPaddle,fit,layoutSign,bakeSign,audio,startGroove,S,get st(){return st;},get balls(){return balls;},get caps(){return caps;},get paddle(){return paddle;},get slowT(){return slowT;},set slowT(v){slowT=v;},get slowF(){return slowF;},get bricks(){return bricks;},get boss(){return boss;},get bossDone(){return bossDone;},get t(){return t;},get SIGN(){return SIGN;},get lives(){return lives;},set lives(v){lives=v;},alive};\nfunction frame(now){');
   fs.writeFileSync(D+'build/rec.html',html);

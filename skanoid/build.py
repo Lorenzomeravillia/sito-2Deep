@@ -1,4 +1,4 @@
-"""Skanoid: the 2Deep's breakout (the name: Arkanoid with ska in it). Candy-glass bricks over a neon sign with the next gig, music made by the ball (A=432 Hz).
+"""Skanoid: the 2Deep's breakout (the name: Arkanoid with ska in it). Neon bricks over a neon sign with the next gig, music made by the ball (A=432 Hz): a home-keyboard reggae that becomes ska.
 
    python3 skanoid/build.py                    -> ../skanoid.html, the page at 2deep.it/skanoid: the dates come from Supabase
                                                     when the page opens (libera/site_data.json if it does not answer within 5 seconds)
@@ -50,11 +50,11 @@ else:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="description" content="Skanoid, il gioco dei 2Deep: spacca il muro al neon, accendi l'insegna al neon con la prossima serata. Ogni colpo suona una nota, a 432 Hz.">
+<meta name="description" content="Skanoid, il gioco dei 2Deep: spacca il muro al neon e accendi l'insegna con la prossima serata. Il muro suona a 432 Hz, dal reggae allo ska.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.2deep.it/skanoid">
 <meta property="og:title" content="Skanoid · il gioco dei 2Deep">
-<meta property="og:description" content="Spacca il muro e accendi l'insegna della prossima serata. Il muro suona: ogni colpo è una nota, a 432 Hz.">
+<meta property="og:description" content="Spacca il muro e accendi l'insegna della prossima serata. Il muro suona a 432 Hz: parte reggae e diventa ska.">
 <meta property="og:image" content="https://www.2deep.it/assets/giochi/og-skanoid.jpg">
 <meta property="og:image:secure_url" content="https://www.2deep.it/assets/giochi/og-skanoid.jpg">
 <meta property="og:image:type" content="image/jpeg">
