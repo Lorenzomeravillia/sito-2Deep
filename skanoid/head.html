@@ -108,6 +108,7 @@ canvas{display:block;touch-action:none}
 #chooser button[data-m="ska"] b{color:var(--pink)}
 #chooser button[data-m="relax"]{border-color:rgba(79,227,255,.55);box-shadow:0 0 18px rgba(79,227,255,.14)}
 #chooser button[data-m="relax"] b{color:var(--cyan)}
+#chooser button.labLink{display:block;align-self:center;background:none;border:0;box-shadow:none;padding:8px 10px;text-align:center;font:600 14px var(--ui);color:var(--cyan2,#7feaff);text-decoration:underline;text-underline-offset:4px}
 #chooser button.last::after{content:'la tua ultima scelta';font:600 11px var(--ui);letter-spacing:.06em;color:var(--gold)}
 </style>
 <!--SITEBAR-->
@@ -227,6 +228,7 @@ canvas{display:block;touch-action:none}
       <h2 id="chT">Che musica vuoi?</h2>
       <button type="button" data-m="ska"><b>Ska-reggae</b>Una colonna sonora 8 bit in levare: gli strumenti entrano man mano che il muro cade.</button>
       <button type="button" data-m="relax"><b>Rilassante</b>Il muro suona: a ogni mattoncino una nota, sopra un tappeto armonico a 432 Hz.</button>
+      <button type="button" class="labLink" data-lab>Suoni? Prova il laboratorio musicale</button>
     </div>
   </div>
 </div>

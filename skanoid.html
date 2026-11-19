@@ -129,6 +129,7 @@ canvas{display:block;touch-action:none}
 #chooser button[data-m="ska"] b{color:var(--pink)}
 #chooser button[data-m="relax"]{border-color:rgba(79,227,255,.55);box-shadow:0 0 18px rgba(79,227,255,.14)}
 #chooser button[data-m="relax"] b{color:var(--cyan)}
+#chooser button.labLink{display:block;align-self:center;background:none;border:0;box-shadow:none;padding:8px 10px;text-align:center;font:600 14px var(--ui);color:var(--cyan2,#7feaff);text-decoration:underline;text-underline-offset:4px}
 #chooser button.last::after{content:'la tua ultima scelta';font:600 11px var(--ui);letter-spacing:.06em;color:var(--gold)}
 </style>
 </head>
@@ -284,6 +285,7 @@ html,body{touch-action:none;overscroll-behavior:none}
       <h2 id="chT">Che musica vuoi?</h2>
       <button type="button" data-m="ska"><b>Ska-reggae</b>Una colonna sonora 8 bit in levare: gli strumenti entrano man mano che il muro cade.</button>
       <button type="button" data-m="relax"><b>Rilassante</b>Il muro suona: a ogni mattoncino una nota, sopra un tappeto armonico a 432 Hz.</button>
+      <button type="button" class="labLink" data-lab>Suoni? Prova il laboratorio musicale</button>
     </div>
   </div>
 </div>
@@ -1876,11 +1878,18 @@ requestAnimationFrame(frame);
 };
 
 function SKANOID_START(m,touch){(m==='relax'?window.SKANOID_RELAX:window.SKANOID_SKA)();if(touch&&window.__SKANOID)window.__SKANOID.startAudio();}
+/* the music lab (relaxing version): options open, lab unfolded and in view, the game paused; the first touch inside starts the sound */
+function SKANOID_LAB(){var o=document.getElementById('opt'),l=document.getElementById('labBox'),sh=document.getElementById('sheet');if(o)o.click();
+  if(l){l.open=true;setTimeout(function(){l.scrollIntoView({block:'start'});},80);}
+  if(sh)sh.addEventListener('pointerdown',function(){if(window.__SKANOID)window.__SKANOID.startAudio();},{once:true});}
 function SKANOID_CHOOSE(ready,only){var q=new URLSearchParams(location.search),m=only||q.get('musica');
+  /* 2deep.it/skanoid?laboratorio (or #laboratorio): straight into the music lab, the link to share with musicians */
+  if((q.has('laboratorio')||location.hash==='#laboratorio')&&only!=='ska'){ready(function(){SKANOID_START('relax',false);SKANOID_LAB();});return;}
   if(m==='ska'||m==='relax'){ready(function(){SKANOID_START(m,false);});return;}
   var ch=document.getElementById('chooser'),last=null;try{last=localStorage.getItem('skanoid_musica');}catch(e){}ch.hidden=false;
   var bs=ch.querySelectorAll('button[data-m]');Array.prototype.forEach.call(bs,function(b){var mm=b.getAttribute('data-m');if(mm===last)b.classList.add('last');
     b.addEventListener('click',function(){try{localStorage.setItem('skanoid_musica',mm);}catch(e){}ch.hidden=true;ready(function(now){SKANOID_START(mm,now);});});});
+  var lb=ch.querySelector('button[data-lab]');if(lb)lb.addEventListener('click',function(){try{localStorage.setItem('skanoid_musica','relax');}catch(e){}ch.hidden=true;ready(function(now){SKANOID_START('relax',now);SKANOID_LAB();});});
   (ch.querySelector('button.last')||bs[0]).focus();}
 (function(){var SNAP=[{"id": "e62a516a-e2de-425d-97fa-dabcf30f4026", "event_date": "2026-11-14", "event_time": "18:00:00", "venue": "Monkey's bar", "city": "Cugnan (BL)", "description": null, "is_published": true}, {"id": "f93c1503-53ec-42f1-83e0-1d42d595c403", "event_date": "2026-11-21", "event_time": "21:00:00", "venue": "Al Cantonet", "city": "Feltre ", "description": null, "is_published": true}, {"id": "1dad713d-caf0-4099-8215-166af5cd4d88", "event_date": "2026-11-28", "event_time": "16:00:00", "venue": "Al Chioschetto", "city": "Cimolais", "description": null, "is_published": true}, {"id": "a2d7f94c-5278-4003-b309-91f9f4fee539", "event_date": "2027-01-16", "event_time": null, "venue": "Locale Misterioso!", "city": "Visome", "description": "Data da confermare a breve", "is_published": true}, {"id": "4637dd92-6887-4536-9208-9b6a95b41205", "event_date": "2027-02-13", "event_time": null, "venue": "Bar Aurora", "city": "Peron di Sedico ", "description": "data da confermare", "is_published": true}],q=new URLSearchParams(location.search),done=false,wait=null;
   function ready(cb){if(done)cb(true);else wait=cb;}

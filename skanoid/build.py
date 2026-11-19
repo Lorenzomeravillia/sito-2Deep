@@ -92,11 +92,18 @@ MODES = [ONLY] if ONLY else ['ska', 'relax']
 # the choice of music: the game starts when the data is in and the music is picked; a pick made after the data keeps the touch,
 # so the sound starts at once
 CHOOSE = """function SKANOID_START(m,touch){(m==='relax'?window.SKANOID_RELAX:window.SKANOID_SKA)();if(touch&&window.__SKANOID)window.__SKANOID.startAudio();}
+/* the music lab (relaxing version): options open, lab unfolded and in view, the game paused; the first touch inside starts the sound */
+function SKANOID_LAB(){var o=document.getElementById('opt'),l=document.getElementById('labBox'),sh=document.getElementById('sheet');if(o)o.click();
+  if(l){l.open=true;setTimeout(function(){l.scrollIntoView({block:'start'});},80);}
+  if(sh)sh.addEventListener('pointerdown',function(){if(window.__SKANOID)window.__SKANOID.startAudio();},{once:true});}
 function SKANOID_CHOOSE(ready,only){var q=new URLSearchParams(location.search),m=only||q.get('musica');
+  /* 2deep.it/skanoid?laboratorio (or #laboratorio): straight into the music lab, the link to share with musicians */
+  if((q.has('laboratorio')||location.hash==='#laboratorio')&&only!=='ska'){ready(function(){SKANOID_START('relax',false);SKANOID_LAB();});return;}
   if(m==='ska'||m==='relax'){ready(function(){SKANOID_START(m,false);});return;}
   var ch=document.getElementById('chooser'),last=null;try{last=localStorage.getItem('skanoid_musica');}catch(e){}ch.hidden=false;
   var bs=ch.querySelectorAll('button[data-m]');Array.prototype.forEach.call(bs,function(b){var mm=b.getAttribute('data-m');if(mm===last)b.classList.add('last');
     b.addEventListener('click',function(){try{localStorage.setItem('skanoid_musica',mm);}catch(e){}ch.hidden=true;ready(function(now){SKANOID_START(mm,now);});});});
+  var lb=ch.querySelector('button[data-lab]');if(lb)lb.addEventListener('click',function(){try{localStorage.setItem('skanoid_musica','relax');}catch(e){}ch.hidden=true;ready(function(now){SKANOID_START('relax',now);SKANOID_LAB();});});
   (ch.querySelector('button.last')||bs[0]).focus();}"""
 
 
