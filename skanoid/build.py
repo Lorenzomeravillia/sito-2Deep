@@ -58,6 +58,7 @@ def ska_parts():
     assert n == 1, n
     ui = patched(FL('songui.js'), [('function autoCfg(info,name){', 'function autoCfgBase(info,name){'),
         ('function renderPanel(){', 'function renderPanelBase(){'),
+        ("(CANEDIT||location.hash==='#brano')", "(CANEDIT||location.hash==='#brano'||adminDevice())"),
         ('const info=analyzeMidi(parseMidi(b64d(cfg.midi)));', 'const info=analyzeMidi(parseMidi(b64d(cfg.midi)),cfg.levare);'),
         ('const bl=beatLen(info)*4,span=bars*bl;let best=info.first,bs=-1;', 'const bl=barSec(info),span=bars*bl;let best=Math.floor(info.first/bl+1e-6)*bl,bs=-1;'),
         ('for(let off=info.first;off+span<=info.end+0.01;off+=bl)', 'for(let off=Math.floor(info.first/bl+1e-6)*bl;off+span<=info.end+0.01;off+=bl)'),

@@ -23,3 +23,17 @@ function renderPanel(){renderPanelBase();if(!PINFO)return;LEVSEL.value=PCFG.leva
   LEVSEL.options[0].textContent='Automatico'+(a?' ('+LEV_WHY[a.why]+')':'');}
 LEVSEL.addEventListener('change',()=>{if(!PINFO||!PMIDI)return;PCFG.levare=LEVSEL.value;PINFO=analyzeMidi(parseMidi(b64d(PMIDI)),PCFG.levare);PV.key='';renderPanel();changed();
   setS('Skank e batteria ricalcolati: '+LEVSEL.selectedOptions[0].textContent.toLowerCase()+'. Ascolta e confronta.');});
+/* the admin, remembered on this device: once the BRANO panel has seen an admin login here (or the address had #brano), its button
+   stays on this device; when the login has lapsed, the panel asks for it again in place, without going through 2deep.it/admin.
+   The login is Supabase's, kept by the browser like the admin page's (the same one: logging in here also opens the admin) */
+const ADMIN_KEY='skanoid_admin_device';
+function adminDevice(){try{return localStorage.getItem(ADMIN_KEY)==='1';}catch(e){return false;}}
+function markDevice(){try{localStorage.setItem(ADMIN_KEY,'1');}catch(e){}}
+if(location.hash==='#brano')markDevice();
+function updateLogin(){const can=!!STORE.sb();$('sLogin').hidden=!can||STORE.edit;$('sWho').hidden=!STORE.edit;}
+{const init0=STORE.init.bind(STORE);STORE.init=async function(){await init0();if(STORE.edit)markDevice();updateLogin();};}
+SBTN.addEventListener('click',updateLogin);
+$('sLoginForm').addEventListener('submit',async e=>{e.preventDefault();const sb=STORE.sb();if(!sb)return;const btn=$('sLoginBtn');btn.disabled=true;setS('Accesso…');
+  try{const{error}=await sb.auth.signInWithPassword({email:$('sEmail').value.trim(),password:$('sPass').value});if(error)throw error;
+    STORE.edit=true;CANEDIT=true;markDevice();$('sPass').value='';updateLogin();setS('Accesso fatto: SALVA ora vale per tutti, e su questo dispositivo il pulsante BRANO resta visibile.');}
+  catch(err){setS('Accesso non riuscito: '+(err.message||err)+'.',true);}finally{btn.disabled=false;}});
