@@ -531,17 +531,19 @@ function spawnBoss(){const hp=6+2*(lvl-1);boss={x:-40,y:BY+ROWS*BH+44,w:56,h:42,
 
 /* ---- input: drag anywhere moves the paddle; a short tap launches; a mouse follows the pointer ---- */
 let down=null;
-cv.addEventListener('pointerdown',e=>{audio();if(AC&&AC.state==='suspended')AC.resume();startGroove();down={id:e.pointerId,t:performance.now(),moved:0,lx:e.clientX};cv.setPointerCapture(e.pointerId);e.preventDefault();});
-cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&!down){const r=cv.getBoundingClientRect();paddle.x=(e.clientX-r.left)/scale;clampPaddle();return;}
-  if(!down||e.pointerId!==down.id)return;if(down.mood){down.my+=Math.abs(e.clientY-down.ly);down.ly=e.clientY;}paddle.x+=(e.clientX-down.lx)/scale*1.15;down.moved+=Math.abs(e.clientX-down.lx);down.lx=e.clientX;clampPaddle();e.preventDefault();});
+cv.addEventListener('pointerdown',e=>{audio();if(AC&&AC.state==='suspended')AC.resume();startGroove();down={id:e.pointerId,t:performance.now(),moved:0,lx:e.clientX};try{cv.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();});
+cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'&&!down){const r=cv.getBoundingClientRect();paddle.x=(e.clientX-r.left)/scale;clampPaddle();}});
+/* drags and releases are heard on the whole window, each matched to the finger that started it: some phone browsers keep a touch
+   that began on the Atmosfera button on the button instead of handing it to the canvas, and the tap was lost there */
+addEventListener('pointermove',e=>{if(!down||e.pointerId!==down.id)return;if(down.mood){down.my+=Math.abs(e.clientY-down.ly);down.ly=e.clientY;}paddle.x+=(e.clientX-down.lx)/scale*1.15;down.moved+=Math.abs(e.clientX-down.lx);down.lx=e.clientX;clampPaddle();e.preventDefault();});
 moodB.addEventListener('pointerdown',e=>{down={id:e.pointerId,t:performance.now(),moved:0,lx:e.clientX,mood:true,my:0,ly:e.clientY};try{cv.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();});
 moodB.addEventListener('click',e=>{if(e.detail===0)nextMood();});
 /* touch defaults off on the game surface: no browser gesture starts from a drag on the canvas */
 for(const el of [cv,moodB]){el.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});el.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});}
-cv.addEventListener('pointerup',e=>{if(!down)return;const tap=down.moved<10&&performance.now()-down.t<350,fromMood=down.mood,still=down.moved+(down.my||0)<14;down=null;arm();
+addEventListener('pointerup',e=>{if(!down||e.pointerId!==down.id)return;const tap=down.moved<10&&performance.now()-down.t<350,fromMood=down.mood,still=down.moved+(down.my||0)<14;down=null;arm();
   if(fromMood){if(still)nextMood();return;}/* on the Atmosfera button: a touch that stays put changes the mood, however long; a swipe only moves the paddle */
   if(st==='ready'&&(tap||e.pointerType==='mouse'))launch();else if(st==='over'&&t-stT>1.2)newGame();else if(st==='win'&&t-stT>1.6)nextLevel();});
-cv.addEventListener('pointercancel',()=>{down=null;});
+addEventListener('pointercancel',e=>{if(down&&e.pointerId===down.id)down=null;});
 function clampPaddle(){paddle.x=clamp(paddle.x,paddle.w/2+4,W-paddle.w/2-4);}
 const keys={};addEventListener('keydown',e=>{keys[e.key]=true;if(e.key===' '){audio();startGroove();if(st==='ready')launch();else if(st==='over'&&t-stT>1.2)newGame();else if(st==='win'&&t-stT>1.6)nextLevel();e.preventDefault();}});
 addEventListener('keyup',e=>{keys[e.key]=false;});
