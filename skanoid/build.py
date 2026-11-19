@@ -132,15 +132,15 @@ else:
 <meta property="og:url" content="https://www.2deep.it/skanoid">
 <meta property="og:title" content="Skanoid · il gioco dei 2Deep">
 <meta property="og:description" content="Spacca il muro e accendi l'insegna della prossima serata, con lo ska-reggae in 8 bit dei 2Deep o con il muro che suona a 432 Hz.">
-<meta property="og:image" content="https://www.2deep.it/assets/giochi/og-skanoid.jpg">
-<meta property="og:image:secure_url" content="https://www.2deep.it/assets/giochi/og-skanoid.jpg">
+<meta property="og:image" content="https://www.2deep.it/assets/giochi/og-skanoid-2.jpg">
+<meta property="og:image:secure_url" content="https://www.2deep.it/assets/giochi/og-skanoid-2.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Skanoid: il gioco dei 2Deep, un muro al neon sopra l'insegna della serata">
 <meta property="og:locale" content="it_IT">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://www.2deep.it/assets/giochi/og-skanoid.jpg">
+<meta name="twitter:image" content="https://www.2deep.it/assets/giochi/og-skanoid-2.jpg">
 <meta name="theme-color" content="#05030c">
 <link rel="canonical" href="https://www.2deep.it/skanoid">
 """
