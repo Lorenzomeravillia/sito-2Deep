@@ -92,6 +92,10 @@ canvas{display:block;touch-action:none}
 #song .sbtns{display:flex;flex-wrap:wrap;gap:8px}
 #song #sPlay{border-color:var(--neon)}
 #song #sSave{border-color:var(--cyan2);color:var(--cyan2)}
+#song .slogin{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid var(--neon);border-radius:10px;background:#1a0b26}
+#song .slogin form{display:flex;flex-wrap:wrap;gap:8px}
+#song .slogin input{flex:1 1 160px;font:14px system-ui,sans-serif;background:#120d24;color:var(--ink);border:1px solid var(--edge);padding:8px;min-height:40px;border-radius:6px}
+#song .swho{color:var(--cyan2);font-size:13px}
 #song #sStatus{min-height:1.4em;color:var(--cyan2);font-size:13px}
 /* the choice of music, before the game starts */
 #chooser{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,#24104a 0,#05030c 70%)}
@@ -186,6 +190,11 @@ canvas{display:block;touch-action:none}
   <div id="song" hidden role="dialog" aria-modal="true" aria-labelledby="songT">
     <div class="sbox">
       <div class="shead"><h2 id="songT">BRANO DI SKANOID</h2><button id="sClose" type="button">CHIUDI</button></div>
+      <div id="sLogin" class="slogin" hidden>
+        <p>Per salvare il brano per tutti serve l'accesso da amministratore. Basta farlo una volta: su questo dispositivo resta attivo finché non premi Esci nel pannello admin.</p>
+        <form id="sLoginForm"><input id="sEmail" type="email" autocomplete="username" placeholder="Email" aria-label="Email" required><input id="sPass" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password" required><button id="sLoginBtn" type="submit">ACCEDI</button></form>
+      </div>
+      <p id="sWho" class="swho" hidden>Accesso da amministratore attivo su questo dispositivo: SALVA vale per tutti.</p>
       <p>È la colonna sonora della versione ska-reggae di Skanoid, separata da quella del flipper. All'inizio suona il primo gruppo di strumenti, poi ne entra uno al 15%, al 35%, al 55% e al 75% del muro; alla vittoria suonano tutti.</p>
       <p>Il gioco aggiunge a ogni brano tre tracce in levare calcolate dal brano stesso: lo SKANK (gli accordi del brano, brevi, sul levare), la BATTERIA SKA e il ONE DROP reggae (spento all'inizio). La batteria del MIDI e le sue tracce di accordi partono escluse: rimettile se servono. Va meglio con i brani in 4/4; in 6/8 il levare diventa uno shuffle, in 3/4 un valzer in levare. Se il brano è già in levare, il gioco prova a capirlo da solo (lo vedi accanto al titolo del file); se sbaglia, scegli tu nella voce «Levare».</p>
       <label class="sfile"><input id="sFile" type="file" accept=".mid,.midi,audio/midi,audio/x-midi"><span>SCEGLI FILE .MID</span></label>
